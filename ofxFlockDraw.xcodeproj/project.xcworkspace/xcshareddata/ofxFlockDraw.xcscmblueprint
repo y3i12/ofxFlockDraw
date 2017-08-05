@@ -1,0 +1,50 @@
+{
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "65F0E57F9FBE704C78F412BB3A758052CBC46923" : 9223372036854775807,
+    "84CE04532A76281E9D0C7B3A7EFCDC0E12CAC6FA" : 9223372036854775807,
+    "9233F0F4A2BE011BD468E5177A5AD6623263B23D" : 9223372036854775807,
+    "A9EB116B24E1E187292E7D55C8A151A6DEA16570" : 9223372036854775807,
+    "E1973EE936B32FD6C1A9080FB86363F99151DFAC" : 9223372036854775807
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "E3E43530-CB70-4A1C-9B50-1E4753791114",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "65F0E57F9FBE704C78F412BB3A758052CBC46923" : "..\/..\/addons\/ofxAudioDecoder",
+    "84CE04532A76281E9D0C7B3A7EFCDC0E12CAC6FA" : "..\/..\/addons\/ofxFft",
+    "9233F0F4A2BE011BD468E5177A5AD6623263B23D" : "..\/..\/addons\/ofxDatGui",
+    "A9EB116B24E1E187292E7D55C8A151A6DEA16570" : "..\/..\/addons\/ofxTimeMeasurements",
+    "E1973EE936B32FD6C1A9080FB86363F99151DFAC" : "..\/..\/addons\/ofxBeat"
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "ofxFlockDraw",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "ofxFlockDraw.xcodeproj",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/kylemcdonald\/ofxAudioDecoder",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "65F0E57F9FBE704C78F412BB3A758052CBC46923"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/kylemcdonald\/ofxFft",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "84CE04532A76281E9D0C7B3A7EFCDC0E12CAC6FA"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/braitsch\/ofxDatGui",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "9233F0F4A2BE011BD468E5177A5AD6623263B23D"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/armadillu\/ofxTimeMeasurements",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "A9EB116B24E1E187292E7D55C8A151A6DEA16570"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/darrenmothersele\/ofxBeat",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "E1973EE936B32FD6C1A9080FB86363F99151DFAC"
+    }
+  ]
+}

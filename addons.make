@@ -1,0 +1,7 @@
+ofxAudioDecoder
+ofxBeat
+ofxDatGui
+ofxFft
+ofxThreadedImageLoader
+ofxTimeMeasurements
+ofxXmlSettings

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<VariablesViewState
+   version = "1.0">
+   <ContextStates>
+      <ContextState
+         contextName = "ofFilePath::addTrailingSlash(std::__1::basic_string&lt;char, std::__1::char_traits&lt;char&gt;, std::__1::allocator&lt;char&gt; &gt; const&amp;):ofFileUtils.cpp">
+         <PersistentStrings>
+            <PersistentString
+               value = "sep.string()">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "ParticleEmitter::threadProcessParticles(int):ParticleEmitter.cpp">
+         <PersistentStrings>
+            <PersistentString
+               value = "m_processing">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "ofApp::update():ofApp.cpp">
+      </ContextState>
+      <ContextState
+         contextName = "ParticleEmitter::update(float, float):ParticleEmitter.cpp">
+         <PersistentStrings>
+            <PersistentString
+               value = "this-&gt;m_processing">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "ofApp::draw():ofApp.cpp">
+      </ContextState>
+      <ContextState
+         contextName = "bool loadImage&lt;unsigned char&gt;(ofPixels_&lt;unsigned char&gt;&amp;, std::__1::basic_string&lt;char, std::__1::char_traits&lt;char&gt;, std::__1::allocator&lt;char&gt; &gt;) [inlined]:ofImage.cpp">
+      </ContextState>
+      <ContextState
+         contextName = "ParticleEmitter::update(double, double):ParticleEmitter.cpp">
+      </ContextState>
+      <ContextState
+         contextName = "ofxDatGuiTheme::init():ofxDatGuiTheme.h">
+      </ContextState>
+      <ContextState
+         contextName = "ofApp::openImage():ofApp.cpp">
+      </ContextState>
+      <ContextState
+         contextName = "ofApp::setImage(std::__1::basic_string&lt;char, std::__1::char_traits&lt;char&gt;, std::__1::allocator&lt;char&gt; &gt;, double):ofApp.cpp">
+      </ContextState>
+      <ContextState
+         contextName = "Particle::update(double, double):Particle.cpp">
+      </ContextState>
+      <ContextState
+         contextName = "ofToDataPath(std::__1::basic_string&lt;char, std::__1::char_traits&lt;char&gt;, std::__1::allocator&lt;char&gt; &gt; const&amp;, bool):ofUtils.cpp">
+      </ContextState>
+   </ContextStates>
+</VariablesViewState>
