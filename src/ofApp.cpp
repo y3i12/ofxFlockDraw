@@ -1,5 +1,7 @@
 #include "ofApp.h"
 
+#include <algorithm>
+
 #define SGUI_CONFIG_FILE_EXT "cfg"
 #define FRAMERATE            60.0f
 
@@ -10,16 +12,13 @@
 #include <math.h>
 
 #define DEBUG_DRAW
+bool ofApp::s_debugFFt = true;
 
 ofApp::ofApp( std::list< std::string >& _args ) :
     m_particleEmitter( m_surface )
 {
     ofSetupOpenGL( 1024, 768, OF_WINDOW );			// <-------- setup the GL context
     _args.pop_front();
-    for ( auto file : _args )
-    {
-        m_files.push_back( file );
-    }
 }
 
 //--------------------------------------------------------------
@@ -27,6 +26,9 @@ void ofApp::setup()
 {
     // Initialize OFX
     ofRestoreWorkingDirectoryToDefault();// little trick to make debugging easier
+    // Initialize fft processor
+    m_fft.setup();
+    m_fft.setNormalize(true);
     
     ofBackground( 0, 0, 0 );
     ofSetFrameRate( 60 );
@@ -54,6 +56,15 @@ void ofApp::setup()
     //m_gui->textFont   = ci::Font( "Consolas", 12 );
     //m_mainPanel = m_gui->addPanel();
     
+    // linking audio pointers to values
+    m_lowPointer    = &Particle::s_particleSizeRatio;  //3.0f
+    m_highPointer   = &Particle::s_particleSpeedRatio; //3.0f
+    //    = &Particle::s_dampness; // 0.99f
+    m_midPointer    = &Particle::s_colorRedirection; //360.0f
+    
+    
+    
+    
     // general settings
     m_gui->addLabel( "General Settings" );
     m_gui->addSlider( "Pic. Cycle Time",    m_cycleImageEvery,               3.0f, 120.0f, 15.0f );
@@ -69,11 +80,11 @@ void ofApp::setup()
     m_gui->addLabel( "Flocking Settings" );
     
     m_gui->addSlider( "Repel Str.",         m_particleEmitter.m_repelStrength,       0.000f,     10.0f,   2.0f );
-    m_gui->addSlider( "Align Str.",         m_particleEmitter.m_alignStrength,       0.000f,     10.0f,   2.0f );
-    m_gui->addSlider( "Att. Str.",          m_particleEmitter.m_attractStrength,     0.000f,     10.0f,   1.0f );
+    m_gui->addSlider( "Align Str.",         m_particleEmitter.m_alignStrength,       0.000f,     10.0f,   4.0f );
+    m_gui->addSlider( "Att. Str.",          m_particleEmitter.m_attractStrength,     0.000f,     10.0f,   8.0f );
     m_gui->addSlider( "Area Size",          m_particleEmitter.m_zoneRadiusSqrd,      625.0f, 10000.0f, 5625.0f ),
-    m_gui->addSlider( "Repel Area",         m_particleEmitter.m_lowThresh,             0.0f,     1.0f,  0.125f );
-    m_gui->addSlider( "Align Area",         m_particleEmitter.m_highThresh,            0.0f,     1.0f,   0.65f );
+    m_gui->addSlider( "Repel Area",         m_particleEmitter.m_lowThresh,             0.0f,     1.0f,  0.45f );
+    m_gui->addSlider( "Align Area",         m_particleEmitter.m_highThresh,            0.0f,     1.0f,   0.85f );
     
     m_gui->addBreak()->setHeight( 20.0f );
     
@@ -121,6 +132,8 @@ void ofApp::setup()
     m_guiHelp->addLabel( "Drag multiple files"    );
     m_guiHelp->addLabel( "to slideshow!"          );
 
+
+    m_guiHelp->setVisible( !m_guiHelp->getVisible() );
     
     // remove invalid paths
     for ( auto itr = m_files.begin(); itr != m_files.end(); ++itr ) {
@@ -162,6 +175,17 @@ void ofApp::update()
     m_currentTime = ofGetElapsedTimef();
     delta         = m_currentTime - m_lastTime;
     
+    // &Particle::s_particleSizeRatio;  //3.0f
+    // &Particle::s_particleSpeedRatio; //3.0f
+    // &Particle::s_dampness;           // 0.99f
+    // &Particle::s_colorRedirection;   //360.0f
+
+    *m_lowPointer    = std::min< float >( 1.0f   - ( m_fft.getLowVal()  * 1.5f   ), 3.0f   );
+    *m_midPointer    = std::min< float >( 180.0f + ( m_fft.getMidVal()  * 180.0f ), 360.0f );
+    *m_highPointer   = std::min< float >( 0.5f   + ( m_fft.getHighVal() * 1.5f   ), 3.0f   );
+    //    = &Particle::s_dampness; // 0.99f
+    
+
     if ( m_cycleCounter != -1.0 )
     {
         m_cycleCounter += delta;
@@ -181,6 +205,8 @@ void ofApp::update()
     m_particleEmitter.update( m_currentTime, delta );
     
     m_lastTime = m_currentTime;
+    
+    m_fft.update();
 }
 
 //--------------------------------------------------------------
@@ -201,7 +227,7 @@ void ofApp::draw()
         blendMode = OF_BLENDMODE_MULTIPLY;
         blendMode = OF_BLENDMODE_SUBTRACT;
         blendMode = OF_BLENDMODE_SCREEN;
-         */
+        //*/
         //ofEnableBlendMode(OF_BLENDMODE_ALPHA);
         m_particleEmitter.draw();
         //ofDisableBlendMode();
@@ -214,6 +240,20 @@ void ofApp::draw()
     if ( ParticleEmitter::s_debugDraw )
     {
         m_particleEmitter.debugDraw();
+    }
+    
+    if ( 0& s_debugFFt )
+    {
+        m_fft.drawHistoryGraph( ofPoint( 824,   0 ), LOW  );
+        m_fft.drawHistoryGraph( ofPoint( 824, 200 ), MID  );
+        m_fft.drawHistoryGraph( ofPoint( 824, 400 ), HIGH );
+
+        ofDrawBitmapString( "LOW",  850,  20 );
+        ofDrawBitmapString( "HIGH", 850, 420 );
+        ofDrawBitmapString( "MID",  850, 220 );
+        
+        //m_fft.drawBars();
+        //m_fft.drawDebug();
     }
     
     // draw the UI
@@ -302,13 +342,13 @@ void ofApp::keyPressed(int key){
             m_particleEmitter.killAll();
             ofExit();
         }
-            break;
+        break;
             
         case OF_KEY_F1:
         {
             m_guiHelp->setVisible( !m_guiHelp->getVisible() );
         }
-            break;
+        break;
             
         case ' ':
         {

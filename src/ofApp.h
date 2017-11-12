@@ -2,6 +2,7 @@
 
 #include "ofMain.h"
 #include "ofxDatGui.h"
+#include "ofxProcessFFT.h"
 
 #include "ParticleEmitter.h"
 
@@ -66,5 +67,12 @@ private:
     float                       m_currentTime;
     float                       m_cycleCounter;
     
+    float*                      m_lowPointer;
+    float*                      m_midPointer;
+    float*                      m_highPointer;
+    
+    ProcessFFT                  m_fft;
+    
+    static bool                 s_debugFFt;
 
 };

@@ -1,864 +1,2418 @@
-// !$*UTF8*$!
-{
-	archiveVersion = 1;
-	classes = {
-	};
-	objectVersion = 46;
-	objects = {
-
-/* Begin PBXBuildFile section */
-		007F713E619B81D821BEA319 /* ofxFftBasic.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CE67198F2891A8FFEA3686E6 /* ofxFftBasic.cpp */; };
-		0686C38EE993C67B96002FA1 /* kiss_fft.c in Sources */ = {isa = PBXBuildFile; fileRef = 4B053B6F1252BCFCFF0F59AC /* kiss_fft.c */; };
-		2761F96388F64FE596863183 /* audiodecodercoreaudio.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2EE3C26422275C7D402CCF25 /* audiodecodercoreaudio.cpp */; };
-		29938E05AF78B3DF7A591187 /* ofxFftw.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5F353204A917F4B2BCEEABE6 /* ofxFftw.cpp */; };
-		47741AD4D543009E4DF29CEA /* ofxProcessFFT.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 971B530AB93ACC5065D9489E /* ofxProcessFFT.cpp */; };
-		477F449F6256389CCDB36FFC /* audiodecoderbase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0B54B44EFD41F864E0BD75D7 /* audiodecoderbase.cpp */; };
-		567A8E85CAD379B59206852D /* ofxTimeMeasurements.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 113EC1656B3145FE1FA1B295 /* ofxTimeMeasurements.cpp */; };
-		5A4349E9754D6FA14C0F2A3A /* tinyxmlparser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC5DA1C87211D4F6377DA719 /* tinyxmlparser.cpp */; };
-		63B57AC5BF4EF088491E0317 /* ofxXmlSettings.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 50DF87D612C5AAE17AAFA6C0 /* ofxXmlSettings.cpp */; };
-		6DB9E3911BA6216FE1F0E91C /* kiss_fftr.c in Sources */ = {isa = PBXBuildFile; fileRef = DACFE8C08D7F4619176E65D7 /* kiss_fftr.c */; };
-		7A61C288AE942E5885881232 /* ofxEasyFft.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 67BFC7F21E824F5A7FAC65E0 /* ofxEasyFft.cpp */; };
-		87EB71A35D524340AE0A8C4C /* ofxAudioDecoder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09535104AE13A73B23DCF56B /* ofxAudioDecoder.cpp */; };
-		933A2227713C720CEFF80FD9 /* tinyxml.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2B40EDA85BEB63E46785BC29 /* tinyxml.cpp */; };
-		9CF4130A7E6DA19A3DC42B9A /* ofxSmartFont.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C954E0E8B7DB9D6983309883 /* ofxSmartFont.cpp */; };
-		9D44DC88EF9E7991B4A09951 /* tinyxmlerror.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 832BDC407620CDBA568B713D /* tinyxmlerror.cpp */; };
-		A86D7323CE1A9450906A91DD /* fft.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B85440CFD1540D81C05B85CB /* fft.cpp */; };
-		C098DBE008A1B5C6D12ABFFD /* ofxBeat.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C6684F2AB3BF96EE746EF6DA /* ofxBeat.cpp */; };
-		C9466C434D1CF8AB968D298D /* ofxDatGui.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 26490D7CC31EF7D6ED5F925A /* ofxDatGui.cpp */; };
-		D3C1C48E59CAA2D68C0DD477 /* ofxDatGuiComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A3E3B8F332A1A3C7EDF4998 /* ofxDatGuiComponent.cpp */; };
-		D409288D137DB82107887FFD /* ofxFft.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 32CA89CD22339F4F9433CAF6 /* ofxFft.cpp */; };
-		E4328149138ABC9F0047C5CB /* openFrameworksDebug.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E4328148138ABC890047C5CB /* openFrameworksDebug.a */; };
-		E4B69E200A3A1BDC003C02F2 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4B69E1D0A3A1BDC003C02F2 /* main.cpp */; };
-		E4B69E210A3A1BDC003C02F2 /* ofApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4B69E1E0A3A1BDC003C02F2 /* ofApp.cpp */; };
-		EC203A141F2FB69E002EDE11 /* Particle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EC203A0F1F2FB69E002EDE11 /* Particle.cpp */; };
-		EC203A151F2FB69E002EDE11 /* ParticleEmitter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EC203A111F2FB69E002EDE11 /* ParticleEmitter.cpp */; };
-		EC26F225D807F4F069405924 /* ofxThreadedImageLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 45B576A8B106CBE71564781C /* ofxThreadedImageLoader.cpp */; };
-/* End PBXBuildFile section */
-
-/* Begin PBXContainerItemProxy section */
-		E4328147138ABC890047C5CB /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = E4328143138ABC890047C5CB /* openFrameworksLib.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = E4B27C1510CBEB8E00536013;
-			remoteInfo = openFrameworks;
-		};
-		E4EEB9AB138B136A00A80321 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = E4328143138ABC890047C5CB /* openFrameworksLib.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = E4B27C1410CBEB8E00536013;
-			remoteInfo = openFrameworks;
-		};
-/* End PBXContainerItemProxy section */
-
-/* Begin PBXCopyFilesBuildPhase section */
-		E4C2427710CC5ABF004149E2 /* CopyFiles */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXCopyFilesBuildPhase section */
-
-/* Begin PBXFileReference section */
-		01DCC0911400F9ACF5B65578 /* ofxXmlSettings.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxXmlSettings.h; path = ../../../addons/ofxXmlSettings/src/ofxXmlSettings.h; sourceTree = SOURCE_ROOT; };
-		04C339FF9ADCF05DF2DA62A3 /* ofxDatGuiTextInputField.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxDatGuiTextInputField.h; path = ../../../addons/ofxDatGui/src/components/ofxDatGuiTextInputField.h; sourceTree = SOURCE_ROOT; };
-		09535104AE13A73B23DCF56B /* ofxAudioDecoder.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = ofxAudioDecoder.cpp; path = ../../../addons/ofxAudioDecoder/src/ofxAudioDecoder.cpp; sourceTree = SOURCE_ROOT; };
-		0A42C807BEF3A18E8E105A3B /* ofxDatGuiTimeGraph.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxDatGuiTimeGraph.h; path = ../../../addons/ofxDatGui/src/components/ofxDatGuiTimeGraph.h; sourceTree = SOURCE_ROOT; };
-		0B54B44EFD41F864E0BD75D7 /* audiodecoderbase.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = audiodecoderbase.cpp; path = ../../../addons/ofxAudioDecoder/libs/src/audiodecoderbase.cpp; sourceTree = SOURCE_ROOT; };
-		113EC1656B3145FE1FA1B295 /* ofxTimeMeasurements.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = ofxTimeMeasurements.cpp; path = ../../../addons/ofxTimeMeasurements/src/ofxTimeMeasurements.cpp; sourceTree = SOURCE_ROOT; };
-		12FDE6FD42DC4BF9763E1D00 /* ofxTimeMeasurementsMacros.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxTimeMeasurementsMacros.h; path = ../../../addons/ofxTimeMeasurements/src/ofxTimeMeasurementsMacros.h; sourceTree = SOURCE_ROOT; };
-		19B6C350D9FAA9277E9345CF /* ofxAudioDecoder.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxAudioDecoder.h; path = ../../../addons/ofxAudioDecoder/src/ofxAudioDecoder.h; sourceTree = SOURCE_ROOT; };
-		1A3E3B8F332A1A3C7EDF4998 /* ofxDatGuiComponent.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = ofxDatGuiComponent.cpp; path = ../../../addons/ofxDatGui/src/core/ofxDatGuiComponent.cpp; sourceTree = SOURCE_ROOT; };
-		1CBD6F883000C78087DD5738 /* _kiss_fft_guts.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = _kiss_fft_guts.h; path = ../../../addons/ofxFft/libs/kiss/_kiss_fft_guts.h; sourceTree = SOURCE_ROOT; };
-		21E1E3071CB7B11914428B62 /* ofxDatGuiThemes.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxDatGuiThemes.h; path = ../../../addons/ofxDatGui/src/themes/ofxDatGuiThemes.h; sourceTree = SOURCE_ROOT; };
-		258BD733949A19E1F0702FFA /* ofxThreadedImageLoader.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxThreadedImageLoader.h; path = ../../../addons/ofxThreadedImageLoader/src/ofxThreadedImageLoader.h; sourceTree = SOURCE_ROOT; };
-		26490D7CC31EF7D6ED5F925A /* ofxDatGui.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = ofxDatGui.cpp; path = ../../../addons/ofxDatGui/src/ofxDatGui.cpp; sourceTree = SOURCE_ROOT; };
-		2B40EDA85BEB63E46785BC29 /* tinyxml.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = tinyxml.cpp; path = ../../../addons/ofxXmlSettings/libs/tinyxml.cpp; sourceTree = SOURCE_ROOT; };
-		2D0C0AA4436B2A16530BA991 /* fftw3.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = fftw3.h; path = ../../../addons/ofxFft/libs/fftw/include/fftw3.h; sourceTree = SOURCE_ROOT; };
-		2EE3C26422275C7D402CCF25 /* audiodecodercoreaudio.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = audiodecodercoreaudio.cpp; path = ../../../addons/ofxAudioDecoder/libs/src/audiodecodercoreaudio.cpp; sourceTree = SOURCE_ROOT; };
-		32CA89CD22339F4F9433CAF6 /* ofxFft.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = ofxFft.cpp; path = ../../../addons/ofxFft/src/ofxFft.cpp; sourceTree = SOURCE_ROOT; };
-		422C4E1AAC7EC4D30B17702D /* ofxDatGuiIntObject.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxDatGuiIntObject.h; path = ../../../addons/ofxDatGui/src/core/ofxDatGuiIntObject.h; sourceTree = SOURCE_ROOT; };
-		45B576A8B106CBE71564781C /* ofxThreadedImageLoader.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = ofxThreadedImageLoader.cpp; path = ../../../addons/ofxThreadedImageLoader/src/ofxThreadedImageLoader.cpp; sourceTree = SOURCE_ROOT; };
-		49685133551D0AEF06F1817A /* audiodecodercoreaudio.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = audiodecodercoreaudio.h; path = ../../../addons/ofxAudioDecoder/libs/include/audiodecodercoreaudio.h; sourceTree = SOURCE_ROOT; };
-		4B053B6F1252BCFCFF0F59AC /* kiss_fft.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.c; fileEncoding = 30; name = kiss_fft.c; path = ../../../addons/ofxFft/libs/kiss/kiss_fft.c; sourceTree = SOURCE_ROOT; };
-		4FA7C66BC39A49BCFA509386 /* fft.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = fft.h; path = ../../../addons/ofxBeat/src/fft.h; sourceTree = SOURCE_ROOT; };
-		50DF87D612C5AAE17AAFA6C0 /* ofxXmlSettings.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = ofxXmlSettings.cpp; path = ../../../addons/ofxXmlSettings/src/ofxXmlSettings.cpp; sourceTree = SOURCE_ROOT; };
-		53D05984F46836E36C48B617 /* ofxTimeMeasurementsScoped.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxTimeMeasurementsScoped.h; path = ../../../addons/ofxTimeMeasurements/src/ofxTimeMeasurementsScoped.h; sourceTree = SOURCE_ROOT; };
-		53E1487610DB6C899AA08EAB /* audiodecoder.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = audiodecoder.h; path = ../../../addons/ofxAudioDecoder/libs/include/audiodecoder.h; sourceTree = SOURCE_ROOT; };
-		545BBA6F6669BED2DA497BC6 /* ofxDatGuiScrollView.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxDatGuiScrollView.h; path = ../../../addons/ofxDatGui/src/components/ofxDatGuiScrollView.h; sourceTree = SOURCE_ROOT; };
-		56C38035679CEFF6F09AE81A /* GL_Measurement.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = GL_Measurement.h; path = ../../../addons/ofxTimeMeasurements/src/GL_Measurement.h; sourceTree = SOURCE_ROOT; };
-		5F353204A917F4B2BCEEABE6 /* ofxFftw.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = ofxFftw.cpp; path = ../../../addons/ofxFft/src/ofxFftw.cpp; sourceTree = SOURCE_ROOT; };
-		64C563B8158C37E9D07AE29D /* ofxDatGuiFRM.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxDatGuiFRM.h; path = ../../../addons/ofxDatGui/src/components/ofxDatGuiFRM.h; sourceTree = SOURCE_ROOT; };
-		67BFC7F21E824F5A7FAC65E0 /* ofxEasyFft.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = ofxEasyFft.cpp; path = ../../../addons/ofxFft/src/ofxEasyFft.cpp; sourceTree = SOURCE_ROOT; };
-		744031A3E8F8DAF9FE6F3EA8 /* ofxDatGuiGroups.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxDatGuiGroups.h; path = ../../../addons/ofxDatGui/src/components/ofxDatGuiGroups.h; sourceTree = SOURCE_ROOT; };
-		7717E7D36A522CF834A85A8E /* audiodecoderbase.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = audiodecoderbase.h; path = ../../../addons/ofxAudioDecoder/libs/include/audiodecoderbase.h; sourceTree = SOURCE_ROOT; };
-		787315438BF1DD00C81DF413 /* ofxDatGuiLabel.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxDatGuiLabel.h; path = ../../../addons/ofxDatGui/src/components/ofxDatGuiLabel.h; sourceTree = SOURCE_ROOT; };
-		7D3BE1A2ADAFC399E7B20A91 /* ofxFftBasic.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxFftBasic.h; path = ../../../addons/ofxFft/src/ofxFftBasic.h; sourceTree = SOURCE_ROOT; };
-		832BDC407620CDBA568B713D /* tinyxmlerror.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = tinyxmlerror.cpp; path = ../../../addons/ofxXmlSettings/libs/tinyxmlerror.cpp; sourceTree = SOURCE_ROOT; };
-		83F10DECDFF16F9F1E67D731 /* ofxTimeMeasurements.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxTimeMeasurements.h; path = ../../../addons/ofxTimeMeasurements/src/ofxTimeMeasurements.h; sourceTree = SOURCE_ROOT; };
-		896211FFD7650884437CE42C /* ofxSmartFont.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxSmartFont.h; path = ../../../addons/ofxDatGui/src/libs/ofxSmartFont/ofxSmartFont.h; sourceTree = SOURCE_ROOT; };
-		902724601B82C6AD81BBCD71 /* ofxDatGui2dPad.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxDatGui2dPad.h; path = ../../../addons/ofxDatGui/src/components/ofxDatGui2dPad.h; sourceTree = SOURCE_ROOT; };
-		90C2EFE21B5EE22A7F772AF8 /* CAStreamBasicDescription.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = CAStreamBasicDescription.h; path = ../../../addons/ofxAudioDecoder/libs/include/apple/CAStreamBasicDescription.h; sourceTree = SOURCE_ROOT; };
-		9705D66270ED89ECA6E6FECE /* ofxDatGui.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxDatGui.h; path = ../../../addons/ofxDatGui/src/ofxDatGui.h; sourceTree = SOURCE_ROOT; };
-		971B530AB93ACC5065D9489E /* ofxProcessFFT.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = ofxProcessFFT.cpp; path = ../../../addons/ofxFft/src/ofxProcessFFT.cpp; sourceTree = SOURCE_ROOT; };
-		977E7DDA94E88633BE025A78 /* kiss_fftr.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = kiss_fftr.h; path = ../../../addons/ofxFft/libs/kiss/kiss_fftr.h; sourceTree = SOURCE_ROOT; };
-		9A2FCCF1ABF23081D2CD9D5F /* ofxProcessFFT.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxProcessFFT.h; path = ../../../addons/ofxFft/src/ofxProcessFFT.h; sourceTree = SOURCE_ROOT; };
-		9B5051062C6A871714E6F5F4 /* ofxDatGuiConstants.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxDatGuiConstants.h; path = ../../../addons/ofxDatGui/src/core/ofxDatGuiConstants.h; sourceTree = SOURCE_ROOT; };
-		A6F65D3430FD7E893FFF58F3 /* kiss_fft.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = kiss_fft.h; path = ../../../addons/ofxFft/libs/kiss/kiss_fft.h; sourceTree = SOURCE_ROOT; };
-		B21E7E5F548EEA92F368040B /* tinyxml.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = tinyxml.h; path = ../../../addons/ofxXmlSettings/libs/tinyxml.h; sourceTree = SOURCE_ROOT; };
-		B36431C04C788FEDB1ECD8FC /* ofxFft.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxFft.h; path = ../../../addons/ofxFft/src/ofxFft.h; sourceTree = SOURCE_ROOT; };
-		B498F0559F473CF855EF6062 /* ofxDatGuiTheme.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxDatGuiTheme.h; path = ../../../addons/ofxDatGui/src/themes/ofxDatGuiTheme.h; sourceTree = SOURCE_ROOT; };
-		B85440CFD1540D81C05B85CB /* fft.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = fft.cpp; path = ../../../addons/ofxBeat/src/fft.cpp; sourceTree = SOURCE_ROOT; };
-		BCC84C6EB3417706F4F762F0 /* ofxDatGuiComponent.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxDatGuiComponent.h; path = ../../../addons/ofxDatGui/src/core/ofxDatGuiComponent.h; sourceTree = SOURCE_ROOT; };
-		C085A33340AB0C1DB647AC2F /* ofxDatGuiTextInput.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxDatGuiTextInput.h; path = ../../../addons/ofxDatGui/src/components/ofxDatGuiTextInput.h; sourceTree = SOURCE_ROOT; };
-		C6684F2AB3BF96EE746EF6DA /* ofxBeat.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = ofxBeat.cpp; path = ../../../addons/ofxBeat/src/ofxBeat.cpp; sourceTree = SOURCE_ROOT; };
-		C84ED7FCC017328C6F58283D /* ofxDatGuiColorPicker.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxDatGuiColorPicker.h; path = ../../../addons/ofxDatGui/src/components/ofxDatGuiColorPicker.h; sourceTree = SOURCE_ROOT; };
-		C954E0E8B7DB9D6983309883 /* ofxSmartFont.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = ofxSmartFont.cpp; path = ../../../addons/ofxDatGui/src/libs/ofxSmartFont/ofxSmartFont.cpp; sourceTree = SOURCE_ROOT; };
-		CAB67BC7A1CC020FDAC5381B /* ofxEasyFft.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxEasyFft.h; path = ../../../addons/ofxFft/src/ofxEasyFft.h; sourceTree = SOURCE_ROOT; };
-		CDF7278CB636137FE7BF91A5 /* ofxDatGuiMatrix.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxDatGuiMatrix.h; path = ../../../addons/ofxDatGui/src/components/ofxDatGuiMatrix.h; sourceTree = SOURCE_ROOT; };
-		CE67198F2891A8FFEA3686E6 /* ofxFftBasic.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = ofxFftBasic.cpp; path = ../../../addons/ofxFft/src/ofxFftBasic.cpp; sourceTree = SOURCE_ROOT; };
-		D0D6A66BEBA820EA1D396889 /* ofxDatGuiSlider.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxDatGuiSlider.h; path = ../../../addons/ofxDatGui/src/components/ofxDatGuiSlider.h; sourceTree = SOURCE_ROOT; };
-		D8952DEFF3CE56AC1009A996 /* ofxFftw.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxFftw.h; path = ../../../addons/ofxFft/src/ofxFftw.h; sourceTree = SOURCE_ROOT; };
-		DACFE8C08D7F4619176E65D7 /* kiss_fftr.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.c; fileEncoding = 30; name = kiss_fftr.c; path = ../../../addons/ofxFft/libs/kiss/kiss_fftr.c; sourceTree = SOURCE_ROOT; };
-		E100ED9DCB412957A879CD5A /* ofxDatGuiControls.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxDatGuiControls.h; path = ../../../addons/ofxDatGui/src/components/ofxDatGuiControls.h; sourceTree = SOURCE_ROOT; };
-		E4328143138ABC890047C5CB /* openFrameworksLib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = openFrameworksLib.xcodeproj; path = ../../../libs/openFrameworksCompiled/project/osx/openFrameworksLib.xcodeproj; sourceTree = SOURCE_ROOT; };
-		E4B69B5B0A3A1756003C02F2 /* ofxFlockDrawDebug.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ofxFlockDrawDebug.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		E4B69E1D0A3A1BDC003C02F2 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = src/main.cpp; sourceTree = SOURCE_ROOT; };
-		E4B69E1E0A3A1BDC003C02F2 /* ofApp.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = ofApp.cpp; path = src/ofApp.cpp; sourceTree = SOURCE_ROOT; };
-		E4B69E1F0A3A1BDC003C02F2 /* ofApp.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = ofApp.h; path = src/ofApp.h; sourceTree = SOURCE_ROOT; };
-		E4B6FCAD0C3E899E008CF71C /* openFrameworks-Info.plist */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.plist.xml; path = "openFrameworks-Info.plist"; sourceTree = "<group>"; };
-		E4EB691F138AFCF100A09F29 /* CoreOF.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; name = CoreOF.xcconfig; path = ../../../libs/openFrameworksCompiled/project/osx/CoreOF.xcconfig; sourceTree = SOURCE_ROOT; };
-		E4EB6923138AFD0F00A09F29 /* Project.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = Project.xcconfig; sourceTree = "<group>"; };
-		EC203A0F1F2FB69E002EDE11 /* Particle.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Particle.cpp; sourceTree = "<group>"; };
-		EC203A101F2FB69E002EDE11 /* Particle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Particle.h; sourceTree = "<group>"; };
-		EC203A111F2FB69E002EDE11 /* ParticleEmitter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticleEmitter.cpp; sourceTree = "<group>"; };
-		EC203A121F2FB69E002EDE11 /* ParticleEmitter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticleEmitter.h; sourceTree = "<group>"; };
-		F21017D5316CB2B55CD68641 /* ofxBeat.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxBeat.h; path = ../../../addons/ofxBeat/src/ofxBeat.h; sourceTree = SOURCE_ROOT; };
-		F59384ED57A7C6A7A8B0351D /* ofxDatGuiEvents.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxDatGuiEvents.h; path = ../../../addons/ofxDatGui/src/core/ofxDatGuiEvents.h; sourceTree = SOURCE_ROOT; };
-		FC5DA1C87211D4F6377DA719 /* tinyxmlparser.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = tinyxmlparser.cpp; path = ../../../addons/ofxXmlSettings/libs/tinyxmlparser.cpp; sourceTree = SOURCE_ROOT; };
-		FDA86F4C2F1F1964D35391C6 /* ofxDatGuiButton.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxDatGuiButton.h; path = ../../../addons/ofxDatGui/src/components/ofxDatGuiButton.h; sourceTree = SOURCE_ROOT; };
-		FF4AB1E6C60B588369863CA7 /* CADebugMacros.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = CADebugMacros.h; path = ../../../addons/ofxAudioDecoder/libs/include/apple/CADebugMacros.h; sourceTree = SOURCE_ROOT; };
-/* End PBXFileReference section */
-
-/* Begin PBXFrameworksBuildPhase section */
-		E4B69B590A3A1756003C02F2 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				E4328149138ABC9F0047C5CB /* openFrameworksDebug.a in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXFrameworksBuildPhase section */
-
-/* Begin PBXGroup section */
-		0EF29D3ABD6E4147AE024D7A /* ofxSmartFont */ = {
-			isa = PBXGroup;
-			children = (
-				C954E0E8B7DB9D6983309883 /* ofxSmartFont.cpp */,
-				896211FFD7650884437CE42C /* ofxSmartFont.h */,
-			);
-			name = ofxSmartFont;
-			sourceTree = "<group>";
-		};
-		14D2E3EE0233F84B1B324DD9 /* src */ = {
-			isa = PBXGroup;
-			children = (
-				67BFC7F21E824F5A7FAC65E0 /* ofxEasyFft.cpp */,
-				CAB67BC7A1CC020FDAC5381B /* ofxEasyFft.h */,
-				32CA89CD22339F4F9433CAF6 /* ofxFft.cpp */,
-				B36431C04C788FEDB1ECD8FC /* ofxFft.h */,
-				CE67198F2891A8FFEA3686E6 /* ofxFftBasic.cpp */,
-				7D3BE1A2ADAFC399E7B20A91 /* ofxFftBasic.h */,
-				5F353204A917F4B2BCEEABE6 /* ofxFftw.cpp */,
-				D8952DEFF3CE56AC1009A996 /* ofxFftw.h */,
-				971B530AB93ACC5065D9489E /* ofxProcessFFT.cpp */,
-				9A2FCCF1ABF23081D2CD9D5F /* ofxProcessFFT.h */,
-			);
-			name = src;
-			sourceTree = "<group>";
-		};
-		1F4FB5C423662B96ADFDCC0B /* ofxXmlSettings */ = {
-			isa = PBXGroup;
-			children = (
-				6ECEF0D76BC33727823EADFF /* src */,
-				6E54289412D2D94F45A05113 /* libs */,
-			);
-			name = ofxXmlSettings;
-			sourceTree = "<group>";
-		};
-		2593B7743D30DF6DEB591433 /* src */ = {
-			isa = PBXGroup;
-			children = (
-				B85440CFD1540D81C05B85CB /* fft.cpp */,
-				4FA7C66BC39A49BCFA509386 /* fft.h */,
-				C6684F2AB3BF96EE746EF6DA /* ofxBeat.cpp */,
-				F21017D5316CB2B55CD68641 /* ofxBeat.h */,
-			);
-			name = src;
-			sourceTree = "<group>";
-		};
-		3CD2B0AEE6FE628A91175CDA /* ofxThreadedImageLoader */ = {
-			isa = PBXGroup;
-			children = (
-				F7347CBF7C47F1110E5FA42A /* src */,
-			);
-			name = ofxThreadedImageLoader;
-			sourceTree = "<group>";
-		};
-		526C0E0654F6F87F802EBE13 /* libs */ = {
-			isa = PBXGroup;
-			children = (
-				A133AE7383B29E66D684559A /* include */,
-				58047649A01E9261E74AC1C4 /* src */,
-			);
-			name = libs;
-			sourceTree = "<group>";
-		};
-		58047649A01E9261E74AC1C4 /* src */ = {
-			isa = PBXGroup;
-			children = (
-				0B54B44EFD41F864E0BD75D7 /* audiodecoderbase.cpp */,
-				2EE3C26422275C7D402CCF25 /* audiodecodercoreaudio.cpp */,
-			);
-			name = src;
-			sourceTree = "<group>";
-		};
-		5B3BFE89BB3B98E8FC2F783F /* ofxBeat */ = {
-			isa = PBXGroup;
-			children = (
-				2593B7743D30DF6DEB591433 /* src */,
-			);
-			name = ofxBeat;
-			sourceTree = "<group>";
-		};
-		69146F0BA46E48E576618E5E /* libs */ = {
-			isa = PBXGroup;
-			children = (
-				0EF29D3ABD6E4147AE024D7A /* ofxSmartFont */,
-			);
-			name = libs;
-			sourceTree = "<group>";
-		};
-		6948EE371B920CB800B5AC1A /* local_addons */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = local_addons;
-			sourceTree = "<group>";
-		};
-		6E54289412D2D94F45A05113 /* libs */ = {
-			isa = PBXGroup;
-			children = (
-				2B40EDA85BEB63E46785BC29 /* tinyxml.cpp */,
-				B21E7E5F548EEA92F368040B /* tinyxml.h */,
-				832BDC407620CDBA568B713D /* tinyxmlerror.cpp */,
-				FC5DA1C87211D4F6377DA719 /* tinyxmlparser.cpp */,
-			);
-			name = libs;
-			sourceTree = "<group>";
-		};
-		6ECEF0D76BC33727823EADFF /* src */ = {
-			isa = PBXGroup;
-			children = (
-				50DF87D612C5AAE17AAFA6C0 /* ofxXmlSettings.cpp */,
-				01DCC0911400F9ACF5B65578 /* ofxXmlSettings.h */,
-			);
-			name = src;
-			sourceTree = "<group>";
-		};
-		72C89FAFAC11F96856792042 /* libs */ = {
-			isa = PBXGroup;
-			children = (
-				A0535D33570F65575182C18F /* fftw */,
-				A2C4D2900B6384FDE5E77208 /* kiss */,
-			);
-			name = libs;
-			sourceTree = "<group>";
-		};
-		8870759BC9CAEA1E4E9EA3A8 /* core */ = {
-			isa = PBXGroup;
-			children = (
-				1A3E3B8F332A1A3C7EDF4998 /* ofxDatGuiComponent.cpp */,
-				BCC84C6EB3417706F4F762F0 /* ofxDatGuiComponent.h */,
-				9B5051062C6A871714E6F5F4 /* ofxDatGuiConstants.h */,
-				F59384ED57A7C6A7A8B0351D /* ofxDatGuiEvents.h */,
-				422C4E1AAC7EC4D30B17702D /* ofxDatGuiIntObject.h */,
-			);
-			name = core;
-			sourceTree = "<group>";
-		};
-		911FE1C75E520EE70A7B4830 /* themes */ = {
-			isa = PBXGroup;
-			children = (
-				B498F0559F473CF855EF6062 /* ofxDatGuiTheme.h */,
-				21E1E3071CB7B11914428B62 /* ofxDatGuiThemes.h */,
-			);
-			name = themes;
-			sourceTree = "<group>";
-		};
-		92E528A9DEEBED1AFEDC17AD /* apple */ = {
-			isa = PBXGroup;
-			children = (
-				FF4AB1E6C60B588369863CA7 /* CADebugMacros.h */,
-				90C2EFE21B5EE22A7F772AF8 /* CAStreamBasicDescription.h */,
-			);
-			name = apple;
-			sourceTree = "<group>";
-		};
-		947FCD1248D8B0A16B53C1AA /* components */ = {
-			isa = PBXGroup;
-			children = (
-				902724601B82C6AD81BBCD71 /* ofxDatGui2dPad.h */,
-				FDA86F4C2F1F1964D35391C6 /* ofxDatGuiButton.h */,
-				C84ED7FCC017328C6F58283D /* ofxDatGuiColorPicker.h */,
-				E100ED9DCB412957A879CD5A /* ofxDatGuiControls.h */,
-				64C563B8158C37E9D07AE29D /* ofxDatGuiFRM.h */,
-				744031A3E8F8DAF9FE6F3EA8 /* ofxDatGuiGroups.h */,
-				787315438BF1DD00C81DF413 /* ofxDatGuiLabel.h */,
-				CDF7278CB636137FE7BF91A5 /* ofxDatGuiMatrix.h */,
-				545BBA6F6669BED2DA497BC6 /* ofxDatGuiScrollView.h */,
-				D0D6A66BEBA820EA1D396889 /* ofxDatGuiSlider.h */,
-				C085A33340AB0C1DB647AC2F /* ofxDatGuiTextInput.h */,
-				04C339FF9ADCF05DF2DA62A3 /* ofxDatGuiTextInputField.h */,
-				0A42C807BEF3A18E8E105A3B /* ofxDatGuiTimeGraph.h */,
-			);
-			name = components;
-			sourceTree = "<group>";
-		};
-		98D685E6144A167898628CFF /* ofxTimeMeasurements */ = {
-			isa = PBXGroup;
-			children = (
-				EFCD60E2ACA4B88D4D54E3F0 /* src */,
-			);
-			name = ofxTimeMeasurements;
-			sourceTree = "<group>";
-		};
-		A0535D33570F65575182C18F /* fftw */ = {
-			isa = PBXGroup;
-			children = (
-				F2022DF37286FECB8B9BA5B2 /* include */,
-			);
-			name = fftw;
-			sourceTree = "<group>";
-		};
-		A133AE7383B29E66D684559A /* include */ = {
-			isa = PBXGroup;
-			children = (
-				92E528A9DEEBED1AFEDC17AD /* apple */,
-				53E1487610DB6C899AA08EAB /* audiodecoder.h */,
-				7717E7D36A522CF834A85A8E /* audiodecoderbase.h */,
-				49685133551D0AEF06F1817A /* audiodecodercoreaudio.h */,
-			);
-			name = include;
-			sourceTree = "<group>";
-		};
-		A2C4D2900B6384FDE5E77208 /* kiss */ = {
-			isa = PBXGroup;
-			children = (
-				1CBD6F883000C78087DD5738 /* _kiss_fft_guts.h */,
-				4B053B6F1252BCFCFF0F59AC /* kiss_fft.c */,
-				A6F65D3430FD7E893FFF58F3 /* kiss_fft.h */,
-				DACFE8C08D7F4619176E65D7 /* kiss_fftr.c */,
-				977E7DDA94E88633BE025A78 /* kiss_fftr.h */,
-			);
-			name = kiss;
-			sourceTree = "<group>";
-		};
-		A5F870D5915B31AB56254EA7 /* src */ = {
-			isa = PBXGroup;
-			children = (
-				09535104AE13A73B23DCF56B /* ofxAudioDecoder.cpp */,
-				19B6C350D9FAA9277E9345CF /* ofxAudioDecoder.h */,
-			);
-			name = src;
-			sourceTree = "<group>";
-		};
-		BB4B014C10F69532006C3DED /* addons */ = {
-			isa = PBXGroup;
-			children = (
-				E57BA9F5B131DD75E7F6B1AC /* ofxAudioDecoder */,
-				5B3BFE89BB3B98E8FC2F783F /* ofxBeat */,
-				D8DD1043C333F6F63C8685E6 /* ofxDatGui */,
-				BBC2B4228932C2AACC6701CF /* ofxFft */,
-				3CD2B0AEE6FE628A91175CDA /* ofxThreadedImageLoader */,
-				98D685E6144A167898628CFF /* ofxTimeMeasurements */,
-				1F4FB5C423662B96ADFDCC0B /* ofxXmlSettings */,
-			);
-			name = addons;
-			sourceTree = "<group>";
-		};
-		BBC2B4228932C2AACC6701CF /* ofxFft */ = {
-			isa = PBXGroup;
-			children = (
-				14D2E3EE0233F84B1B324DD9 /* src */,
-				72C89FAFAC11F96856792042 /* libs */,
-			);
-			name = ofxFft;
-			sourceTree = "<group>";
-		};
-		D8DD1043C333F6F63C8685E6 /* ofxDatGui */ = {
-			isa = PBXGroup;
-			children = (
-				E9B32C117486580389FAFF01 /* src */,
-			);
-			name = ofxDatGui;
-			sourceTree = "<group>";
-		};
-		E4328144138ABC890047C5CB /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				E4328148138ABC890047C5CB /* openFrameworksDebug.a */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		E4B69B4A0A3A1720003C02F2 = {
-			isa = PBXGroup;
-			children = (
-				E4B6FCAD0C3E899E008CF71C /* openFrameworks-Info.plist */,
-				E4EB6923138AFD0F00A09F29 /* Project.xcconfig */,
-				E4B69E1C0A3A1BDC003C02F2 /* src */,
-				E4EEC9E9138DF44700A80321 /* openFrameworks */,
-				BB4B014C10F69532006C3DED /* addons */,
-				6948EE371B920CB800B5AC1A /* local_addons */,
-				E4B69B5B0A3A1756003C02F2 /* ofxFlockDrawDebug.app */,
-			);
-			sourceTree = "<group>";
-		};
-		E4B69E1C0A3A1BDC003C02F2 /* src */ = {
-			isa = PBXGroup;
-			children = (
-				EC203A0F1F2FB69E002EDE11 /* Particle.cpp */,
-				EC203A101F2FB69E002EDE11 /* Particle.h */,
-				EC203A111F2FB69E002EDE11 /* ParticleEmitter.cpp */,
-				EC203A121F2FB69E002EDE11 /* ParticleEmitter.h */,
-				E4B69E1D0A3A1BDC003C02F2 /* main.cpp */,
-				E4B69E1E0A3A1BDC003C02F2 /* ofApp.cpp */,
-				E4B69E1F0A3A1BDC003C02F2 /* ofApp.h */,
-			);
-			path = src;
-			sourceTree = SOURCE_ROOT;
-		};
-		E4EEC9E9138DF44700A80321 /* openFrameworks */ = {
-			isa = PBXGroup;
-			children = (
-				E4EB691F138AFCF100A09F29 /* CoreOF.xcconfig */,
-				E4328143138ABC890047C5CB /* openFrameworksLib.xcodeproj */,
-			);
-			name = openFrameworks;
-			sourceTree = "<group>";
-		};
-		E57BA9F5B131DD75E7F6B1AC /* ofxAudioDecoder */ = {
-			isa = PBXGroup;
-			children = (
-				A5F870D5915B31AB56254EA7 /* src */,
-				526C0E0654F6F87F802EBE13 /* libs */,
-			);
-			name = ofxAudioDecoder;
-			sourceTree = "<group>";
-		};
-		E9B32C117486580389FAFF01 /* src */ = {
-			isa = PBXGroup;
-			children = (
-				947FCD1248D8B0A16B53C1AA /* components */,
-				8870759BC9CAEA1E4E9EA3A8 /* core */,
-				69146F0BA46E48E576618E5E /* libs */,
-				26490D7CC31EF7D6ED5F925A /* ofxDatGui.cpp */,
-				9705D66270ED89ECA6E6FECE /* ofxDatGui.h */,
-				911FE1C75E520EE70A7B4830 /* themes */,
-			);
-			name = src;
-			sourceTree = "<group>";
-		};
-		EFCD60E2ACA4B88D4D54E3F0 /* src */ = {
-			isa = PBXGroup;
-			children = (
-				56C38035679CEFF6F09AE81A /* GL_Measurement.h */,
-				113EC1656B3145FE1FA1B295 /* ofxTimeMeasurements.cpp */,
-				83F10DECDFF16F9F1E67D731 /* ofxTimeMeasurements.h */,
-				12FDE6FD42DC4BF9763E1D00 /* ofxTimeMeasurementsMacros.h */,
-				53D05984F46836E36C48B617 /* ofxTimeMeasurementsScoped.h */,
-			);
-			name = src;
-			sourceTree = "<group>";
-		};
-		F2022DF37286FECB8B9BA5B2 /* include */ = {
-			isa = PBXGroup;
-			children = (
-				2D0C0AA4436B2A16530BA991 /* fftw3.h */,
-			);
-			name = include;
-			sourceTree = "<group>";
-		};
-		F7347CBF7C47F1110E5FA42A /* src */ = {
-			isa = PBXGroup;
-			children = (
-				45B576A8B106CBE71564781C /* ofxThreadedImageLoader.cpp */,
-				258BD733949A19E1F0702FFA /* ofxThreadedImageLoader.h */,
-			);
-			name = src;
-			sourceTree = "<group>";
-		};
-/* End PBXGroup section */
-
-/* Begin PBXNativeTarget section */
-		E4B69B5A0A3A1756003C02F2 /* ofxFlockDraw */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = E4B69B5F0A3A1757003C02F2 /* Build configuration list for PBXNativeTarget "ofxFlockDraw" */;
-			buildPhases = (
-				E4B69B580A3A1756003C02F2 /* Sources */,
-				E4B69B590A3A1756003C02F2 /* Frameworks */,
-				E4B6FFFD0C3F9AB9008CF71C /* ShellScript */,
-				E4C2427710CC5ABF004149E2 /* CopyFiles */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				E4EEB9AC138B136A00A80321 /* PBXTargetDependency */,
-			);
-			name = ofxFlockDraw;
-			productName = myOFApp;
-			productReference = E4B69B5B0A3A1756003C02F2 /* ofxFlockDrawDebug.app */;
-			productType = "com.apple.product-type.application";
-		};
-/* End PBXNativeTarget section */
-
-/* Begin PBXProject section */
-		E4B69B4C0A3A1720003C02F2 /* Project object */ = {
-			isa = PBXProject;
-			attributes = {
-				LastUpgradeCheck = 0600;
-			};
-			buildConfigurationList = E4B69B4D0A3A1720003C02F2 /* Build configuration list for PBXProject "ofxFlockDraw" */;
-			compatibilityVersion = "Xcode 3.2";
-			developmentRegion = English;
-			hasScannedForEncodings = 0;
-			knownRegions = (
-				English,
-				Japanese,
-				French,
-				German,
-			);
-			mainGroup = E4B69B4A0A3A1720003C02F2;
-			productRefGroup = E4B69B4A0A3A1720003C02F2;
-			projectDirPath = "";
-			projectReferences = (
-				{
-					ProductGroup = E4328144138ABC890047C5CB /* Products */;
-					ProjectRef = E4328143138ABC890047C5CB /* openFrameworksLib.xcodeproj */;
-				},
-			);
-			projectRoot = "";
-			targets = (
-				E4B69B5A0A3A1756003C02F2 /* ofxFlockDraw */,
-			);
-		};
-/* End PBXProject section */
-
-/* Begin PBXReferenceProxy section */
-		E4328148138ABC890047C5CB /* openFrameworksDebug.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = openFrameworksDebug.a;
-			remoteRef = E4328147138ABC890047C5CB /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-/* End PBXReferenceProxy section */
-
-/* Begin PBXShellScriptBuildPhase section */
-		E4B6FFFD0C3F9AB9008CF71C /* ShellScript */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "mkdir -p \"$TARGET_BUILD_DIR/$PRODUCT_NAME.app/Contents/Resources/\"\n# Copy default icon file into App/Resources\nrsync -aved \"$ICON_FILE\" \"$TARGET_BUILD_DIR/$PRODUCT_NAME.app/Contents/Resources/\"\n# Copy libfmod and change install directory for fmod to run\nrsync -aved ../../../libs/fmodex/lib/osx/libfmodex.dylib \"$TARGET_BUILD_DIR/$PRODUCT_NAME.app/Contents/Frameworks/\";\ninstall_name_tool -change @executable_path/libfmodex.dylib @executable_path/../Frameworks/libfmodex.dylib \"$TARGET_BUILD_DIR/$PRODUCT_NAME.app/Contents/MacOS/$PRODUCT_NAME\";\n# Copy GLUT framework (must remove for AppStore submissions)\nrsync -aved ../../../libs/glut/lib/osx/GLUT.framework \"$TARGET_BUILD_DIR/$PRODUCT_NAME.app/Contents/Frameworks/\"\n";
-		};
-/* End PBXShellScriptBuildPhase section */
-
-/* Begin PBXSourcesBuildPhase section */
-		E4B69B580A3A1756003C02F2 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				E4B69E200A3A1BDC003C02F2 /* main.cpp in Sources */,
-				E4B69E210A3A1BDC003C02F2 /* ofApp.cpp in Sources */,
-				87EB71A35D524340AE0A8C4C /* ofxAudioDecoder.cpp in Sources */,
-				477F449F6256389CCDB36FFC /* audiodecoderbase.cpp in Sources */,
-				2761F96388F64FE596863183 /* audiodecodercoreaudio.cpp in Sources */,
-				A86D7323CE1A9450906A91DD /* fft.cpp in Sources */,
-				EC203A151F2FB69E002EDE11 /* ParticleEmitter.cpp in Sources */,
-				EC203A141F2FB69E002EDE11 /* Particle.cpp in Sources */,
-				C098DBE008A1B5C6D12ABFFD /* ofxBeat.cpp in Sources */,
-				D3C1C48E59CAA2D68C0DD477 /* ofxDatGuiComponent.cpp in Sources */,
-				9CF4130A7E6DA19A3DC42B9A /* ofxSmartFont.cpp in Sources */,
-				C9466C434D1CF8AB968D298D /* ofxDatGui.cpp in Sources */,
-				7A61C288AE942E5885881232 /* ofxEasyFft.cpp in Sources */,
-				D409288D137DB82107887FFD /* ofxFft.cpp in Sources */,
-				007F713E619B81D821BEA319 /* ofxFftBasic.cpp in Sources */,
-				29938E05AF78B3DF7A591187 /* ofxFftw.cpp in Sources */,
-				47741AD4D543009E4DF29CEA /* ofxProcessFFT.cpp in Sources */,
-				0686C38EE993C67B96002FA1 /* kiss_fft.c in Sources */,
-				6DB9E3911BA6216FE1F0E91C /* kiss_fftr.c in Sources */,
-				EC26F225D807F4F069405924 /* ofxThreadedImageLoader.cpp in Sources */,
-				567A8E85CAD379B59206852D /* ofxTimeMeasurements.cpp in Sources */,
-				63B57AC5BF4EF088491E0317 /* ofxXmlSettings.cpp in Sources */,
-				933A2227713C720CEFF80FD9 /* tinyxml.cpp in Sources */,
-				9D44DC88EF9E7991B4A09951 /* tinyxmlerror.cpp in Sources */,
-				5A4349E9754D6FA14C0F2A3A /* tinyxmlparser.cpp in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXSourcesBuildPhase section */
-
-/* Begin PBXTargetDependency section */
-		E4EEB9AC138B136A00A80321 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = openFrameworks;
-			targetProxy = E4EEB9AB138B136A00A80321 /* PBXContainerItemProxy */;
-		};
-/* End PBXTargetDependency section */
-
-/* Begin XCBuildConfiguration section */
-		E4B69B4E0A3A1720003C02F2 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = E4EB6923138AFD0F00A09F29 /* Project.xcconfig */;
-			buildSettings = {
-				CONFIGURATION_BUILD_DIR = "$(SRCROOT)/bin/";
-				COPY_PHASE_STRIP = NO;
-				DEAD_CODE_STRIPPING = YES;
-				GCC_AUTO_VECTORIZATION = YES;
-				GCC_ENABLE_SSE3_EXTENSIONS = YES;
-				GCC_ENABLE_SUPPLEMENTAL_SSE3_INSTRUCTIONS = YES;
-				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS = YES;
-				GCC_WARN_ABOUT_INVALID_OFFSETOF_MACRO = NO;
-				GCC_WARN_ALLOW_INCOMPLETE_PROTOCOL = NO;
-				GCC_WARN_UNINITIALIZED_AUTOS = NO;
-				GCC_WARN_UNUSED_VALUE = NO;
-				GCC_WARN_UNUSED_VARIABLE = NO;
-				HEADER_SEARCH_PATHS = (
-					"$(OF_CORE_HEADERS)",
-					../../../addons/ofxAudioDecoder/libs,
-					../../../addons/ofxAudioDecoder/libs/include,
-					../../../addons/ofxAudioDecoder/libs/include/apple,
-					../../../addons/ofxAudioDecoder/libs/src,
-					../../../addons/ofxAudioDecoder/src,
-					../../../addons/ofxBeat/src,
-					../../../addons/ofxDatGui/src,
-					../../../addons/ofxDatGui/src/components,
-					../../../addons/ofxDatGui/src/core,
-					../../../addons/ofxDatGui/src/libs,
-					../../../addons/ofxDatGui/src/libs/ofxSmartFont,
-					../../../addons/ofxDatGui/src/themes,
-					../../../addons/ofxFft/libs,
-					../../../addons/ofxFft/libs/fftw,
-					../../../addons/ofxFft/libs/fftw/include,
-					../../../addons/ofxFft/libs/fftw/lib,
-					../../../addons/ofxFft/libs/kiss,
-					../../../addons/ofxFft/src,
-					../../../addons/ofxThreadedImageLoader/src,
-					../../../addons/ofxTimeMeasurements/src,
-					../../../addons/ofxXmlSettings/libs,
-					../../../addons/ofxXmlSettings/src,
-				);
-				MACOSX_DEPLOYMENT_TARGET = 10.8;
-				ONLY_ACTIVE_ARCH = YES;
-				OTHER_CPLUSPLUSFLAGS = (
-					"-D__MACOSX_CORE__",
-					"-mtune=native",
-				);
-				SDKROOT = macosx;
-			};
-			name = Debug;
-		};
-		E4B69B4F0A3A1720003C02F2 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = E4EB6923138AFD0F00A09F29 /* Project.xcconfig */;
-			buildSettings = {
-				CONFIGURATION_BUILD_DIR = "$(SRCROOT)/bin/";
-				COPY_PHASE_STRIP = YES;
-				DEAD_CODE_STRIPPING = YES;
-				GCC_AUTO_VECTORIZATION = YES;
-				GCC_ENABLE_SSE3_EXTENSIONS = YES;
-				GCC_ENABLE_SUPPLEMENTAL_SSE3_INSTRUCTIONS = YES;
-				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
-				GCC_OPTIMIZATION_LEVEL = 3;
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				GCC_UNROLL_LOOPS = YES;
-				GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS = YES;
-				GCC_WARN_ABOUT_INVALID_OFFSETOF_MACRO = NO;
-				GCC_WARN_ALLOW_INCOMPLETE_PROTOCOL = NO;
-				GCC_WARN_UNINITIALIZED_AUTOS = NO;
-				GCC_WARN_UNUSED_VALUE = NO;
-				GCC_WARN_UNUSED_VARIABLE = NO;
-				HEADER_SEARCH_PATHS = (
-					"$(OF_CORE_HEADERS)",
-					../../../addons/ofxAudioDecoder/libs,
-					../../../addons/ofxAudioDecoder/libs/include,
-					../../../addons/ofxAudioDecoder/libs/include/apple,
-					../../../addons/ofxAudioDecoder/libs/src,
-					../../../addons/ofxAudioDecoder/src,
-					../../../addons/ofxBeat/src,
-					../../../addons/ofxDatGui/src,
-					../../../addons/ofxDatGui/src/components,
-					../../../addons/ofxDatGui/src/core,
-					../../../addons/ofxDatGui/src/libs,
-					../../../addons/ofxDatGui/src/libs/ofxSmartFont,
-					../../../addons/ofxDatGui/src/themes,
-					../../../addons/ofxFft/libs,
-					../../../addons/ofxFft/libs/fftw,
-					../../../addons/ofxFft/libs/fftw/include,
-					../../../addons/ofxFft/libs/fftw/lib,
-					../../../addons/ofxFft/libs/kiss,
-					../../../addons/ofxFft/src,
-					../../../addons/ofxThreadedImageLoader/src,
-					../../../addons/ofxTimeMeasurements/src,
-					../../../addons/ofxXmlSettings/libs,
-					../../../addons/ofxXmlSettings/src,
-				);
-				MACOSX_DEPLOYMENT_TARGET = 10.8;
-				OTHER_CPLUSPLUSFLAGS = (
-					"-D__MACOSX_CORE__",
-					"-mtune=native",
-				);
-				SDKROOT = macosx;
-			};
-			name = Release;
-		};
-		E4B69B600A3A1757003C02F2 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = E4EB6923138AFD0F00A09F29 /* Project.xcconfig */;
-			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
-				COPY_PHASE_STRIP = NO;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
-				);
-				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../../libs/glut/lib/osx\"";
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
-				GCC_MODEL_TUNING = NONE;
-				HEADER_SEARCH_PATHS = (
-					"$(OF_CORE_HEADERS)",
-					../../../addons/ofxAudioDecoder/libs,
-					../../../addons/ofxAudioDecoder/libs/include,
-					../../../addons/ofxAudioDecoder/libs/include/apple,
-					../../../addons/ofxAudioDecoder/libs/src,
-					../../../addons/ofxAudioDecoder/src,
-					../../../addons/ofxBeat/src,
-					../../../addons/ofxDatGui/src,
-					../../../addons/ofxDatGui/src/components,
-					../../../addons/ofxDatGui/src/core,
-					../../../addons/ofxDatGui/src/libs,
-					../../../addons/ofxDatGui/src/libs/ofxSmartFont,
-					../../../addons/ofxDatGui/src/themes,
-					../../../addons/ofxFft/libs,
-					../../../addons/ofxFft/libs/fftw,
-					../../../addons/ofxFft/libs/fftw/include,
-					../../../addons/ofxFft/libs/fftw/lib,
-					../../../addons/ofxFft/libs/kiss,
-					../../../addons/ofxFft/src,
-					../../../addons/ofxThreadedImageLoader/src,
-					../../../addons/ofxTimeMeasurements/src,
-					../../../addons/ofxXmlSettings/libs,
-					../../../addons/ofxXmlSettings/src,
-				);
-				ICON = "$(ICON_NAME_DEBUG)";
-				ICON_FILE = "$(ICON_FILE_PATH)$(ICON)";
-				INFOPLIST_FILE = "openFrameworks-Info.plist";
-				INSTALL_PATH = /Applications;
-				LIBRARY_SEARCH_PATHS = "$(inherited)";
-				PRODUCT_NAME = "$(TARGET_NAME)Debug";
-				WRAPPER_EXTENSION = app;
-			};
-			name = Debug;
-		};
-		E4B69B610A3A1757003C02F2 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = E4EB6923138AFD0F00A09F29 /* Project.xcconfig */;
-			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
-				COPY_PHASE_STRIP = YES;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
-				);
-				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../../libs/glut/lib/osx\"";
-				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
-				GCC_MODEL_TUNING = NONE;
-				HEADER_SEARCH_PATHS = (
-					"$(OF_CORE_HEADERS)",
-					../../../addons/ofxAudioDecoder/libs,
-					../../../addons/ofxAudioDecoder/libs/include,
-					../../../addons/ofxAudioDecoder/libs/include/apple,
-					../../../addons/ofxAudioDecoder/libs/src,
-					../../../addons/ofxAudioDecoder/src,
-					../../../addons/ofxBeat/src,
-					../../../addons/ofxDatGui/src,
-					../../../addons/ofxDatGui/src/components,
-					../../../addons/ofxDatGui/src/core,
-					../../../addons/ofxDatGui/src/libs,
-					../../../addons/ofxDatGui/src/libs/ofxSmartFont,
-					../../../addons/ofxDatGui/src/themes,
-					../../../addons/ofxFft/libs,
-					../../../addons/ofxFft/libs/fftw,
-					../../../addons/ofxFft/libs/fftw/include,
-					../../../addons/ofxFft/libs/fftw/lib,
-					../../../addons/ofxFft/libs/kiss,
-					../../../addons/ofxFft/src,
-					../../../addons/ofxThreadedImageLoader/src,
-					../../../addons/ofxTimeMeasurements/src,
-					../../../addons/ofxXmlSettings/libs,
-					../../../addons/ofxXmlSettings/src,
-				);
-				ICON = "$(ICON_NAME_RELEASE)";
-				ICON_FILE = "$(ICON_FILE_PATH)$(ICON)";
-				INFOPLIST_FILE = "openFrameworks-Info.plist";
-				INSTALL_PATH = /Applications;
-				LIBRARY_SEARCH_PATHS = "$(inherited)";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				WRAPPER_EXTENSION = app;
-				baseConfigurationReference = E4EB6923138AFD0F00A09F29;
-			};
-			name = Release;
-		};
-/* End XCBuildConfiguration section */
-
-/* Begin XCConfigurationList section */
-		E4B69B4D0A3A1720003C02F2 /* Build configuration list for PBXProject "ofxFlockDraw" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				E4B69B4E0A3A1720003C02F2 /* Debug */,
-				E4B69B4F0A3A1720003C02F2 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		E4B69B5F0A3A1757003C02F2 /* Build configuration list for PBXNativeTarget "ofxFlockDraw" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				E4B69B600A3A1757003C02F2 /* Debug */,
-				E4B69B610A3A1757003C02F2 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-/* End XCConfigurationList section */
-	};
-	rootObject = E4B69B4C0A3A1720003C02F2 /* Project object */;
-}
+<?xml version="1.0"?>
+<plist version="1.0">
+	<dict>
+		<key>archiveVersion</key>
+		<string>1</string>
+		<key>classes</key>
+		<dict />
+		<key>objectVersion</key>
+		<string>46</string>
+		<key>objects</key>
+		<dict>
+			<key>5A4349E9754D6FA14C0F2A3A</key>
+			<dict>
+				<key>fileRef</key>
+				<string>FC5DA1C87211D4F6377DA719</string>
+				<key>isa</key>
+				<string>PBXBuildFile</string>
+			</dict>
+			<key>FC5DA1C87211D4F6377DA719</key>
+			<dict>
+				<key>explicitFileType</key>
+				<string>sourcecode.cpp.cpp</string>
+				<key>fileEncoding</key>
+				<string>30</string>
+				<key>isa</key>
+				<string>PBXFileReference</string>
+				<key>name</key>
+				<string>tinyxmlparser.cpp</string>
+				<key>path</key>
+				<string>../../../addons/ofxXmlSettings/libs/tinyxmlparser.cpp</string>
+				<key>sourceTree</key>
+				<string>SOURCE_ROOT</string>
+			</dict>
+			<key>9D44DC88EF9E7991B4A09951</key>
+			<dict>
+				<key>fileRef</key>
+				<string>832BDC407620CDBA568B713D</string>
+				<key>isa</key>
+				<string>PBXBuildFile</string>
+			</dict>
+			<key>832BDC407620CDBA568B713D</key>
+			<dict>
+				<key>explicitFileType</key>
+				<string>sourcecode.cpp.cpp</string>
+				<key>fileEncoding</key>
+				<string>30</string>
+				<key>isa</key>
+				<string>PBXFileReference</string>
+				<key>name</key>
+				<string>tinyxmlerror.cpp</string>
+				<key>path</key>
+				<string>../../../addons/ofxXmlSettings/libs/tinyxmlerror.cpp</string>
+				<key>sourceTree</key>
+				<string>SOURCE_ROOT</string>
+			</dict>
+			<key>B21E7E5F548EEA92F368040B</key>
+			<dict>
+				<key>explicitFileType</key>
+				<string>sourcecode.c.h</string>
+				<key>fileEncoding</key>
+				<string>30</string>
+				<key>isa</key>
+				<string>PBXFileReference</string>
+				<key>name</key>
+				<string>tinyxml.h</string>
+				<key>path</key>
+				<string>../../../addons/ofxXmlSettings/libs/tinyxml.h</string>
+				<key>sourceTree</key>
+				<string>SOURCE_ROOT</string>
+			</dict>
+			<key>6E54289412D2D94F45A05113</key>
+			<dict>
+				<key>children</key>
+				<array>
+					<string>2B40EDA85BEB63E46785BC29</string>
+					<string>B21E7E5F548EEA92F368040B</string>
+					<string>832BDC407620CDBA568B713D</string>
+					<string>FC5DA1C87211D4F6377DA719</string>
+				</array>
+				<key>isa</key>
+				<string>PBXGroup</string>
+				<key>name</key>
+				<string>libs</string>
+				<key>sourceTree</key>
+				<string>&lt;group&gt;</string>
+			</dict>
+			<key>933A2227713C720CEFF80FD9</key>
+			<dict>
+				<key>fileRef</key>
+				<string>2B40EDA85BEB63E46785BC29</string>
+				<key>isa</key>
+				<string>PBXBuildFile</string>
+			</dict>
+			<key>2B40EDA85BEB63E46785BC29</key>
+			<dict>
+				<key>explicitFileType</key>
+				<string>sourcecode.cpp.cpp</string>
+				<key>fileEncoding</key>
+				<string>30</string>
+				<key>isa</key>
+				<string>PBXFileReference</string>
+				<key>name</key>
+				<string>tinyxml.cpp</string>
+				<key>path</key>
+				<string>../../../addons/ofxXmlSettings/libs/tinyxml.cpp</string>
+				<key>sourceTree</key>
+				<string>SOURCE_ROOT</string>
+			</dict>
+			<key>01DCC0911400F9ACF5B65578</key>
+			<dict>
+				<key>explicitFileType</key>
+				<string>sourcecode.c.h</string>
+				<key>fileEncoding</key>
+				<string>30</string>
+				<key>isa</key>
+				<string>PBXFileReference</string>
+				<key>name</key>
+				<string>ofxXmlSettings.h</string>
+				<key>path</key>
+				<string>../../../addons/ofxXmlSettings/src/ofxXmlSettings.h</string>
+				<key>sourceTree</key>
+				<string>SOURCE_ROOT</string>
+			</dict>
+			<key>6ECEF0D76BC33727823EADFF</key>
+			<dict>
+				<key>children</key>
+				<array>
+					<string>50DF87D612C5AAE17AAFA6C0</string>
+					<string>01DCC0911400F9ACF5B65578</string>
+				</array>
+				<key>isa</key>
+				<string>PBXGroup</string>
+				<key>name</key>
+				<string>src</string>
+				<key>sourceTree</key>
+				<string>&lt;group&gt;</string>
+			</dict>
+			<key>1F4FB5C423662B96ADFDCC0B</key>
+			<dict>
+				<key>children</key>
+				<array>
+					<string>6ECEF0D76BC33727823EADFF</string>
+					<string>6E54289412D2D94F45A05113</string>
+				</array>
+				<key>isa</key>
+				<string>PBXGroup</string>
+				<key>name</key>
+				<string>ofxXmlSettings</string>
+				<key>sourceTree</key>
+				<string>&lt;group&gt;</string>
+			</dict>
+			<key>63B57AC5BF4EF088491E0317</key>
+			<dict>
+				<key>fileRef</key>
+				<string>50DF87D612C5AAE17AAFA6C0</string>
+				<key>isa</key>
+				<string>PBXBuildFile</string>
+			</dict>
+			<key>50DF87D612C5AAE17AAFA6C0</key>
+			<dict>
+				<key>explicitFileType</key>
+				<string>sourcecode.cpp.cpp</string>
+				<key>fileEncoding</key>
+				<string>30</string>
+				<key>isa</key>
+				<string>PBXFileReference</string>
+				<key>name</key>
+				<string>ofxXmlSettings.cpp</string>
+				<key>path</key>
+				<string>../../../addons/ofxXmlSettings/src/ofxXmlSettings.cpp</string>
+				<key>sourceTree</key>
+				<string>SOURCE_ROOT</string>
+			</dict>
+			<key>53D05984F46836E36C48B617</key>
+			<dict>
+				<key>explicitFileType</key>
+				<string>sourcecode.c.h</string>
+				<key>fileEncoding</key>
+				<string>30</string>
+				<key>isa</key>
+				<string>PBXFileReference</string>
+				<key>name</key>
+				<string>ofxTimeMeasurementsScoped.h</string>
+				<key>path</key>
+				<string>../../../addons/ofxTimeMeasurements/src/ofxTimeMeasurementsScoped.h</string>
+				<key>sourceTree</key>
+				<string>SOURCE_ROOT</string>
+			</dict>
+			<key>12FDE6FD42DC4BF9763E1D00</key>
+			<dict>
+				<key>explicitFileType</key>
+				<string>sourcecode.c.h</string>
+				<key>fileEncoding</key>
+				<string>30</string>
+				<key>isa</key>
+				<string>PBXFileReference</string>
+				<key>name</key>
+				<string>ofxTimeMeasurementsMacros.h</string>
+				<key>path</key>
+				<string>../../../addons/ofxTimeMeasurements/src/ofxTimeMeasurementsMacros.h</string>
+				<key>sourceTree</key>
+				<string>SOURCE_ROOT</string>
+			</dict>
+			<key>83F10DECDFF16F9F1E67D731</key>
+			<dict>
+				<key>explicitFileType</key>
+				<string>sourcecode.c.h</string>
+				<key>fileEncoding</key>
+				<string>30</string>
+				<key>isa</key>
+				<string>PBXFileReference</string>
+				<key>name</key>
+				<string>ofxTimeMeasurements.h</string>
+				<key>path</key>
+				<string>../../../addons/ofxTimeMeasurements/src/ofxTimeMeasurements.h</string>
+				<key>sourceTree</key>
+				<string>SOURCE_ROOT</string>
+			</dict>
+			<key>567A8E85CAD379B59206852D</key>
+			<dict>
+				<key>fileRef</key>
+				<string>113EC1656B3145FE1FA1B295</string>
+				<key>isa</key>
+				<string>PBXBuildFile</string>
+			</dict>
+			<key>113EC1656B3145FE1FA1B295</key>
+			<dict>
+				<key>explicitFileType</key>
+				<string>sourcecode.cpp.cpp</string>
+				<key>fileEncoding</key>
+				<string>30</string>
+				<key>isa</key>
+				<string>PBXFileReference</string>
+				<key>name</key>
+				<string>ofxTimeMeasurements.cpp</string>
+				<key>path</key>
+				<string>../../../addons/ofxTimeMeasurements/src/ofxTimeMeasurements.cpp</string>
+				<key>sourceTree</key>
+				<string>SOURCE_ROOT</string>
+			</dict>
+			<key>EFCD60E2ACA4B88D4D54E3F0</key>
+			<dict>
+				<key>children</key>
+				<array>
+					<string>56C38035679CEFF6F09AE81A</string>
+					<string>113EC1656B3145FE1FA1B295</string>
+					<string>83F10DECDFF16F9F1E67D731</string>
+					<string>12FDE6FD42DC4BF9763E1D00</string>
+					<string>53D05984F46836E36C48B617</string>
+				</array>
+				<key>isa</key>
+				<string>PBXGroup</string>
+				<key>name</key>
+				<string>src</string>
+				<key>sourceTree</key>
+				<string>&lt;group&gt;</string>
+			</dict>
+			<key>98D685E6144A167898628CFF</key>
+			<dict>
+				<key>children</key>
+				<array>
+					<string>EFCD60E2ACA4B88D4D54E3F0</string>
+				</array>
+				<key>isa</key>
+				<string>PBXGroup</string>
+				<key>name</key>
+				<string>ofxTimeMeasurements</string>
+				<key>sourceTree</key>
+				<string>&lt;group&gt;</string>
+			</dict>
+			<key>56C38035679CEFF6F09AE81A</key>
+			<dict>
+				<key>explicitFileType</key>
+				<string>sourcecode.c.h</string>
+				<key>fileEncoding</key>
+				<string>30</string>
+				<key>isa</key>
+				<string>PBXFileReference</string>
+				<key>name</key>
+				<string>GL_Measurement.h</string>
+				<key>path</key>
+				<string>../../../addons/ofxTimeMeasurements/src/GL_Measurement.h</string>
+				<key>sourceTree</key>
+				<string>SOURCE_ROOT</string>
+			</dict>
+			<key>258BD733949A19E1F0702FFA</key>
+			<dict>
+				<key>explicitFileType</key>
+				<string>sourcecode.c.h</string>
+				<key>fileEncoding</key>
+				<string>30</string>
+				<key>isa</key>
+				<string>PBXFileReference</string>
+				<key>name</key>
+				<string>ofxThreadedImageLoader.h</string>
+				<key>path</key>
+				<string>../../../addons/ofxThreadedImageLoader/src/ofxThreadedImageLoader.h</string>
+				<key>sourceTree</key>
+				<string>SOURCE_ROOT</string>
+			</dict>
+			<key>F7347CBF7C47F1110E5FA42A</key>
+			<dict>
+				<key>children</key>
+				<array>
+					<string>45B576A8B106CBE71564781C</string>
+					<string>258BD733949A19E1F0702FFA</string>
+				</array>
+				<key>isa</key>
+				<string>PBXGroup</string>
+				<key>name</key>
+				<string>src</string>
+				<key>sourceTree</key>
+				<string>&lt;group&gt;</string>
+			</dict>
+			<key>3CD2B0AEE6FE628A91175CDA</key>
+			<dict>
+				<key>children</key>
+				<array>
+					<string>F7347CBF7C47F1110E5FA42A</string>
+				</array>
+				<key>isa</key>
+				<string>PBXGroup</string>
+				<key>name</key>
+				<string>ofxThreadedImageLoader</string>
+				<key>sourceTree</key>
+				<string>&lt;group&gt;</string>
+			</dict>
+			<key>EC26F225D807F4F069405924</key>
+			<dict>
+				<key>fileRef</key>
+				<string>45B576A8B106CBE71564781C</string>
+				<key>isa</key>
+				<string>PBXBuildFile</string>
+			</dict>
+			<key>45B576A8B106CBE71564781C</key>
+			<dict>
+				<key>explicitFileType</key>
+				<string>sourcecode.cpp.cpp</string>
+				<key>fileEncoding</key>
+				<string>30</string>
+				<key>isa</key>
+				<string>PBXFileReference</string>
+				<key>name</key>
+				<string>ofxThreadedImageLoader.cpp</string>
+				<key>path</key>
+				<string>../../../addons/ofxThreadedImageLoader/src/ofxThreadedImageLoader.cpp</string>
+				<key>sourceTree</key>
+				<string>SOURCE_ROOT</string>
+			</dict>
+			<key>977E7DDA94E88633BE025A78</key>
+			<dict>
+				<key>explicitFileType</key>
+				<string>sourcecode.c.h</string>
+				<key>fileEncoding</key>
+				<string>30</string>
+				<key>isa</key>
+				<string>PBXFileReference</string>
+				<key>name</key>
+				<string>kiss_fftr.h</string>
+				<key>path</key>
+				<string>../../../addons/ofxFft/libs/kiss/kiss_fftr.h</string>
+				<key>sourceTree</key>
+				<string>SOURCE_ROOT</string>
+			</dict>
+			<key>6DB9E3911BA6216FE1F0E91C</key>
+			<dict>
+				<key>fileRef</key>
+				<string>DACFE8C08D7F4619176E65D7</string>
+				<key>isa</key>
+				<string>PBXBuildFile</string>
+			</dict>
+			<key>DACFE8C08D7F4619176E65D7</key>
+			<dict>
+				<key>explicitFileType</key>
+				<string>sourcecode.c.c</string>
+				<key>fileEncoding</key>
+				<string>30</string>
+				<key>isa</key>
+				<string>PBXFileReference</string>
+				<key>name</key>
+				<string>kiss_fftr.c</string>
+				<key>path</key>
+				<string>../../../addons/ofxFft/libs/kiss/kiss_fftr.c</string>
+				<key>sourceTree</key>
+				<string>SOURCE_ROOT</string>
+			</dict>
+			<key>A6F65D3430FD7E893FFF58F3</key>
+			<dict>
+				<key>explicitFileType</key>
+				<string>sourcecode.c.h</string>
+				<key>fileEncoding</key>
+				<string>30</string>
+				<key>isa</key>
+				<string>PBXFileReference</string>
+				<key>name</key>
+				<string>kiss_fft.h</string>
+				<key>path</key>
+				<string>../../../addons/ofxFft/libs/kiss/kiss_fft.h</string>
+				<key>sourceTree</key>
+				<string>SOURCE_ROOT</string>
+			</dict>
+			<key>0686C38EE993C67B96002FA1</key>
+			<dict>
+				<key>fileRef</key>
+				<string>4B053B6F1252BCFCFF0F59AC</string>
+				<key>isa</key>
+				<string>PBXBuildFile</string>
+			</dict>
+			<key>4B053B6F1252BCFCFF0F59AC</key>
+			<dict>
+				<key>explicitFileType</key>
+				<string>sourcecode.c.c</string>
+				<key>fileEncoding</key>
+				<string>30</string>
+				<key>isa</key>
+				<string>PBXFileReference</string>
+				<key>name</key>
+				<string>kiss_fft.c</string>
+				<key>path</key>
+				<string>../../../addons/ofxFft/libs/kiss/kiss_fft.c</string>
+				<key>sourceTree</key>
+				<string>SOURCE_ROOT</string>
+			</dict>
+			<key>A2C4D2900B6384FDE5E77208</key>
+			<dict>
+				<key>children</key>
+				<array>
+					<string>1CBD6F883000C78087DD5738</string>
+					<string>4B053B6F1252BCFCFF0F59AC</string>
+					<string>A6F65D3430FD7E893FFF58F3</string>
+					<string>DACFE8C08D7F4619176E65D7</string>
+					<string>977E7DDA94E88633BE025A78</string>
+				</array>
+				<key>isa</key>
+				<string>PBXGroup</string>
+				<key>name</key>
+				<string>kiss</string>
+				<key>sourceTree</key>
+				<string>&lt;group&gt;</string>
+			</dict>
+			<key>1CBD6F883000C78087DD5738</key>
+			<dict>
+				<key>explicitFileType</key>
+				<string>sourcecode.c.h</string>
+				<key>fileEncoding</key>
+				<string>30</string>
+				<key>isa</key>
+				<string>PBXFileReference</string>
+				<key>name</key>
+				<string>_kiss_fft_guts.h</string>
+				<key>path</key>
+				<string>../../../addons/ofxFft/libs/kiss/_kiss_fft_guts.h</string>
+				<key>sourceTree</key>
+				<string>SOURCE_ROOT</string>
+			</dict>
+			<key>F2022DF37286FECB8B9BA5B2</key>
+			<dict>
+				<key>children</key>
+				<array>
+					<string>2D0C0AA4436B2A16530BA991</string>
+				</array>
+				<key>isa</key>
+				<string>PBXGroup</string>
+				<key>name</key>
+				<string>include</string>
+				<key>sourceTree</key>
+				<string>&lt;group&gt;</string>
+			</dict>
+			<key>A0535D33570F65575182C18F</key>
+			<dict>
+				<key>children</key>
+				<array>
+					<string>F2022DF37286FECB8B9BA5B2</string>
+				</array>
+				<key>isa</key>
+				<string>PBXGroup</string>
+				<key>name</key>
+				<string>fftw</string>
+				<key>sourceTree</key>
+				<string>&lt;group&gt;</string>
+			</dict>
+			<key>72C89FAFAC11F96856792042</key>
+			<dict>
+				<key>children</key>
+				<array>
+					<string>A0535D33570F65575182C18F</string>
+					<string>A2C4D2900B6384FDE5E77208</string>
+				</array>
+				<key>isa</key>
+				<string>PBXGroup</string>
+				<key>name</key>
+				<string>libs</string>
+				<key>sourceTree</key>
+				<string>&lt;group&gt;</string>
+			</dict>
+			<key>2D0C0AA4436B2A16530BA991</key>
+			<dict>
+				<key>explicitFileType</key>
+				<string>sourcecode.c.h</string>
+				<key>fileEncoding</key>
+				<string>30</string>
+				<key>isa</key>
+				<string>PBXFileReference</string>
+				<key>name</key>
+				<string>fftw3.h</string>
+				<key>path</key>
+				<string>../../../addons/ofxFft/libs/fftw/include/fftw3.h</string>
+				<key>sourceTree</key>
+				<string>SOURCE_ROOT</string>
+			</dict>
+			<key>9A2FCCF1ABF23081D2CD9D5F</key>
+			<dict>
+				<key>explicitFileType</key>
+				<string>sourcecode.c.h</string>
+				<key>fileEncoding</key>
+				<string>30</string>
+				<key>isa</key>
+				<string>PBXFileReference</string>
+				<key>name</key>
+				<string>ofxProcessFFT.h</string>
+				<key>path</key>
+				<string>../../../addons/ofxFft/src/ofxProcessFFT.h</string>
+				<key>sourceTree</key>
+				<string>SOURCE_ROOT</string>
+			</dict>
+			<key>47741AD4D543009E4DF29CEA</key>
+			<dict>
+				<key>fileRef</key>
+				<string>971B530AB93ACC5065D9489E</string>
+				<key>isa</key>
+				<string>PBXBuildFile</string>
+			</dict>
+			<key>971B530AB93ACC5065D9489E</key>
+			<dict>
+				<key>explicitFileType</key>
+				<string>sourcecode.cpp.cpp</string>
+				<key>fileEncoding</key>
+				<string>30</string>
+				<key>isa</key>
+				<string>PBXFileReference</string>
+				<key>name</key>
+				<string>ofxProcessFFT.cpp</string>
+				<key>path</key>
+				<string>../../../addons/ofxFft/src/ofxProcessFFT.cpp</string>
+				<key>sourceTree</key>
+				<string>SOURCE_ROOT</string>
+			</dict>
+			<key>D8952DEFF3CE56AC1009A996</key>
+			<dict>
+				<key>explicitFileType</key>
+				<string>sourcecode.c.h</string>
+				<key>fileEncoding</key>
+				<string>30</string>
+				<key>isa</key>
+				<string>PBXFileReference</string>
+				<key>name</key>
+				<string>ofxFftw.h</string>
+				<key>path</key>
+				<string>../../../addons/ofxFft/src/ofxFftw.h</string>
+				<key>sourceTree</key>
+				<string>SOURCE_ROOT</string>
+			</dict>
+			<key>29938E05AF78B3DF7A591187</key>
+			<dict>
+				<key>fileRef</key>
+				<string>5F353204A917F4B2BCEEABE6</string>
+				<key>isa</key>
+				<string>PBXBuildFile</string>
+			</dict>
+			<key>5F353204A917F4B2BCEEABE6</key>
+			<dict>
+				<key>explicitFileType</key>
+				<string>sourcecode.cpp.cpp</string>
+				<key>fileEncoding</key>
+				<string>30</string>
+				<key>isa</key>
+				<string>PBXFileReference</string>
+				<key>name</key>
+				<string>ofxFftw.cpp</string>
+				<key>path</key>
+				<string>../../../addons/ofxFft/src/ofxFftw.cpp</string>
+				<key>sourceTree</key>
+				<string>SOURCE_ROOT</string>
+			</dict>
+			<key>7D3BE1A2ADAFC399E7B20A91</key>
+			<dict>
+				<key>explicitFileType</key>
+				<string>sourcecode.c.h</string>
+				<key>fileEncoding</key>
+				<string>30</string>
+				<key>isa</key>
+				<string>PBXFileReference</string>
+				<key>name</key>
+				<string>ofxFftBasic.h</string>
+				<key>path</key>
+				<string>../../../addons/ofxFft/src/ofxFftBasic.h</string>
+				<key>sourceTree</key>
+				<string>SOURCE_ROOT</string>
+			</dict>
+			<key>007F713E619B81D821BEA319</key>
+			<dict>
+				<key>fileRef</key>
+				<string>CE67198F2891A8FFEA3686E6</string>
+				<key>isa</key>
+				<string>PBXBuildFile</string>
+			</dict>
+			<key>CE67198F2891A8FFEA3686E6</key>
+			<dict>
+				<key>explicitFileType</key>
+				<string>sourcecode.cpp.cpp</string>
+				<key>fileEncoding</key>
+				<string>30</string>
+				<key>isa</key>
+				<string>PBXFileReference</string>
+				<key>name</key>
+				<string>ofxFftBasic.cpp</string>
+				<key>path</key>
+				<string>../../../addons/ofxFft/src/ofxFftBasic.cpp</string>
+				<key>sourceTree</key>
+				<string>SOURCE_ROOT</string>
+			</dict>
+			<key>B36431C04C788FEDB1ECD8FC</key>
+			<dict>
+				<key>explicitFileType</key>
+				<string>sourcecode.c.h</string>
+				<key>fileEncoding</key>
+				<string>30</string>
+				<key>isa</key>
+				<string>PBXFileReference</string>
+				<key>name</key>
+				<string>ofxFft.h</string>
+				<key>path</key>
+				<string>../../../addons/ofxFft/src/ofxFft.h</string>
+				<key>sourceTree</key>
+				<string>SOURCE_ROOT</string>
+			</dict>
+			<key>D409288D137DB82107887FFD</key>
+			<dict>
+				<key>fileRef</key>
+				<string>32CA89CD22339F4F9433CAF6</string>
+				<key>isa</key>
+				<string>PBXBuildFile</string>
+			</dict>
+			<key>32CA89CD22339F4F9433CAF6</key>
+			<dict>
+				<key>explicitFileType</key>
+				<string>sourcecode.cpp.cpp</string>
+				<key>fileEncoding</key>
+				<string>30</string>
+				<key>isa</key>
+				<string>PBXFileReference</string>
+				<key>name</key>
+				<string>ofxFft.cpp</string>
+				<key>path</key>
+				<string>../../../addons/ofxFft/src/ofxFft.cpp</string>
+				<key>sourceTree</key>
+				<string>SOURCE_ROOT</string>
+			</dict>
+			<key>CAB67BC7A1CC020FDAC5381B</key>
+			<dict>
+				<key>explicitFileType</key>
+				<string>sourcecode.c.h</string>
+				<key>fileEncoding</key>
+				<string>30</string>
+				<key>isa</key>
+				<string>PBXFileReference</string>
+				<key>name</key>
+				<string>ofxEasyFft.h</string>
+				<key>path</key>
+				<string>../../../addons/ofxFft/src/ofxEasyFft.h</string>
+				<key>sourceTree</key>
+				<string>SOURCE_ROOT</string>
+			</dict>
+			<key>14D2E3EE0233F84B1B324DD9</key>
+			<dict>
+				<key>children</key>
+				<array>
+					<string>67BFC7F21E824F5A7FAC65E0</string>
+					<string>CAB67BC7A1CC020FDAC5381B</string>
+					<string>32CA89CD22339F4F9433CAF6</string>
+					<string>B36431C04C788FEDB1ECD8FC</string>
+					<string>CE67198F2891A8FFEA3686E6</string>
+					<string>7D3BE1A2ADAFC399E7B20A91</string>
+					<string>5F353204A917F4B2BCEEABE6</string>
+					<string>D8952DEFF3CE56AC1009A996</string>
+					<string>971B530AB93ACC5065D9489E</string>
+					<string>9A2FCCF1ABF23081D2CD9D5F</string>
+				</array>
+				<key>isa</key>
+				<string>PBXGroup</string>
+				<key>name</key>
+				<string>src</string>
+				<key>sourceTree</key>
+				<string>&lt;group&gt;</string>
+			</dict>
+			<key>BBC2B4228932C2AACC6701CF</key>
+			<dict>
+				<key>children</key>
+				<array>
+					<string>14D2E3EE0233F84B1B324DD9</string>
+					<string>72C89FAFAC11F96856792042</string>
+				</array>
+				<key>isa</key>
+				<string>PBXGroup</string>
+				<key>name</key>
+				<string>ofxFft</string>
+				<key>sourceTree</key>
+				<string>&lt;group&gt;</string>
+			</dict>
+			<key>7A61C288AE942E5885881232</key>
+			<dict>
+				<key>fileRef</key>
+				<string>67BFC7F21E824F5A7FAC65E0</string>
+				<key>isa</key>
+				<string>PBXBuildFile</string>
+			</dict>
+			<key>67BFC7F21E824F5A7FAC65E0</key>
+			<dict>
+				<key>explicitFileType</key>
+				<string>sourcecode.cpp.cpp</string>
+				<key>fileEncoding</key>
+				<string>30</string>
+				<key>isa</key>
+				<string>PBXFileReference</string>
+				<key>name</key>
+				<string>ofxEasyFft.cpp</string>
+				<key>path</key>
+				<string>../../../addons/ofxFft/src/ofxEasyFft.cpp</string>
+				<key>sourceTree</key>
+				<string>SOURCE_ROOT</string>
+			</dict>
+			<key>21E1E3071CB7B11914428B62</key>
+			<dict>
+				<key>explicitFileType</key>
+				<string>sourcecode.c.h</string>
+				<key>fileEncoding</key>
+				<string>30</string>
+				<key>isa</key>
+				<string>PBXFileReference</string>
+				<key>name</key>
+				<string>ofxDatGuiThemes.h</string>
+				<key>path</key>
+				<string>../../../addons/ofxDatGui/src/themes/ofxDatGuiThemes.h</string>
+				<key>sourceTree</key>
+				<string>SOURCE_ROOT</string>
+			</dict>
+			<key>911FE1C75E520EE70A7B4830</key>
+			<dict>
+				<key>children</key>
+				<array>
+					<string>B498F0559F473CF855EF6062</string>
+					<string>21E1E3071CB7B11914428B62</string>
+				</array>
+				<key>isa</key>
+				<string>PBXGroup</string>
+				<key>name</key>
+				<string>themes</string>
+				<key>sourceTree</key>
+				<string>&lt;group&gt;</string>
+			</dict>
+			<key>B498F0559F473CF855EF6062</key>
+			<dict>
+				<key>explicitFileType</key>
+				<string>sourcecode.c.h</string>
+				<key>fileEncoding</key>
+				<string>30</string>
+				<key>isa</key>
+				<string>PBXFileReference</string>
+				<key>name</key>
+				<string>ofxDatGuiTheme.h</string>
+				<key>path</key>
+				<string>../../../addons/ofxDatGui/src/themes/ofxDatGuiTheme.h</string>
+				<key>sourceTree</key>
+				<string>SOURCE_ROOT</string>
+			</dict>
+			<key>9705D66270ED89ECA6E6FECE</key>
+			<dict>
+				<key>explicitFileType</key>
+				<string>sourcecode.c.h</string>
+				<key>fileEncoding</key>
+				<string>30</string>
+				<key>isa</key>
+				<string>PBXFileReference</string>
+				<key>name</key>
+				<string>ofxDatGui.h</string>
+				<key>path</key>
+				<string>../../../addons/ofxDatGui/src/ofxDatGui.h</string>
+				<key>sourceTree</key>
+				<string>SOURCE_ROOT</string>
+			</dict>
+			<key>C9466C434D1CF8AB968D298D</key>
+			<dict>
+				<key>fileRef</key>
+				<string>26490D7CC31EF7D6ED5F925A</string>
+				<key>isa</key>
+				<string>PBXBuildFile</string>
+			</dict>
+			<key>26490D7CC31EF7D6ED5F925A</key>
+			<dict>
+				<key>explicitFileType</key>
+				<string>sourcecode.cpp.cpp</string>
+				<key>fileEncoding</key>
+				<string>30</string>
+				<key>isa</key>
+				<string>PBXFileReference</string>
+				<key>name</key>
+				<string>ofxDatGui.cpp</string>
+				<key>path</key>
+				<string>../../../addons/ofxDatGui/src/ofxDatGui.cpp</string>
+				<key>sourceTree</key>
+				<string>SOURCE_ROOT</string>
+			</dict>
+			<key>896211FFD7650884437CE42C</key>
+			<dict>
+				<key>explicitFileType</key>
+				<string>sourcecode.c.h</string>
+				<key>fileEncoding</key>
+				<string>30</string>
+				<key>isa</key>
+				<string>PBXFileReference</string>
+				<key>name</key>
+				<string>ofxSmartFont.h</string>
+				<key>path</key>
+				<string>../../../addons/ofxDatGui/src/libs/ofxSmartFont/ofxSmartFont.h</string>
+				<key>sourceTree</key>
+				<string>SOURCE_ROOT</string>
+			</dict>
+			<key>0EF29D3ABD6E4147AE024D7A</key>
+			<dict>
+				<key>children</key>
+				<array>
+					<string>C954E0E8B7DB9D6983309883</string>
+					<string>896211FFD7650884437CE42C</string>
+				</array>
+				<key>isa</key>
+				<string>PBXGroup</string>
+				<key>name</key>
+				<string>ofxSmartFont</string>
+				<key>sourceTree</key>
+				<string>&lt;group&gt;</string>
+			</dict>
+			<key>69146F0BA46E48E576618E5E</key>
+			<dict>
+				<key>children</key>
+				<array>
+					<string>0EF29D3ABD6E4147AE024D7A</string>
+				</array>
+				<key>isa</key>
+				<string>PBXGroup</string>
+				<key>name</key>
+				<string>libs</string>
+				<key>sourceTree</key>
+				<string>&lt;group&gt;</string>
+			</dict>
+			<key>9CF4130A7E6DA19A3DC42B9A</key>
+			<dict>
+				<key>fileRef</key>
+				<string>C954E0E8B7DB9D6983309883</string>
+				<key>isa</key>
+				<string>PBXBuildFile</string>
+			</dict>
+			<key>C954E0E8B7DB9D6983309883</key>
+			<dict>
+				<key>explicitFileType</key>
+				<string>sourcecode.cpp.cpp</string>
+				<key>fileEncoding</key>
+				<string>30</string>
+				<key>isa</key>
+				<string>PBXFileReference</string>
+				<key>name</key>
+				<string>ofxSmartFont.cpp</string>
+				<key>path</key>
+				<string>../../../addons/ofxDatGui/src/libs/ofxSmartFont/ofxSmartFont.cpp</string>
+				<key>sourceTree</key>
+				<string>SOURCE_ROOT</string>
+			</dict>
+			<key>422C4E1AAC7EC4D30B17702D</key>
+			<dict>
+				<key>explicitFileType</key>
+				<string>sourcecode.c.h</string>
+				<key>fileEncoding</key>
+				<string>30</string>
+				<key>isa</key>
+				<string>PBXFileReference</string>
+				<key>name</key>
+				<string>ofxDatGuiIntObject.h</string>
+				<key>path</key>
+				<string>../../../addons/ofxDatGui/src/core/ofxDatGuiIntObject.h</string>
+				<key>sourceTree</key>
+				<string>SOURCE_ROOT</string>
+			</dict>
+			<key>F59384ED57A7C6A7A8B0351D</key>
+			<dict>
+				<key>explicitFileType</key>
+				<string>sourcecode.c.h</string>
+				<key>fileEncoding</key>
+				<string>30</string>
+				<key>isa</key>
+				<string>PBXFileReference</string>
+				<key>name</key>
+				<string>ofxDatGuiEvents.h</string>
+				<key>path</key>
+				<string>../../../addons/ofxDatGui/src/core/ofxDatGuiEvents.h</string>
+				<key>sourceTree</key>
+				<string>SOURCE_ROOT</string>
+			</dict>
+			<key>9B5051062C6A871714E6F5F4</key>
+			<dict>
+				<key>explicitFileType</key>
+				<string>sourcecode.c.h</string>
+				<key>fileEncoding</key>
+				<string>30</string>
+				<key>isa</key>
+				<string>PBXFileReference</string>
+				<key>name</key>
+				<string>ofxDatGuiConstants.h</string>
+				<key>path</key>
+				<string>../../../addons/ofxDatGui/src/core/ofxDatGuiConstants.h</string>
+				<key>sourceTree</key>
+				<string>SOURCE_ROOT</string>
+			</dict>
+			<key>BCC84C6EB3417706F4F762F0</key>
+			<dict>
+				<key>explicitFileType</key>
+				<string>sourcecode.c.h</string>
+				<key>fileEncoding</key>
+				<string>30</string>
+				<key>isa</key>
+				<string>PBXFileReference</string>
+				<key>name</key>
+				<string>ofxDatGuiComponent.h</string>
+				<key>path</key>
+				<string>../../../addons/ofxDatGui/src/core/ofxDatGuiComponent.h</string>
+				<key>sourceTree</key>
+				<string>SOURCE_ROOT</string>
+			</dict>
+			<key>8870759BC9CAEA1E4E9EA3A8</key>
+			<dict>
+				<key>children</key>
+				<array>
+					<string>1A3E3B8F332A1A3C7EDF4998</string>
+					<string>BCC84C6EB3417706F4F762F0</string>
+					<string>9B5051062C6A871714E6F5F4</string>
+					<string>F59384ED57A7C6A7A8B0351D</string>
+					<string>422C4E1AAC7EC4D30B17702D</string>
+				</array>
+				<key>isa</key>
+				<string>PBXGroup</string>
+				<key>name</key>
+				<string>core</string>
+				<key>sourceTree</key>
+				<string>&lt;group&gt;</string>
+			</dict>
+			<key>D3C1C48E59CAA2D68C0DD477</key>
+			<dict>
+				<key>fileRef</key>
+				<string>1A3E3B8F332A1A3C7EDF4998</string>
+				<key>isa</key>
+				<string>PBXBuildFile</string>
+			</dict>
+			<key>1A3E3B8F332A1A3C7EDF4998</key>
+			<dict>
+				<key>explicitFileType</key>
+				<string>sourcecode.cpp.cpp</string>
+				<key>fileEncoding</key>
+				<string>30</string>
+				<key>isa</key>
+				<string>PBXFileReference</string>
+				<key>name</key>
+				<string>ofxDatGuiComponent.cpp</string>
+				<key>path</key>
+				<string>../../../addons/ofxDatGui/src/core/ofxDatGuiComponent.cpp</string>
+				<key>sourceTree</key>
+				<string>SOURCE_ROOT</string>
+			</dict>
+			<key>0A42C807BEF3A18E8E105A3B</key>
+			<dict>
+				<key>explicitFileType</key>
+				<string>sourcecode.c.h</string>
+				<key>fileEncoding</key>
+				<string>30</string>
+				<key>isa</key>
+				<string>PBXFileReference</string>
+				<key>name</key>
+				<string>ofxDatGuiTimeGraph.h</string>
+				<key>path</key>
+				<string>../../../addons/ofxDatGui/src/components/ofxDatGuiTimeGraph.h</string>
+				<key>sourceTree</key>
+				<string>SOURCE_ROOT</string>
+			</dict>
+			<key>04C339FF9ADCF05DF2DA62A3</key>
+			<dict>
+				<key>explicitFileType</key>
+				<string>sourcecode.c.h</string>
+				<key>fileEncoding</key>
+				<string>30</string>
+				<key>isa</key>
+				<string>PBXFileReference</string>
+				<key>name</key>
+				<string>ofxDatGuiTextInputField.h</string>
+				<key>path</key>
+				<string>../../../addons/ofxDatGui/src/components/ofxDatGuiTextInputField.h</string>
+				<key>sourceTree</key>
+				<string>SOURCE_ROOT</string>
+			</dict>
+			<key>C085A33340AB0C1DB647AC2F</key>
+			<dict>
+				<key>explicitFileType</key>
+				<string>sourcecode.c.h</string>
+				<key>fileEncoding</key>
+				<string>30</string>
+				<key>isa</key>
+				<string>PBXFileReference</string>
+				<key>name</key>
+				<string>ofxDatGuiTextInput.h</string>
+				<key>path</key>
+				<string>../../../addons/ofxDatGui/src/components/ofxDatGuiTextInput.h</string>
+				<key>sourceTree</key>
+				<string>SOURCE_ROOT</string>
+			</dict>
+			<key>D0D6A66BEBA820EA1D396889</key>
+			<dict>
+				<key>explicitFileType</key>
+				<string>sourcecode.c.h</string>
+				<key>fileEncoding</key>
+				<string>30</string>
+				<key>isa</key>
+				<string>PBXFileReference</string>
+				<key>name</key>
+				<string>ofxDatGuiSlider.h</string>
+				<key>path</key>
+				<string>../../../addons/ofxDatGui/src/components/ofxDatGuiSlider.h</string>
+				<key>sourceTree</key>
+				<string>SOURCE_ROOT</string>
+			</dict>
+			<key>545BBA6F6669BED2DA497BC6</key>
+			<dict>
+				<key>explicitFileType</key>
+				<string>sourcecode.c.h</string>
+				<key>fileEncoding</key>
+				<string>30</string>
+				<key>isa</key>
+				<string>PBXFileReference</string>
+				<key>name</key>
+				<string>ofxDatGuiScrollView.h</string>
+				<key>path</key>
+				<string>../../../addons/ofxDatGui/src/components/ofxDatGuiScrollView.h</string>
+				<key>sourceTree</key>
+				<string>SOURCE_ROOT</string>
+			</dict>
+			<key>CDF7278CB636137FE7BF91A5</key>
+			<dict>
+				<key>explicitFileType</key>
+				<string>sourcecode.c.h</string>
+				<key>fileEncoding</key>
+				<string>30</string>
+				<key>isa</key>
+				<string>PBXFileReference</string>
+				<key>name</key>
+				<string>ofxDatGuiMatrix.h</string>
+				<key>path</key>
+				<string>../../../addons/ofxDatGui/src/components/ofxDatGuiMatrix.h</string>
+				<key>sourceTree</key>
+				<string>SOURCE_ROOT</string>
+			</dict>
+			<key>787315438BF1DD00C81DF413</key>
+			<dict>
+				<key>explicitFileType</key>
+				<string>sourcecode.c.h</string>
+				<key>fileEncoding</key>
+				<string>30</string>
+				<key>isa</key>
+				<string>PBXFileReference</string>
+				<key>name</key>
+				<string>ofxDatGuiLabel.h</string>
+				<key>path</key>
+				<string>../../../addons/ofxDatGui/src/components/ofxDatGuiLabel.h</string>
+				<key>sourceTree</key>
+				<string>SOURCE_ROOT</string>
+			</dict>
+			<key>744031A3E8F8DAF9FE6F3EA8</key>
+			<dict>
+				<key>explicitFileType</key>
+				<string>sourcecode.c.h</string>
+				<key>fileEncoding</key>
+				<string>30</string>
+				<key>isa</key>
+				<string>PBXFileReference</string>
+				<key>name</key>
+				<string>ofxDatGuiGroups.h</string>
+				<key>path</key>
+				<string>../../../addons/ofxDatGui/src/components/ofxDatGuiGroups.h</string>
+				<key>sourceTree</key>
+				<string>SOURCE_ROOT</string>
+			</dict>
+			<key>64C563B8158C37E9D07AE29D</key>
+			<dict>
+				<key>explicitFileType</key>
+				<string>sourcecode.c.h</string>
+				<key>fileEncoding</key>
+				<string>30</string>
+				<key>isa</key>
+				<string>PBXFileReference</string>
+				<key>name</key>
+				<string>ofxDatGuiFRM.h</string>
+				<key>path</key>
+				<string>../../../addons/ofxDatGui/src/components/ofxDatGuiFRM.h</string>
+				<key>sourceTree</key>
+				<string>SOURCE_ROOT</string>
+			</dict>
+			<key>E100ED9DCB412957A879CD5A</key>
+			<dict>
+				<key>explicitFileType</key>
+				<string>sourcecode.c.h</string>
+				<key>fileEncoding</key>
+				<string>30</string>
+				<key>isa</key>
+				<string>PBXFileReference</string>
+				<key>name</key>
+				<string>ofxDatGuiControls.h</string>
+				<key>path</key>
+				<string>../../../addons/ofxDatGui/src/components/ofxDatGuiControls.h</string>
+				<key>sourceTree</key>
+				<string>SOURCE_ROOT</string>
+			</dict>
+			<key>C84ED7FCC017328C6F58283D</key>
+			<dict>
+				<key>explicitFileType</key>
+				<string>sourcecode.c.h</string>
+				<key>fileEncoding</key>
+				<string>30</string>
+				<key>isa</key>
+				<string>PBXFileReference</string>
+				<key>name</key>
+				<string>ofxDatGuiColorPicker.h</string>
+				<key>path</key>
+				<string>../../../addons/ofxDatGui/src/components/ofxDatGuiColorPicker.h</string>
+				<key>sourceTree</key>
+				<string>SOURCE_ROOT</string>
+			</dict>
+			<key>FDA86F4C2F1F1964D35391C6</key>
+			<dict>
+				<key>explicitFileType</key>
+				<string>sourcecode.c.h</string>
+				<key>fileEncoding</key>
+				<string>30</string>
+				<key>isa</key>
+				<string>PBXFileReference</string>
+				<key>name</key>
+				<string>ofxDatGuiButton.h</string>
+				<key>path</key>
+				<string>../../../addons/ofxDatGui/src/components/ofxDatGuiButton.h</string>
+				<key>sourceTree</key>
+				<string>SOURCE_ROOT</string>
+			</dict>
+			<key>947FCD1248D8B0A16B53C1AA</key>
+			<dict>
+				<key>children</key>
+				<array>
+					<string>902724601B82C6AD81BBCD71</string>
+					<string>FDA86F4C2F1F1964D35391C6</string>
+					<string>C84ED7FCC017328C6F58283D</string>
+					<string>E100ED9DCB412957A879CD5A</string>
+					<string>64C563B8158C37E9D07AE29D</string>
+					<string>744031A3E8F8DAF9FE6F3EA8</string>
+					<string>787315438BF1DD00C81DF413</string>
+					<string>CDF7278CB636137FE7BF91A5</string>
+					<string>545BBA6F6669BED2DA497BC6</string>
+					<string>D0D6A66BEBA820EA1D396889</string>
+					<string>C085A33340AB0C1DB647AC2F</string>
+					<string>04C339FF9ADCF05DF2DA62A3</string>
+					<string>0A42C807BEF3A18E8E105A3B</string>
+				</array>
+				<key>isa</key>
+				<string>PBXGroup</string>
+				<key>name</key>
+				<string>components</string>
+				<key>sourceTree</key>
+				<string>&lt;group&gt;</string>
+			</dict>
+			<key>E9B32C117486580389FAFF01</key>
+			<dict>
+				<key>children</key>
+				<array>
+					<string>947FCD1248D8B0A16B53C1AA</string>
+					<string>8870759BC9CAEA1E4E9EA3A8</string>
+					<string>69146F0BA46E48E576618E5E</string>
+					<string>26490D7CC31EF7D6ED5F925A</string>
+					<string>9705D66270ED89ECA6E6FECE</string>
+					<string>911FE1C75E520EE70A7B4830</string>
+				</array>
+				<key>isa</key>
+				<string>PBXGroup</string>
+				<key>name</key>
+				<string>src</string>
+				<key>sourceTree</key>
+				<string>&lt;group&gt;</string>
+			</dict>
+			<key>D8DD1043C333F6F63C8685E6</key>
+			<dict>
+				<key>children</key>
+				<array>
+					<string>E9B32C117486580389FAFF01</string>
+				</array>
+				<key>isa</key>
+				<string>PBXGroup</string>
+				<key>name</key>
+				<string>ofxDatGui</string>
+				<key>sourceTree</key>
+				<string>&lt;group&gt;</string>
+			</dict>
+			<key>902724601B82C6AD81BBCD71</key>
+			<dict>
+				<key>explicitFileType</key>
+				<string>sourcecode.c.h</string>
+				<key>fileEncoding</key>
+				<string>30</string>
+				<key>isa</key>
+				<string>PBXFileReference</string>
+				<key>name</key>
+				<string>ofxDatGui2dPad.h</string>
+				<key>path</key>
+				<string>../../../addons/ofxDatGui/src/components/ofxDatGui2dPad.h</string>
+				<key>sourceTree</key>
+				<string>SOURCE_ROOT</string>
+			</dict>
+			<key>F21017D5316CB2B55CD68641</key>
+			<dict>
+				<key>explicitFileType</key>
+				<string>sourcecode.c.h</string>
+				<key>fileEncoding</key>
+				<string>30</string>
+				<key>isa</key>
+				<string>PBXFileReference</string>
+				<key>name</key>
+				<string>ofxBeat.h</string>
+				<key>path</key>
+				<string>../../../addons/ofxBeat/src/ofxBeat.h</string>
+				<key>sourceTree</key>
+				<string>SOURCE_ROOT</string>
+			</dict>
+			<key>C098DBE008A1B5C6D12ABFFD</key>
+			<dict>
+				<key>fileRef</key>
+				<string>C6684F2AB3BF96EE746EF6DA</string>
+				<key>isa</key>
+				<string>PBXBuildFile</string>
+			</dict>
+			<key>C6684F2AB3BF96EE746EF6DA</key>
+			<dict>
+				<key>explicitFileType</key>
+				<string>sourcecode.cpp.cpp</string>
+				<key>fileEncoding</key>
+				<string>30</string>
+				<key>isa</key>
+				<string>PBXFileReference</string>
+				<key>name</key>
+				<string>ofxBeat.cpp</string>
+				<key>path</key>
+				<string>../../../addons/ofxBeat/src/ofxBeat.cpp</string>
+				<key>sourceTree</key>
+				<string>SOURCE_ROOT</string>
+			</dict>
+			<key>4FA7C66BC39A49BCFA509386</key>
+			<dict>
+				<key>explicitFileType</key>
+				<string>sourcecode.c.h</string>
+				<key>fileEncoding</key>
+				<string>30</string>
+				<key>isa</key>
+				<string>PBXFileReference</string>
+				<key>name</key>
+				<string>fft.h</string>
+				<key>path</key>
+				<string>../../../addons/ofxBeat/src/fft.h</string>
+				<key>sourceTree</key>
+				<string>SOURCE_ROOT</string>
+			</dict>
+			<key>2593B7743D30DF6DEB591433</key>
+			<dict>
+				<key>children</key>
+				<array>
+					<string>B85440CFD1540D81C05B85CB</string>
+					<string>4FA7C66BC39A49BCFA509386</string>
+					<string>C6684F2AB3BF96EE746EF6DA</string>
+					<string>F21017D5316CB2B55CD68641</string>
+				</array>
+				<key>isa</key>
+				<string>PBXGroup</string>
+				<key>name</key>
+				<string>src</string>
+				<key>sourceTree</key>
+				<string>&lt;group&gt;</string>
+			</dict>
+			<key>5B3BFE89BB3B98E8FC2F783F</key>
+			<dict>
+				<key>children</key>
+				<array>
+					<string>2593B7743D30DF6DEB591433</string>
+				</array>
+				<key>isa</key>
+				<string>PBXGroup</string>
+				<key>name</key>
+				<string>ofxBeat</string>
+				<key>sourceTree</key>
+				<string>&lt;group&gt;</string>
+			</dict>
+			<key>A86D7323CE1A9450906A91DD</key>
+			<dict>
+				<key>fileRef</key>
+				<string>B85440CFD1540D81C05B85CB</string>
+				<key>isa</key>
+				<string>PBXBuildFile</string>
+			</dict>
+			<key>B85440CFD1540D81C05B85CB</key>
+			<dict>
+				<key>explicitFileType</key>
+				<string>sourcecode.cpp.cpp</string>
+				<key>fileEncoding</key>
+				<string>30</string>
+				<key>isa</key>
+				<string>PBXFileReference</string>
+				<key>name</key>
+				<string>fft.cpp</string>
+				<key>path</key>
+				<string>../../../addons/ofxBeat/src/fft.cpp</string>
+				<key>sourceTree</key>
+				<string>SOURCE_ROOT</string>
+			</dict>
+			<key>2761F96388F64FE596863183</key>
+			<dict>
+				<key>fileRef</key>
+				<string>2EE3C26422275C7D402CCF25</string>
+				<key>isa</key>
+				<string>PBXBuildFile</string>
+			</dict>
+			<key>2EE3C26422275C7D402CCF25</key>
+			<dict>
+				<key>explicitFileType</key>
+				<string>sourcecode.cpp.cpp</string>
+				<key>fileEncoding</key>
+				<string>30</string>
+				<key>isa</key>
+				<string>PBXFileReference</string>
+				<key>name</key>
+				<string>audiodecodercoreaudio.cpp</string>
+				<key>path</key>
+				<string>../../../addons/ofxAudioDecoder/libs/src/audiodecodercoreaudio.cpp</string>
+				<key>sourceTree</key>
+				<string>SOURCE_ROOT</string>
+			</dict>
+			<key>58047649A01E9261E74AC1C4</key>
+			<dict>
+				<key>children</key>
+				<array>
+					<string>0B54B44EFD41F864E0BD75D7</string>
+					<string>2EE3C26422275C7D402CCF25</string>
+				</array>
+				<key>isa</key>
+				<string>PBXGroup</string>
+				<key>name</key>
+				<string>src</string>
+				<key>sourceTree</key>
+				<string>&lt;group&gt;</string>
+			</dict>
+			<key>477F449F6256389CCDB36FFC</key>
+			<dict>
+				<key>fileRef</key>
+				<string>0B54B44EFD41F864E0BD75D7</string>
+				<key>isa</key>
+				<string>PBXBuildFile</string>
+			</dict>
+			<key>0B54B44EFD41F864E0BD75D7</key>
+			<dict>
+				<key>explicitFileType</key>
+				<string>sourcecode.cpp.cpp</string>
+				<key>fileEncoding</key>
+				<string>30</string>
+				<key>isa</key>
+				<string>PBXFileReference</string>
+				<key>name</key>
+				<string>audiodecoderbase.cpp</string>
+				<key>path</key>
+				<string>../../../addons/ofxAudioDecoder/libs/src/audiodecoderbase.cpp</string>
+				<key>sourceTree</key>
+				<string>SOURCE_ROOT</string>
+			</dict>
+			<key>49685133551D0AEF06F1817A</key>
+			<dict>
+				<key>explicitFileType</key>
+				<string>sourcecode.c.h</string>
+				<key>fileEncoding</key>
+				<string>30</string>
+				<key>isa</key>
+				<string>PBXFileReference</string>
+				<key>name</key>
+				<string>audiodecodercoreaudio.h</string>
+				<key>path</key>
+				<string>../../../addons/ofxAudioDecoder/libs/include/audiodecodercoreaudio.h</string>
+				<key>sourceTree</key>
+				<string>SOURCE_ROOT</string>
+			</dict>
+			<key>7717E7D36A522CF834A85A8E</key>
+			<dict>
+				<key>explicitFileType</key>
+				<string>sourcecode.c.h</string>
+				<key>fileEncoding</key>
+				<string>30</string>
+				<key>isa</key>
+				<string>PBXFileReference</string>
+				<key>name</key>
+				<string>audiodecoderbase.h</string>
+				<key>path</key>
+				<string>../../../addons/ofxAudioDecoder/libs/include/audiodecoderbase.h</string>
+				<key>sourceTree</key>
+				<string>SOURCE_ROOT</string>
+			</dict>
+			<key>53E1487610DB6C899AA08EAB</key>
+			<dict>
+				<key>explicitFileType</key>
+				<string>sourcecode.c.h</string>
+				<key>fileEncoding</key>
+				<string>30</string>
+				<key>isa</key>
+				<string>PBXFileReference</string>
+				<key>name</key>
+				<string>audiodecoder.h</string>
+				<key>path</key>
+				<string>../../../addons/ofxAudioDecoder/libs/include/audiodecoder.h</string>
+				<key>sourceTree</key>
+				<string>SOURCE_ROOT</string>
+			</dict>
+			<key>90C2EFE21B5EE22A7F772AF8</key>
+			<dict>
+				<key>explicitFileType</key>
+				<string>sourcecode.c.h</string>
+				<key>fileEncoding</key>
+				<string>30</string>
+				<key>isa</key>
+				<string>PBXFileReference</string>
+				<key>name</key>
+				<string>CAStreamBasicDescription.h</string>
+				<key>path</key>
+				<string>../../../addons/ofxAudioDecoder/libs/include/apple/CAStreamBasicDescription.h</string>
+				<key>sourceTree</key>
+				<string>SOURCE_ROOT</string>
+			</dict>
+			<key>92E528A9DEEBED1AFEDC17AD</key>
+			<dict>
+				<key>children</key>
+				<array>
+					<string>FF4AB1E6C60B588369863CA7</string>
+					<string>90C2EFE21B5EE22A7F772AF8</string>
+				</array>
+				<key>isa</key>
+				<string>PBXGroup</string>
+				<key>name</key>
+				<string>apple</string>
+				<key>sourceTree</key>
+				<string>&lt;group&gt;</string>
+			</dict>
+			<key>A133AE7383B29E66D684559A</key>
+			<dict>
+				<key>children</key>
+				<array>
+					<string>92E528A9DEEBED1AFEDC17AD</string>
+					<string>53E1487610DB6C899AA08EAB</string>
+					<string>7717E7D36A522CF834A85A8E</string>
+					<string>49685133551D0AEF06F1817A</string>
+				</array>
+				<key>isa</key>
+				<string>PBXGroup</string>
+				<key>name</key>
+				<string>include</string>
+				<key>sourceTree</key>
+				<string>&lt;group&gt;</string>
+			</dict>
+			<key>526C0E0654F6F87F802EBE13</key>
+			<dict>
+				<key>children</key>
+				<array>
+					<string>A133AE7383B29E66D684559A</string>
+					<string>58047649A01E9261E74AC1C4</string>
+				</array>
+				<key>isa</key>
+				<string>PBXGroup</string>
+				<key>name</key>
+				<string>libs</string>
+				<key>sourceTree</key>
+				<string>&lt;group&gt;</string>
+			</dict>
+			<key>FF4AB1E6C60B588369863CA7</key>
+			<dict>
+				<key>explicitFileType</key>
+				<string>sourcecode.c.h</string>
+				<key>fileEncoding</key>
+				<string>30</string>
+				<key>isa</key>
+				<string>PBXFileReference</string>
+				<key>name</key>
+				<string>CADebugMacros.h</string>
+				<key>path</key>
+				<string>../../../addons/ofxAudioDecoder/libs/include/apple/CADebugMacros.h</string>
+				<key>sourceTree</key>
+				<string>SOURCE_ROOT</string>
+			</dict>
+			<key>19B6C350D9FAA9277E9345CF</key>
+			<dict>
+				<key>explicitFileType</key>
+				<string>sourcecode.c.h</string>
+				<key>fileEncoding</key>
+				<string>30</string>
+				<key>isa</key>
+				<string>PBXFileReference</string>
+				<key>name</key>
+				<string>ofxAudioDecoder.h</string>
+				<key>path</key>
+				<string>../../../addons/ofxAudioDecoder/src/ofxAudioDecoder.h</string>
+				<key>sourceTree</key>
+				<string>SOURCE_ROOT</string>
+			</dict>
+			<key>A5F870D5915B31AB56254EA7</key>
+			<dict>
+				<key>children</key>
+				<array>
+					<string>09535104AE13A73B23DCF56B</string>
+					<string>19B6C350D9FAA9277E9345CF</string>
+				</array>
+				<key>isa</key>
+				<string>PBXGroup</string>
+				<key>name</key>
+				<string>src</string>
+				<key>sourceTree</key>
+				<string>&lt;group&gt;</string>
+			</dict>
+			<key>E57BA9F5B131DD75E7F6B1AC</key>
+			<dict>
+				<key>children</key>
+				<array>
+					<string>A5F870D5915B31AB56254EA7</string>
+					<string>526C0E0654F6F87F802EBE13</string>
+				</array>
+				<key>isa</key>
+				<string>PBXGroup</string>
+				<key>name</key>
+				<string>ofxAudioDecoder</string>
+				<key>sourceTree</key>
+				<string>&lt;group&gt;</string>
+			</dict>
+			<key>87EB71A35D524340AE0A8C4C</key>
+			<dict>
+				<key>fileRef</key>
+				<string>09535104AE13A73B23DCF56B</string>
+				<key>isa</key>
+				<string>PBXBuildFile</string>
+			</dict>
+			<key>09535104AE13A73B23DCF56B</key>
+			<dict>
+				<key>explicitFileType</key>
+				<string>sourcecode.cpp.cpp</string>
+				<key>fileEncoding</key>
+				<string>30</string>
+				<key>isa</key>
+				<string>PBXFileReference</string>
+				<key>name</key>
+				<string>ofxAudioDecoder.cpp</string>
+				<key>path</key>
+				<string>../../../addons/ofxAudioDecoder/src/ofxAudioDecoder.cpp</string>
+				<key>sourceTree</key>
+				<string>SOURCE_ROOT</string>
+			</dict>
+			<key>9F5C483E2EBE47E297FDED3D</key>
+			<dict>
+				<key>explicitFileType</key>
+				<string>sourcecode.c.h</string>
+				<key>fileEncoding</key>
+				<string>30</string>
+				<key>isa</key>
+				<string>PBXFileReference</string>
+				<key>name</key>
+				<string>ParticleEmitter.h</string>
+				<key>path</key>
+				<string>src/ParticleEmitter.h</string>
+				<key>sourceTree</key>
+				<string>SOURCE_ROOT</string>
+			</dict>
+			<key>B0EBE5D4179C65F354530FA7</key>
+			<dict>
+				<key>fileRef</key>
+				<string>59E2FE75C94EBF0B38FE7DF1</string>
+				<key>isa</key>
+				<string>PBXBuildFile</string>
+			</dict>
+			<key>59E2FE75C94EBF0B38FE7DF1</key>
+			<dict>
+				<key>explicitFileType</key>
+				<string>sourcecode.cpp.cpp</string>
+				<key>fileEncoding</key>
+				<string>30</string>
+				<key>isa</key>
+				<string>PBXFileReference</string>
+				<key>name</key>
+				<string>ParticleEmitter.cpp</string>
+				<key>path</key>
+				<string>src/ParticleEmitter.cpp</string>
+				<key>sourceTree</key>
+				<string>SOURCE_ROOT</string>
+			</dict>
+			<key>7B0055EEB8AD49D04B3F5D4D</key>
+			<dict>
+				<key>explicitFileType</key>
+				<string>sourcecode.c.h</string>
+				<key>fileEncoding</key>
+				<string>30</string>
+				<key>isa</key>
+				<string>PBXFileReference</string>
+				<key>name</key>
+				<string>Particle.h</string>
+				<key>path</key>
+				<string>src/Particle.h</string>
+				<key>sourceTree</key>
+				<string>SOURCE_ROOT</string>
+			</dict>
+			<key>C6792CBAAA54D5A713D25ADF</key>
+			<dict>
+				<key>fileRef</key>
+				<string>E9AA5FD1EDF04CD1F5FB1686</string>
+				<key>isa</key>
+				<string>PBXBuildFile</string>
+			</dict>
+			<key>E9AA5FD1EDF04CD1F5FB1686</key>
+			<dict>
+				<key>explicitFileType</key>
+				<string>sourcecode.cpp.cpp</string>
+				<key>fileEncoding</key>
+				<string>30</string>
+				<key>isa</key>
+				<string>PBXFileReference</string>
+				<key>name</key>
+				<string>Particle.cpp</string>
+				<key>path</key>
+				<string>src/Particle.cpp</string>
+				<key>sourceTree</key>
+				<string>SOURCE_ROOT</string>
+			</dict>
+			<key>6948EE371B920CB800B5AC1A</key>
+			<dict>
+				<key>children</key>
+				<array />
+				<key>isa</key>
+				<string>PBXGroup</string>
+				<key>name</key>
+				<string>local_addons</string>
+				<key>sourceTree</key>
+				<string>&lt;group&gt;</string>
+			</dict>
+			<key>BB4B014C10F69532006C3DED</key>
+			<dict>
+				<key>children</key>
+				<array>
+					<string>E57BA9F5B131DD75E7F6B1AC</string>
+					<string>5B3BFE89BB3B98E8FC2F783F</string>
+					<string>D8DD1043C333F6F63C8685E6</string>
+					<string>BBC2B4228932C2AACC6701CF</string>
+					<string>3CD2B0AEE6FE628A91175CDA</string>
+					<string>98D685E6144A167898628CFF</string>
+					<string>1F4FB5C423662B96ADFDCC0B</string>
+				</array>
+				<key>isa</key>
+				<string>PBXGroup</string>
+				<key>name</key>
+				<string>addons</string>
+				<key>sourceTree</key>
+				<string>&lt;group&gt;</string>
+			</dict>
+			<key>E4328143138ABC890047C5CB</key>
+			<dict>
+				<key>isa</key>
+				<string>PBXFileReference</string>
+				<key>lastKnownFileType</key>
+				<string>wrapper.pb-project</string>
+				<key>name</key>
+				<string>openFrameworksLib.xcodeproj</string>
+				<key>path</key>
+				<string>../../../libs/openFrameworksCompiled/project/osx/openFrameworksLib.xcodeproj</string>
+				<key>sourceTree</key>
+				<string>SOURCE_ROOT</string>
+			</dict>
+			<key>E4328144138ABC890047C5CB</key>
+			<dict>
+				<key>children</key>
+				<array>
+					<string>E4328148138ABC890047C5CB</string>
+				</array>
+				<key>isa</key>
+				<string>PBXGroup</string>
+				<key>name</key>
+				<string>Products</string>
+				<key>sourceTree</key>
+				<string>&lt;group&gt;</string>
+			</dict>
+			<key>E4328147138ABC890047C5CB</key>
+			<dict>
+				<key>containerPortal</key>
+				<string>E4328143138ABC890047C5CB</string>
+				<key>isa</key>
+				<string>PBXContainerItemProxy</string>
+				<key>proxyType</key>
+				<string>2</string>
+				<key>remoteGlobalIDString</key>
+				<string>E4B27C1510CBEB8E00536013</string>
+				<key>remoteInfo</key>
+				<string>openFrameworks</string>
+			</dict>
+			<key>E4328148138ABC890047C5CB</key>
+			<dict>
+				<key>fileType</key>
+				<string>archive.ar</string>
+				<key>isa</key>
+				<string>PBXReferenceProxy</string>
+				<key>path</key>
+				<string>openFrameworksDebug.a</string>
+				<key>remoteRef</key>
+				<string>E4328147138ABC890047C5CB</string>
+				<key>sourceTree</key>
+				<string>BUILT_PRODUCTS_DIR</string>
+			</dict>
+			<key>E4328149138ABC9F0047C5CB</key>
+			<dict>
+				<key>fileRef</key>
+				<string>E4328148138ABC890047C5CB</string>
+				<key>isa</key>
+				<string>PBXBuildFile</string>
+			</dict>
+			<key>E4B69B4A0A3A1720003C02F2</key>
+			<dict>
+				<key>children</key>
+				<array>
+					<string>E4B6FCAD0C3E899E008CF71C</string>
+					<string>E4EB6923138AFD0F00A09F29</string>
+					<string>E4B69E1C0A3A1BDC003C02F2</string>
+					<string>E4EEC9E9138DF44700A80321</string>
+					<string>BB4B014C10F69532006C3DED</string>
+					<string>6948EE371B920CB800B5AC1A</string>
+					<string>E4B69B5B0A3A1756003C02F2</string>
+				</array>
+				<key>isa</key>
+				<string>PBXGroup</string>
+				<key>sourceTree</key>
+				<string>&lt;group&gt;</string>
+			</dict>
+			<key>E4B69B4C0A3A1720003C02F2</key>
+			<dict>
+				<key>attributes</key>
+				<dict>
+					<key>LastUpgradeCheck</key>
+					<string>0600</string>
+				</dict>
+				<key>buildConfigurationList</key>
+				<string>E4B69B4D0A3A1720003C02F2</string>
+				<key>compatibilityVersion</key>
+				<string>Xcode 3.2</string>
+				<key>developmentRegion</key>
+				<string>English</string>
+				<key>hasScannedForEncodings</key>
+				<string>0</string>
+				<key>isa</key>
+				<string>PBXProject</string>
+				<key>knownRegions</key>
+				<array>
+					<string>English</string>
+					<string>Japanese</string>
+					<string>French</string>
+					<string>German</string>
+				</array>
+				<key>mainGroup</key>
+				<string>E4B69B4A0A3A1720003C02F2</string>
+				<key>productRefGroup</key>
+				<string>E4B69B4A0A3A1720003C02F2</string>
+				<key>projectDirPath</key>
+				<string />
+				<key>projectReferences</key>
+				<array>
+					<dict>
+						<key>ProductGroup</key>
+						<string>E4328144138ABC890047C5CB</string>
+						<key>ProjectRef</key>
+						<string>E4328143138ABC890047C5CB</string>
+					</dict>
+				</array>
+				<key>projectRoot</key>
+				<string />
+				<key>targets</key>
+				<array>
+					<string>E4B69B5A0A3A1756003C02F2</string>
+				</array>
+			</dict>
+			<key>E4B69B4D0A3A1720003C02F2</key>
+			<dict>
+				<key>buildConfigurations</key>
+				<array>
+					<string>E4B69B4E0A3A1720003C02F2</string>
+					<string>E4B69B4F0A3A1720003C02F2</string>
+				</array>
+				<key>defaultConfigurationIsVisible</key>
+				<string>0</string>
+				<key>defaultConfigurationName</key>
+				<string>Release</string>
+				<key>isa</key>
+				<string>XCConfigurationList</string>
+			</dict>
+			<key>E4B69B4E0A3A1720003C02F2</key>
+			<dict>
+				<key>baseConfigurationReference</key>
+				<string>E4EB6923138AFD0F00A09F29</string>
+				<key>buildSettings</key>
+				<dict>
+					<key>HEADER_SEARCH_PATHS</key>
+					<array>
+						<string>$(OF_CORE_HEADERS)</string>
+						<string>src</string>
+						<string>../../../addons/ofxAudioDecoder/libs</string>
+						<string>../../../addons/ofxAudioDecoder/libs/include</string>
+						<string>../../../addons/ofxAudioDecoder/libs/include/apple</string>
+						<string>../../../addons/ofxAudioDecoder/libs/src</string>
+						<string>../../../addons/ofxAudioDecoder/src</string>
+						<string>../../../addons/ofxBeat/src</string>
+						<string>../../../addons/ofxDatGui/src</string>
+						<string>../../../addons/ofxDatGui/src/components</string>
+						<string>../../../addons/ofxDatGui/src/core</string>
+						<string>../../../addons/ofxDatGui/src/libs</string>
+						<string>../../../addons/ofxDatGui/src/libs/ofxSmartFont</string>
+						<string>../../../addons/ofxDatGui/src/themes</string>
+						<string>../../../addons/ofxFft/libs</string>
+						<string>../../../addons/ofxFft/libs/fftw</string>
+						<string>../../../addons/ofxFft/libs/fftw/include</string>
+						<string>../../../addons/ofxFft/libs/fftw/lib</string>
+						<string>../../../addons/ofxFft/libs/kiss</string>
+						<string>../../../addons/ofxFft/src</string>
+						<string>../../../addons/ofxThreadedImageLoader/src</string>
+						<string>../../../addons/ofxTimeMeasurements/src</string>
+						<string>../../../addons/ofxXmlSettings/libs</string>
+						<string>../../../addons/ofxXmlSettings/src</string>
+					</array>
+					<key>CONFIGURATION_BUILD_DIR</key>
+					<string>$(SRCROOT)/bin/</string>
+					<key>COPY_PHASE_STRIP</key>
+					<string>NO</string>
+					<key>DEAD_CODE_STRIPPING</key>
+					<string>YES</string>
+					<key>GCC_AUTO_VECTORIZATION</key>
+					<string>YES</string>
+					<key>GCC_ENABLE_SSE3_EXTENSIONS</key>
+					<string>YES</string>
+					<key>GCC_ENABLE_SUPPLEMENTAL_SSE3_INSTRUCTIONS</key>
+					<string>YES</string>
+					<key>GCC_INLINES_ARE_PRIVATE_EXTERN</key>
+					<string>NO</string>
+					<key>GCC_OPTIMIZATION_LEVEL</key>
+					<string>0</string>
+					<key>GCC_SYMBOLS_PRIVATE_EXTERN</key>
+					<string>NO</string>
+					<key>GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS</key>
+					<string>YES</string>
+					<key>GCC_WARN_ABOUT_INVALID_OFFSETOF_MACRO</key>
+					<string>NO</string>
+					<key>GCC_WARN_ALLOW_INCOMPLETE_PROTOCOL</key>
+					<string>NO</string>
+					<key>GCC_WARN_UNINITIALIZED_AUTOS</key>
+					<string>NO</string>
+					<key>GCC_WARN_UNUSED_VALUE</key>
+					<string>NO</string>
+					<key>GCC_WARN_UNUSED_VARIABLE</key>
+					<string>NO</string>
+					<key>MACOSX_DEPLOYMENT_TARGET</key>
+					<string>10.8</string>
+					<key>ONLY_ACTIVE_ARCH</key>
+					<string>YES</string>
+					<key>OTHER_CPLUSPLUSFLAGS</key>
+					<array>
+						<string>-D__MACOSX_CORE__</string>
+						<string>-mtune=native</string>
+					</array>
+					<key>SDKROOT</key>
+					<string>macosx</string>
+				</dict>
+				<key>isa</key>
+				<string>XCBuildConfiguration</string>
+				<key>name</key>
+				<string>Debug</string>
+			</dict>
+			<key>E4B69B4F0A3A1720003C02F2</key>
+			<dict>
+				<key>baseConfigurationReference</key>
+				<string>E4EB6923138AFD0F00A09F29</string>
+				<key>buildSettings</key>
+				<dict>
+					<key>HEADER_SEARCH_PATHS</key>
+					<array>
+						<string>$(OF_CORE_HEADERS)</string>
+						<string>src</string>
+						<string>../../../addons/ofxAudioDecoder/libs</string>
+						<string>../../../addons/ofxAudioDecoder/libs/include</string>
+						<string>../../../addons/ofxAudioDecoder/libs/include/apple</string>
+						<string>../../../addons/ofxAudioDecoder/libs/src</string>
+						<string>../../../addons/ofxAudioDecoder/src</string>
+						<string>../../../addons/ofxBeat/src</string>
+						<string>../../../addons/ofxDatGui/src</string>
+						<string>../../../addons/ofxDatGui/src/components</string>
+						<string>../../../addons/ofxDatGui/src/core</string>
+						<string>../../../addons/ofxDatGui/src/libs</string>
+						<string>../../../addons/ofxDatGui/src/libs/ofxSmartFont</string>
+						<string>../../../addons/ofxDatGui/src/themes</string>
+						<string>../../../addons/ofxFft/libs</string>
+						<string>../../../addons/ofxFft/libs/fftw</string>
+						<string>../../../addons/ofxFft/libs/fftw/include</string>
+						<string>../../../addons/ofxFft/libs/fftw/lib</string>
+						<string>../../../addons/ofxFft/libs/kiss</string>
+						<string>../../../addons/ofxFft/src</string>
+						<string>../../../addons/ofxThreadedImageLoader/src</string>
+						<string>../../../addons/ofxTimeMeasurements/src</string>
+						<string>../../../addons/ofxXmlSettings/libs</string>
+						<string>../../../addons/ofxXmlSettings/src</string>
+					</array>
+					<key>CONFIGURATION_BUILD_DIR</key>
+					<string>$(SRCROOT)/bin/</string>
+					<key>COPY_PHASE_STRIP</key>
+					<string>YES</string>
+					<key>DEAD_CODE_STRIPPING</key>
+					<string>YES</string>
+					<key>GCC_AUTO_VECTORIZATION</key>
+					<string>YES</string>
+					<key>GCC_ENABLE_SSE3_EXTENSIONS</key>
+					<string>YES</string>
+					<key>GCC_ENABLE_SUPPLEMENTAL_SSE3_INSTRUCTIONS</key>
+					<string>YES</string>
+					<key>GCC_INLINES_ARE_PRIVATE_EXTERN</key>
+					<string>NO</string>
+					<key>GCC_OPTIMIZATION_LEVEL</key>
+					<string>3</string>
+					<key>GCC_SYMBOLS_PRIVATE_EXTERN</key>
+					<string>NO</string>
+					<key>GCC_UNROLL_LOOPS</key>
+					<string>YES</string>
+					<key>GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS</key>
+					<string>YES</string>
+					<key>GCC_WARN_ABOUT_INVALID_OFFSETOF_MACRO</key>
+					<string>NO</string>
+					<key>GCC_WARN_ALLOW_INCOMPLETE_PROTOCOL</key>
+					<string>NO</string>
+					<key>GCC_WARN_UNINITIALIZED_AUTOS</key>
+					<string>NO</string>
+					<key>GCC_WARN_UNUSED_VALUE</key>
+					<string>NO</string>
+					<key>GCC_WARN_UNUSED_VARIABLE</key>
+					<string>NO</string>
+					<key>MACOSX_DEPLOYMENT_TARGET</key>
+					<string>10.8</string>
+					<key>OTHER_CPLUSPLUSFLAGS</key>
+					<array>
+						<string>-D__MACOSX_CORE__</string>
+						<string>-mtune=native</string>
+					</array>
+					<key>SDKROOT</key>
+					<string>macosx</string>
+				</dict>
+				<key>isa</key>
+				<string>XCBuildConfiguration</string>
+				<key>name</key>
+				<string>Release</string>
+			</dict>
+			<key>E4B69B580A3A1756003C02F2</key>
+			<dict>
+				<key>buildActionMask</key>
+				<string>2147483647</string>
+				<key>files</key>
+				<array>
+					<string>E4B69E200A3A1BDC003C02F2</string>
+					<string>E4B69E210A3A1BDC003C02F2</string>
+					<string>C6792CBAAA54D5A713D25ADF</string>
+					<string>B0EBE5D4179C65F354530FA7</string>
+					<string>87EB71A35D524340AE0A8C4C</string>
+					<string>477F449F6256389CCDB36FFC</string>
+					<string>2761F96388F64FE596863183</string>
+					<string>A86D7323CE1A9450906A91DD</string>
+					<string>C098DBE008A1B5C6D12ABFFD</string>
+					<string>D3C1C48E59CAA2D68C0DD477</string>
+					<string>9CF4130A7E6DA19A3DC42B9A</string>
+					<string>C9466C434D1CF8AB968D298D</string>
+					<string>7A61C288AE942E5885881232</string>
+					<string>D409288D137DB82107887FFD</string>
+					<string>007F713E619B81D821BEA319</string>
+					<string>29938E05AF78B3DF7A591187</string>
+					<string>47741AD4D543009E4DF29CEA</string>
+					<string>0686C38EE993C67B96002FA1</string>
+					<string>6DB9E3911BA6216FE1F0E91C</string>
+					<string>EC26F225D807F4F069405924</string>
+					<string>567A8E85CAD379B59206852D</string>
+					<string>63B57AC5BF4EF088491E0317</string>
+					<string>933A2227713C720CEFF80FD9</string>
+					<string>9D44DC88EF9E7991B4A09951</string>
+					<string>5A4349E9754D6FA14C0F2A3A</string>
+				</array>
+				<key>isa</key>
+				<string>PBXSourcesBuildPhase</string>
+				<key>runOnlyForDeploymentPostprocessing</key>
+				<string>0</string>
+			</dict>
+			<key>E4B69B590A3A1756003C02F2</key>
+			<dict>
+				<key>buildActionMask</key>
+				<string>2147483647</string>
+				<key>files</key>
+				<array>
+					<string>E4328149138ABC9F0047C5CB</string>
+				</array>
+				<key>isa</key>
+				<string>PBXFrameworksBuildPhase</string>
+				<key>runOnlyForDeploymentPostprocessing</key>
+				<string>0</string>
+			</dict>
+			<key>E4B69B5A0A3A1756003C02F2</key>
+			<dict>
+				<key>buildConfigurationList</key>
+				<string>E4B69B5F0A3A1757003C02F2</string>
+				<key>buildPhases</key>
+				<array>
+					<string>E4B69B580A3A1756003C02F2</string>
+					<string>E4B69B590A3A1756003C02F2</string>
+					<string>E4B6FFFD0C3F9AB9008CF71C</string>
+					<string>E4C2427710CC5ABF004149E2</string>
+				</array>
+				<key>buildRules</key>
+				<array />
+				<key>dependencies</key>
+				<array>
+					<string>E4EEB9AC138B136A00A80321</string>
+				</array>
+				<key>isa</key>
+				<string>PBXNativeTarget</string>
+				<key>name</key>
+				<string>ofxFlockDraw</string>
+				<key>productName</key>
+				<string>myOFApp</string>
+				<key>productReference</key>
+				<string>E4B69B5B0A3A1756003C02F2</string>
+				<key>productType</key>
+				<string>com.apple.product-type.application</string>
+			</dict>
+			<key>E4B69B5B0A3A1756003C02F2</key>
+			<dict>
+				<key>explicitFileType</key>
+				<string>wrapper.application</string>
+				<key>includeInIndex</key>
+				<string>0</string>
+				<key>isa</key>
+				<string>PBXFileReference</string>
+				<key>path</key>
+				<string>ofxFlockDrawDebug.app</string>
+				<key>sourceTree</key>
+				<string>BUILT_PRODUCTS_DIR</string>
+			</dict>
+			<key>E4B69B5F0A3A1757003C02F2</key>
+			<dict>
+				<key>buildConfigurations</key>
+				<array>
+					<string>E4B69B600A3A1757003C02F2</string>
+					<string>E4B69B610A3A1757003C02F2</string>
+				</array>
+				<key>defaultConfigurationIsVisible</key>
+				<string>0</string>
+				<key>defaultConfigurationName</key>
+				<string>Release</string>
+				<key>isa</key>
+				<string>XCConfigurationList</string>
+			</dict>
+			<key>E4B69B600A3A1757003C02F2</key>
+			<dict>
+				<key>baseConfigurationReference</key>
+				<string>E4EB6923138AFD0F00A09F29</string>
+				<key>buildSettings</key>
+				<dict>
+					<key>HEADER_SEARCH_PATHS</key>
+					<array>
+						<string>$(OF_CORE_HEADERS)</string>
+						<string>src</string>
+						<string>../../../addons/ofxAudioDecoder/libs</string>
+						<string>../../../addons/ofxAudioDecoder/libs/include</string>
+						<string>../../../addons/ofxAudioDecoder/libs/include/apple</string>
+						<string>../../../addons/ofxAudioDecoder/libs/src</string>
+						<string>../../../addons/ofxAudioDecoder/src</string>
+						<string>../../../addons/ofxBeat/src</string>
+						<string>../../../addons/ofxDatGui/src</string>
+						<string>../../../addons/ofxDatGui/src/components</string>
+						<string>../../../addons/ofxDatGui/src/core</string>
+						<string>../../../addons/ofxDatGui/src/libs</string>
+						<string>../../../addons/ofxDatGui/src/libs/ofxSmartFont</string>
+						<string>../../../addons/ofxDatGui/src/themes</string>
+						<string>../../../addons/ofxFft/libs</string>
+						<string>../../../addons/ofxFft/libs/fftw</string>
+						<string>../../../addons/ofxFft/libs/fftw/include</string>
+						<string>../../../addons/ofxFft/libs/fftw/lib</string>
+						<string>../../../addons/ofxFft/libs/kiss</string>
+						<string>../../../addons/ofxFft/src</string>
+						<string>../../../addons/ofxThreadedImageLoader/src</string>
+						<string>../../../addons/ofxTimeMeasurements/src</string>
+						<string>../../../addons/ofxXmlSettings/libs</string>
+						<string>../../../addons/ofxXmlSettings/src</string>
+					</array>
+					<key>COMBINE_HIDPI_IMAGES</key>
+					<string>YES</string>
+					<key>COPY_PHASE_STRIP</key>
+					<string>NO</string>
+					<key>FRAMEWORK_SEARCH_PATHS</key>
+					<array>
+						<string>$(inherited)</string>
+						<string>$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1)</string>
+					</array>
+					<key>FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1</key>
+					<string>"$(SRCROOT)/../../../libs/glut/lib/osx"</string>
+					<key>GCC_DYNAMIC_NO_PIC</key>
+					<string>NO</string>
+					<key>GCC_GENERATE_DEBUGGING_SYMBOLS</key>
+					<string>YES</string>
+					<key>GCC_MODEL_TUNING</key>
+					<string>NONE</string>
+					<key>ICON</key>
+					<string>$(ICON_NAME_DEBUG)</string>
+					<key>ICON_FILE</key>
+					<string>$(ICON_FILE_PATH)$(ICON)</string>
+					<key>INFOPLIST_FILE</key>
+					<string>openFrameworks-Info.plist</string>
+					<key>INSTALL_PATH</key>
+					<string>/Applications</string>
+					<key>LIBRARY_SEARCH_PATHS</key>
+					<string>$(inherited)</string>
+					<key>PRODUCT_NAME</key>
+					<string>$(TARGET_NAME)Debug</string>
+					<key>WRAPPER_EXTENSION</key>
+					<string>app</string>
+				</dict>
+				<key>isa</key>
+				<string>XCBuildConfiguration</string>
+				<key>name</key>
+				<string>Debug</string>
+			</dict>
+			<key>E4B69B610A3A1757003C02F2</key>
+			<dict>
+				<key>baseConfigurationReference</key>
+				<string>E4EB6923138AFD0F00A09F29</string>
+				<key>buildSettings</key>
+				<dict>
+					<key>HEADER_SEARCH_PATHS</key>
+					<array>
+						<string>$(OF_CORE_HEADERS)</string>
+						<string>src</string>
+						<string>../../../addons/ofxAudioDecoder/libs</string>
+						<string>../../../addons/ofxAudioDecoder/libs/include</string>
+						<string>../../../addons/ofxAudioDecoder/libs/include/apple</string>
+						<string>../../../addons/ofxAudioDecoder/libs/src</string>
+						<string>../../../addons/ofxAudioDecoder/src</string>
+						<string>../../../addons/ofxBeat/src</string>
+						<string>../../../addons/ofxDatGui/src</string>
+						<string>../../../addons/ofxDatGui/src/components</string>
+						<string>../../../addons/ofxDatGui/src/core</string>
+						<string>../../../addons/ofxDatGui/src/libs</string>
+						<string>../../../addons/ofxDatGui/src/libs/ofxSmartFont</string>
+						<string>../../../addons/ofxDatGui/src/themes</string>
+						<string>../../../addons/ofxFft/libs</string>
+						<string>../../../addons/ofxFft/libs/fftw</string>
+						<string>../../../addons/ofxFft/libs/fftw/include</string>
+						<string>../../../addons/ofxFft/libs/fftw/lib</string>
+						<string>../../../addons/ofxFft/libs/kiss</string>
+						<string>../../../addons/ofxFft/src</string>
+						<string>../../../addons/ofxThreadedImageLoader/src</string>
+						<string>../../../addons/ofxTimeMeasurements/src</string>
+						<string>../../../addons/ofxXmlSettings/libs</string>
+						<string>../../../addons/ofxXmlSettings/src</string>
+					</array>
+					<key>COMBINE_HIDPI_IMAGES</key>
+					<string>YES</string>
+					<key>COPY_PHASE_STRIP</key>
+					<string>YES</string>
+					<key>FRAMEWORK_SEARCH_PATHS</key>
+					<array>
+						<string>$(inherited)</string>
+						<string>$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1)</string>
+					</array>
+					<key>FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1</key>
+					<string>"$(SRCROOT)/../../../libs/glut/lib/osx"</string>
+					<key>GCC_GENERATE_DEBUGGING_SYMBOLS</key>
+					<string>YES</string>
+					<key>GCC_MODEL_TUNING</key>
+					<string>NONE</string>
+					<key>ICON</key>
+					<string>$(ICON_NAME_RELEASE)</string>
+					<key>ICON_FILE</key>
+					<string>$(ICON_FILE_PATH)$(ICON)</string>
+					<key>INFOPLIST_FILE</key>
+					<string>openFrameworks-Info.plist</string>
+					<key>INSTALL_PATH</key>
+					<string>/Applications</string>
+					<key>LIBRARY_SEARCH_PATHS</key>
+					<string>$(inherited)</string>
+					<key>PRODUCT_NAME</key>
+					<string>$(TARGET_NAME)</string>
+					<key>WRAPPER_EXTENSION</key>
+					<string>app</string>
+					<key>baseConfigurationReference</key>
+					<string>E4EB6923138AFD0F00A09F29</string>
+				</dict>
+				<key>isa</key>
+				<string>XCBuildConfiguration</string>
+				<key>name</key>
+				<string>Release</string>
+			</dict>
+			<key>E4B69E1C0A3A1BDC003C02F2</key>
+			<dict>
+				<key>children</key>
+				<array>
+					<string>E4B69E1D0A3A1BDC003C02F2</string>
+					<string>E4B69E1E0A3A1BDC003C02F2</string>
+					<string>E4B69E1F0A3A1BDC003C02F2</string>
+					<string>E9AA5FD1EDF04CD1F5FB1686</string>
+					<string>7B0055EEB8AD49D04B3F5D4D</string>
+					<string>59E2FE75C94EBF0B38FE7DF1</string>
+					<string>9F5C483E2EBE47E297FDED3D</string>
+				</array>
+				<key>isa</key>
+				<string>PBXGroup</string>
+				<key>path</key>
+				<string>src</string>
+				<key>sourceTree</key>
+				<string>SOURCE_ROOT</string>
+			</dict>
+			<key>E4B69E1D0A3A1BDC003C02F2</key>
+			<dict>
+				<key>fileEncoding</key>
+				<string>30</string>
+				<key>isa</key>
+				<string>PBXFileReference</string>
+				<key>lastKnownFileType</key>
+				<string>sourcecode.cpp.cpp</string>
+				<key>name</key>
+				<string>main.cpp</string>
+				<key>path</key>
+				<string>src/main.cpp</string>
+				<key>sourceTree</key>
+				<string>SOURCE_ROOT</string>
+			</dict>
+			<key>E4B69E1E0A3A1BDC003C02F2</key>
+			<dict>
+				<key>explicitFileType</key>
+				<string>sourcecode.cpp.cpp</string>
+				<key>fileEncoding</key>
+				<string>30</string>
+				<key>isa</key>
+				<string>PBXFileReference</string>
+				<key>name</key>
+				<string>ofApp.cpp</string>
+				<key>path</key>
+				<string>src/ofApp.cpp</string>
+				<key>sourceTree</key>
+				<string>SOURCE_ROOT</string>
+			</dict>
+			<key>E4B69E1F0A3A1BDC003C02F2</key>
+			<dict>
+				<key>fileEncoding</key>
+				<string>30</string>
+				<key>isa</key>
+				<string>PBXFileReference</string>
+				<key>lastKnownFileType</key>
+				<string>sourcecode.c.h</string>
+				<key>name</key>
+				<string>ofApp.h</string>
+				<key>path</key>
+				<string>src/ofApp.h</string>
+				<key>sourceTree</key>
+				<string>SOURCE_ROOT</string>
+			</dict>
+			<key>E4B69E200A3A1BDC003C02F2</key>
+			<dict>
+				<key>fileRef</key>
+				<string>E4B69E1D0A3A1BDC003C02F2</string>
+				<key>isa</key>
+				<string>PBXBuildFile</string>
+			</dict>
+			<key>E4B69E210A3A1BDC003C02F2</key>
+			<dict>
+				<key>fileRef</key>
+				<string>E4B69E1E0A3A1BDC003C02F2</string>
+				<key>isa</key>
+				<string>PBXBuildFile</string>
+			</dict>
+			<key>E4B6FCAD0C3E899E008CF71C</key>
+			<dict>
+				<key>fileEncoding</key>
+				<string>30</string>
+				<key>isa</key>
+				<string>PBXFileReference</string>
+				<key>lastKnownFileType</key>
+				<string>text.plist.xml</string>
+				<key>path</key>
+				<string>openFrameworks-Info.plist</string>
+				<key>sourceTree</key>
+				<string>&lt;group&gt;</string>
+			</dict>
+			<key>E4B6FFFD0C3F9AB9008CF71C</key>
+			<dict>
+				<key>buildActionMask</key>
+				<string>2147483647</string>
+				<key>files</key>
+				<array />
+				<key>inputPaths</key>
+				<array />
+				<key>isa</key>
+				<string>PBXShellScriptBuildPhase</string>
+				<key>outputPaths</key>
+				<array />
+				<key>runOnlyForDeploymentPostprocessing</key>
+				<string>0</string>
+				<key>shellPath</key>
+				<string>/bin/sh</string>
+				<key>shellScript</key>
+				<string>mkdir -p "$TARGET_BUILD_DIR/$PRODUCT_NAME.app/Contents/Resources/"
+# Copy default icon file into App/Resources
+rsync -aved "$ICON_FILE" "$TARGET_BUILD_DIR/$PRODUCT_NAME.app/Contents/Resources/"
+# Copy libfmod and change install directory for fmod to run
+rsync -aved ../../../libs/fmodex/lib/osx/libfmodex.dylib "$TARGET_BUILD_DIR/$PRODUCT_NAME.app/Contents/Frameworks/";
+install_name_tool -change @executable_path/libfmodex.dylib @executable_path/../Frameworks/libfmodex.dylib "$TARGET_BUILD_DIR/$PRODUCT_NAME.app/Contents/MacOS/$PRODUCT_NAME";
+# Copy GLUT framework (must remove for AppStore submissions)
+rsync -aved ../../../libs/glut/lib/osx/GLUT.framework "$TARGET_BUILD_DIR/$PRODUCT_NAME.app/Contents/Frameworks/"
+</string>
+			</dict>
+			<key>E4C2427710CC5ABF004149E2</key>
+			<dict>
+				<key>buildActionMask</key>
+				<string>2147483647</string>
+				<key>dstPath</key>
+				<string />
+				<key>dstSubfolderSpec</key>
+				<string>10</string>
+				<key>files</key>
+				<array />
+				<key>isa</key>
+				<string>PBXCopyFilesBuildPhase</string>
+				<key>runOnlyForDeploymentPostprocessing</key>
+				<string>0</string>
+			</dict>
+			<key>E4EB691F138AFCF100A09F29</key>
+			<dict>
+				<key>fileEncoding</key>
+				<string>4</string>
+				<key>isa</key>
+				<string>PBXFileReference</string>
+				<key>lastKnownFileType</key>
+				<string>text.xcconfig</string>
+				<key>name</key>
+				<string>CoreOF.xcconfig</string>
+				<key>path</key>
+				<string>../../../libs/openFrameworksCompiled/project/osx/CoreOF.xcconfig</string>
+				<key>sourceTree</key>
+				<string>SOURCE_ROOT</string>
+			</dict>
+			<key>E4EB6923138AFD0F00A09F29</key>
+			<dict>
+				<key>fileEncoding</key>
+				<string>4</string>
+				<key>isa</key>
+				<string>PBXFileReference</string>
+				<key>lastKnownFileType</key>
+				<string>text.xcconfig</string>
+				<key>path</key>
+				<string>Project.xcconfig</string>
+				<key>sourceTree</key>
+				<string>&lt;group&gt;</string>
+			</dict>
+			<key>E4EEB9AB138B136A00A80321</key>
+			<dict>
+				<key>containerPortal</key>
+				<string>E4328143138ABC890047C5CB</string>
+				<key>isa</key>
+				<string>PBXContainerItemProxy</string>
+				<key>proxyType</key>
+				<string>1</string>
+				<key>remoteGlobalIDString</key>
+				<string>E4B27C1410CBEB8E00536013</string>
+				<key>remoteInfo</key>
+				<string>openFrameworks</string>
+			</dict>
+			<key>E4EEB9AC138B136A00A80321</key>
+			<dict>
+				<key>isa</key>
+				<string>PBXTargetDependency</string>
+				<key>name</key>
+				<string>openFrameworks</string>
+				<key>targetProxy</key>
+				<string>E4EEB9AB138B136A00A80321</string>
+			</dict>
+			<key>E4EEC9E9138DF44700A80321</key>
+			<dict>
+				<key>children</key>
+				<array>
+					<string>E4EB691F138AFCF100A09F29</string>
+					<string>E4328143138ABC890047C5CB</string>
+				</array>
+				<key>isa</key>
+				<string>PBXGroup</string>
+				<key>name</key>
+				<string>openFrameworks</string>
+				<key>sourceTree</key>
+				<string>&lt;group&gt;</string>
+			</dict>
+		</dict>
+		<key>rootObject</key>
+		<string>E4B69B4C0A3A1720003C02F2</string>
+	</dict>
+</plist>
