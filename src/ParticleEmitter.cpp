@@ -3,19 +3,68 @@
 
 #include <cmath>
 #include <algorithm>
+#include <cstdlib>
 
 #define PI2             6.28318530718f
 #define THREADS         4
 
-bool ParticleEmitter::s_debugDraw          = false;
+float ParticleEmitter::s_minParticleLife = 3.0f;
+float ParticleEmitter::s_maxParticleLife = 10.0f;
+
 int  ParticleEmitter::s_particlesPerGroup  = 0.0f;
 int  ParticleEmitter::s_particleGroups     = 0.0f;
+bool ParticleEmitter::s_debugDraw          = false;
 
+float ParticleEmitter::FuncCtl::s_minChangeTime = 3.0f;
+float ParticleEmitter::FuncCtl::s_maxChangeTime = 20.0f;
+
+ParticleEmitter::FuncCtl::FuncCtl( std::vector< ParticleEmitter::PosFunc >& _fn ) :
+    m_fnList( _fn ),
+    m_funcTimer( 0.0f ),
+    m_funcTimeout( 0.0f )
+{
+}
+
+float ParticleEmitter::FuncCtl::operator()( float _v )
+{
+    float percent       = ofClamp( m_funcTimer / m_funcTimeout, 0.0f, 1.0f );
+    float invPercent    = 1.0f - percent;
+    float result = ( m_fnList[ m_fn[ 0 ] ]( _v ) * invPercent +
+                     m_fnList[ m_fn[ 1 ] ]( _v ) * percent    );
+    
+    return std::isnan( result ) ? 0.0f : result;
+    
+}
+
+void ParticleEmitter::FuncCtl::randomize( void )
+{
+    m_fn[ 0 ] = rand() % m_fnList.size();
+    m_fn[ 1 ] = rand() % m_fnList.size();
+}
+
+void ParticleEmitter::FuncCtl::update( float _delta )
+{
+    // add the times to the timer
+    m_funcTimer += _delta;
+    
+    // resets the timers if needed
+    if ( m_funcTimer >= m_funcTimeout )
+    {
+        m_funcTimer     = 0.0;
+        m_funcTimeout   = ofRandom( ParticleEmitter::FuncCtl::s_minChangeTime + _delta, ParticleEmitter::FuncCtl::s_maxChangeTime - _delta );
+        m_fn[ 0 ]       = m_fn[ 1 ];
+        m_fn[ 1 ]       = rand() % m_fnList.size();
+    }
+}
 
 ParticleEmitter::ParticleEmitter( ofPixels*& _surface ) :
     m_position( 0.0f, 0.0f ),
     m_maxLifeTime( 0.0f ),
     m_minLifeTime( 0.0f ),
+    m_soundLow( 0.0f ),
+    m_soundMid( 0.0f ),
+    m_soundHigh( 0.0f ),
+    m_updateType( kFunctionAndFlocking ),
     m_zoneRadiusSqrd( 75.0f * 75.0f ),
     m_repelStrength( 0.04f ),
     m_alignStrength( 0.04f ),
@@ -32,12 +81,56 @@ ParticleEmitter::ParticleEmitter( ofPixels*& _surface ) :
     m_updateFlockTimer( 0.0 ),
     m_lastFlockUpdateTime( 0.0 ),
     m_particlesPerGroup( 0 ),
-    m_particleGroups( 0 )
+    m_particleGroups( 0 ),
+    m_xMathFunc( m_mathFn ),
+    m_velocityAudioFunc( m_audioFn ),
+    m_yMathFunc( m_mathFn )
 {
     for ( int i = 0; i < THREADS; ++i )
     {
         m_threads.push_back( std::thread( &ParticleEmitter::threadProcessParticles, this, i ) );
     }
+
+    // Math related positioning functions
+    /* 00 */ m_mathFn.push_back( &sinf );
+    /* 01 */ m_mathFn.push_back( &cosf );
+    /* 02 */ m_mathFn.push_back( &tanf );
+    /* 03 */ m_mathFn.push_back( [ this ]( float x ){ return 1.0f; } );
+    /* 04 */ m_mathFn.push_back( [ this ]( float x ){ return static_cast< float >( ( static_cast< int >( m_currentTime ) % 3 ) - 1 ); } );
+    /* 05 */ m_mathFn.push_back( [ this ]( float x ){ return cosf( static_cast< float >( m_currentTime / 1e11 ) ); } );
+    /* 06 */ m_mathFn.push_back( [ this ]( float x ){ return 5.0f / std::max< float >( fmod( x, 5.0f ), 0.1f ); } );
+    /* 07 */ m_mathFn.push_back( [ this ]( float x ){ return fmod( x, 4.0f ) > 2.0f ? 1.0f : -1.0f; } );
+    /* 08 */ m_mathFn.push_back( [ this ]( float x ){ return 1 / sinf( x ); } );
+    /* 09 */ m_mathFn.push_back( [ this ]( float x ){ return sinf( x ) * tanf( std::min( x, 0.01f ) / 5 ); } );
+    /* 10 */ m_mathFn.push_back( [ this ]( float x ){ return sinf( x ) * m_mathFn[ 9 ]( x ); } );
+    /* 11 */ m_mathFn.push_back( [ this ]( float x ){ return static_cast< float >( ( static_cast< int >( m_currentTime + 7 * 13 ) % 3 ) - 1 ); } );
+
+    //// Mirroring
+#define GEN_NEGATIVE_FUNCTIONS( w, n ) w.push_back( [ this ]( float x ){ return w[ n ]( x ); } )
+    GEN_NEGATIVE_FUNCTIONS( m_mathFn,  0 );
+    GEN_NEGATIVE_FUNCTIONS( m_mathFn,  1 );
+    GEN_NEGATIVE_FUNCTIONS( m_mathFn,  2 );
+    GEN_NEGATIVE_FUNCTIONS( m_mathFn,  3 );
+    GEN_NEGATIVE_FUNCTIONS( m_mathFn,  4 );
+    GEN_NEGATIVE_FUNCTIONS( m_mathFn,  5 );
+    GEN_NEGATIVE_FUNCTIONS( m_mathFn,  6 );
+    GEN_NEGATIVE_FUNCTIONS( m_mathFn,  7 );
+    GEN_NEGATIVE_FUNCTIONS( m_mathFn,  8 );
+    GEN_NEGATIVE_FUNCTIONS( m_mathFn,  9 );
+    GEN_NEGATIVE_FUNCTIONS( m_mathFn, 10 );
+    GEN_NEGATIVE_FUNCTIONS( m_mathFn, 11 );
+    
+    
+    m_xMathFunc.randomize();
+    m_yMathFunc.randomize();
+    
+    // Audio Related Positioning Functions
+    // m_audioFn
+    /* 00 */ m_audioFn.push_back( [ this ]( float x ) { return  m_soundLow;   } );
+    /* 02 */ m_audioFn.push_back( [ this ]( float x ) { return  m_soundMid;   } );
+    /* 04 */ m_audioFn.push_back( [ this ]( float x ) { return  m_soundHigh;  } );
+    
+    m_velocityAudioFunc.randomize();
 }
 
 ParticleEmitter::~ParticleEmitter(void)
@@ -46,7 +139,7 @@ ParticleEmitter::~ParticleEmitter(void)
 }
 
 #define EMISSION_AREA_PERCENTAGE 0.3f
-void ParticleEmitter::addParticles( int _aumont, int _group )
+void ParticleEmitter::addParticles( int _group )
 {
     ofVec2f      refSize( m_referenceSurface->getWidth(), m_referenceSurface->getHeight() );
     ofRectangle  emissionArea( m_position, m_position );
@@ -58,6 +151,7 @@ void ParticleEmitter::addParticles( int _aumont, int _group )
     }
     
     auto& particleGroup = m_particles[ _group ];
+    int particlesToEmit = std::min< int >( 2, s_particlesPerGroup - particleGroup.size() );
     
     if ( m_referenceSurface )
     {
@@ -69,7 +163,7 @@ void ParticleEmitter::addParticles( int _aumont, int _group )
     
     float angle = ofRandom( 0.0f, 2 * PI );
     
-    for ( int i = 0; i < _aumont; ++i )
+    for ( int i = 0; i < particlesToEmit; ++i )
     {
         
         float   angleVar  = ofRandom( 0.0f, 0.8f * PI );
@@ -97,7 +191,7 @@ void ParticleEmitter::addParticles( int _aumont, int _group )
         p->m_acceleration.normalize();
         p->m_acceleration        *= 2.5f;
         p->m_group                = _group;
-        
+        p->m_lifeTimeLeft         = ofRandom( ParticleEmitter::s_minParticleLife, ParticleEmitter::s_maxParticleLife );
         particleGroup.push_back( p );
     }
 }
@@ -129,15 +223,16 @@ void ParticleEmitter::debugDraw( void )
 
 void ParticleEmitter::update( float _currentTime, float _delta )
 {
-    // wait threaded update if it still pending
-    waitThreadedUpdate();
+    m_velocityAudioFunc.update( _delta );
+    m_xMathFunc.update(  _delta );
+    m_yMathFunc.update(  _delta );
     
     // add groups
     if ( m_particleGroups < s_particleGroups )
     {
         int groupsToCreate = s_particleGroups - m_particleGroups;
         for ( int i = 0; i < groupsToCreate; ++i ) {
-            addParticles( m_particlesPerGroup, m_particleGroups + i );
+            addParticles( m_particleGroups + i );
         }
         m_particleGroups += groupsToCreate;
     }
@@ -163,15 +258,11 @@ void ParticleEmitter::update( float _currentTime, float _delta )
     // add particles
     if ( s_particlesPerGroup > m_particlesPerGroup )
     {
-        int particlesToEmit = std::min< int >( 2, s_particlesPerGroup - m_particlesPerGroup );
-        
         size_t idx = 0;
         for ( auto& particleGroup : m_particles )
         {
-            addParticles( particlesToEmit, idx++ );
+            addParticles( idx++ );
         }
-        
-        m_particlesPerGroup += particlesToEmit;
     }
     // remove particles
     else if ( m_particlesPerGroup > s_particlesPerGroup )
@@ -208,22 +299,23 @@ void ParticleEmitter::update( float _currentTime, float _delta )
         return;
     }
     
+    
     // start threaded update
     startThreadedUpdate();
+    // wait threaded update if it still pending
+    waitThreadedUpdate();
 }
 
 void ParticleEmitter::startThreadedUpdate( void )
 {
-    // Create a lock to change our processing criteria (m_processing)
-    std::unique_lock< std::mutex > ul( m_updateLock );
-    
     // initialize the number of threads that are currently active
+    size_t t_processing = std::min< size_t >( THREADS, m_particles.size() );
     m_processing = std::min< size_t >( THREADS, m_particles.size() );
     
     // notify all trheads to do their job
-    for ( size_t i( 0 ), toNotify( m_processing ); i < m_processing; ++i)
+    for ( size_t i( 0 ); i < t_processing; ++i)
     {
-        m_startCondition.notify_one();
+        m_conditionVar.notify_one();
     }
 }
 
@@ -232,7 +324,7 @@ void ParticleEmitter::waitThreadedUpdate( void )
     std::unique_lock< std::mutex > ul( m_updateLock );
     
     // and wait until all threadsdo their job
-    m_doneCondition.wait( ul, [ this ](){ return m_processing == 0; } );
+    m_conditionVar.wait( ul, [ this ](){ return m_processing == 0; } );
 }
 
 void ParticleEmitter::threadProcessParticles( size_t _threadNumber )
@@ -241,7 +333,7 @@ void ParticleEmitter::threadProcessParticles( size_t _threadNumber )
     {
         std::unique_lock< std::mutex > cl( m_updateLock );
         // wait until we have something to process or we need to stop
-        m_startCondition.wait( cl, [ this ](){ return m_processing > 0 || m_stop; } );
+        m_conditionVar.wait( cl, [ this ](){ return m_processing > 0 || m_stop; } );
         
         if ( m_pause || m_stop )
         {
@@ -254,7 +346,7 @@ void ParticleEmitter::threadProcessParticles( size_t _threadNumber )
         // process all particles that are pertinent to this tread
         while ( groupIdx < numGroups )
         {
-            auto particles = m_particles[ groupIdx ];
+            auto& particles = m_particles[ groupIdx ];
             updateParticles( m_currentTime, m_delta, particles );
             
             groupIdx      += THREADS;
@@ -262,11 +354,61 @@ void ParticleEmitter::threadProcessParticles( size_t _threadNumber )
         
         // Thread done - lock to update the processing count
         --m_processing;
-        m_doneCondition.notify_one();
+        m_conditionVar.notify_one();
     }
 }
 
 void ParticleEmitter::updateParticles( float _currentTime, float _delta, std::vector< Particle* >& _particles )
+{
+    updateParticleTiming( _currentTime, _delta, _particles );
+    
+    if ( ( m_updateType & kFunction ) != 0 ) updateParticlesFunctions( _currentTime, _delta, _particles );
+    if ( ( m_updateType & kFlocking ) != 0 ) updateParticlesFlocking(  _currentTime, _delta, _particles );
+    
+    for ( auto p : _particles )
+    {
+        p->update( _currentTime, _delta );
+    }
+}
+
+void ParticleEmitter::updateParticleTiming( float _currentTime, float _delta, std::vector< Particle* >& _particles )
+{
+    for ( int i = 0; i < _particles.size(); ++i )
+    {
+        Particle* p = _particles[ i ];
+        p->updateTimer( _delta );
+        
+        if ( p->m_lifeTimeLeft < 0.0f )
+        {
+            delete p;
+            _particles[ i ] = _particles[ _particles.size() - 1 ];
+            _particles.pop_back();
+            --i;
+        }
+    }
+}
+
+void ParticleEmitter::updateParticlesFunctions( float _currentTime, float _delta, std::vector< Particle* >& _particles )
+{
+    // update the particles
+    for ( auto p : _particles )
+    {
+        ofVec2f& particleVelocity( p->m_velocity );
+        ofVec2f& particlePosition( p->m_position );
+        //ofVec2f& particleAcceleration( p->m_acceleration );
+        
+        // update the position and velocity of each particle
+        ofVec2f force(
+            m_xMathFunc( particlePosition.y / 25 )  - 0.5,
+            m_yMathFunc( particlePosition.x / 25 )  - 0.5
+        );
+        p->applyForce( force );
+        
+        particleVelocity *= 1.0f + ( m_velocityAudioFunc( particlePosition.y ) * 5.0f );
+    }
+}
+
+void ParticleEmitter::updateParticlesFlocking( float _currentTime, float _delta, std::vector< Particle* >& _particles )
 {
     size_t  itr     = 0;
     size_t  itr_end = _particles.size();
@@ -352,8 +494,6 @@ void ParticleEmitter::updateParticles( float _currentTime, float _delta, std::ve
             }
         }
         
-        p1->update( _currentTime, _delta );
-        
         ++itr;
     }
 }
@@ -373,7 +513,7 @@ void ParticleEmitter::killAll( void )
     std::unique_lock< std::mutex > cl( m_updateLock );
     m_pause = true;
     m_stop  = true;
-    m_startCondition.notify_all();
+    m_conditionVar.notify_all();
     cl.unlock();
     
     for ( auto& thread : m_threads )

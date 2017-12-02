@@ -26,7 +26,9 @@ public:
     
     virtual ~Particle( void );
     
-    virtual void update( double _currentTime, double _delta );
+    void applyForce( ofVec2f _force, bool _limit = true );
+    virtual void update( float _currentTime, float _delta );
+    void updateTimer( float _delta );
     virtual void draw( void );
     virtual void debugDraw( void );
     
@@ -49,8 +51,8 @@ public:
     float               m_maxSpeedSquared;
     float               m_minSpeedSquared;
     
-    float               m_spawnTime;
     float               m_lifeTime;
+    float               m_lifeTimeLeft;
     
     ofPixels*&          m_referenceSurface;
     

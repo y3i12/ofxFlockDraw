@@ -1,6 +1,9 @@
 #include "ofApp.h"
 
 #include <algorithm>
+#include <iostream>
+#include <sstream>
+#include <math.h>
 
 #define SGUI_CONFIG_FILE_EXT "cfg"
 #define FRAMERATE            60.0f
@@ -8,16 +11,15 @@
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-#include <sstream>
-#include <math.h>
 
 #define DEBUG_DRAW
-bool ofApp::s_debugFFt = true;
+bool            ofApp::s_debugFFt = true;
 
 ofApp::ofApp( std::list< std::string >& _args ) :
     m_particleEmitter( m_surface )
 {
-    ofSetupOpenGL( 1024, 768, OF_WINDOW );			// <-------- setup the GL context
+    //ofSetupOpenGL( 1024, 768, OF_WINDOW );			// <-------- setup the GL context
+    ofSetupOpenGL( 1680, 1050, OF_FULLSCREEN );
     _args.pop_front();
 }
 
@@ -26,9 +28,22 @@ void ofApp::setup()
 {
     // Initialize OFX
     ofRestoreWorkingDirectoryToDefault();// little trick to make debugging easier
+    
+    // Initialize GLSL
+    m_post.init(ofGetWidth(), ofGetHeight());
+    m_rgbShift  = m_post.createPass< RGBShiftPass >();
+    m_noiseWrap = m_post.createPass< NoiseWarpPass >();
+    m_noiseWrap->setSpeed( 0.5f );
+    m_noiseWrap->setAmplitude( 0.0f );
+    m_post.createPass< BloomPass >();
+    
     // Initialize fft processor
     m_fft.setup();
-    m_fft.setNormalize(true);
+    m_fft.setVolumeRange( 100 );
+    m_fft.setNormalize( true );
+    //m_fft.setNormalize( false );
+    
+
     
     ofBackground( 0, 0, 0 );
     ofSetFrameRate( 60 );
@@ -61,16 +76,16 @@ void ofApp::setup()
     m_highPointer   = &Particle::s_particleSpeedRatio; //3.0f
     //    = &Particle::s_dampness; // 0.99f
     m_midPointer    = &Particle::s_colorRedirection; //360.0f
-    
-    
-    
+    m_lowPointer  = &m_particleEmitter.m_soundLow;
+    m_midPointer  = &m_particleEmitter.m_soundMid;
+    m_highPointer = &m_particleEmitter.m_soundHigh;
     
     // general settings
     m_gui->addLabel( "General Settings" );
     m_gui->addSlider( "Pic. Cycle Time",    m_cycleImageEvery,               3.0f, 120.0f, 15.0f );
     m_gui->addSlider( "Particle Size",      Particle::s_particleSizeRatio,  0.25f,   3.0f,  1.0f );
     m_gui->addSlider( "Particle Speed",     Particle::s_particleSpeedRatio,  0.2f,   3.0f,  1.0f );
-    m_gui->addSlider( "Dampness",           Particle::s_dampness,           0.01f,  0.99f,  0.9f );
+    m_gui->addSlider( "Dampness",           Particle::s_dampness,           0.01f,  1.0f,  0.90f );
     m_gui->addSlider( "Color Guidance",     Particle::s_colorRedirection,    0.0f, 360.0f, 90.0f );
     
     m_gui->addSlider( "#Particles/Group",   ParticleEmitter::s_particlesPerGroup,  50,    5000,   500 );
@@ -79,12 +94,12 @@ void ofApp::setup()
     m_gui->addBreak()->setHeight( 20.0f );
     m_gui->addLabel( "Flocking Settings" );
     
-    m_gui->addSlider( "Repel Str.",         m_particleEmitter.m_repelStrength,       0.000f,     10.0f,   2.0f );
-    m_gui->addSlider( "Align Str.",         m_particleEmitter.m_alignStrength,       0.000f,     10.0f,   4.0f );
-    m_gui->addSlider( "Att. Str.",          m_particleEmitter.m_attractStrength,     0.000f,     10.0f,   8.0f );
-    m_gui->addSlider( "Area Size",          m_particleEmitter.m_zoneRadiusSqrd,      625.0f, 10000.0f, 5625.0f ),
-    m_gui->addSlider( "Repel Area",         m_particleEmitter.m_lowThresh,             0.0f,     1.0f,  0.45f );
-    m_gui->addSlider( "Align Area",         m_particleEmitter.m_highThresh,            0.0f,     1.0f,   0.85f );
+    m_gui->addSlider( "Repel Str.",         m_particleEmitter.m_repelStrength,       0.000f,     10.0f,   10.0f ); // 2
+    m_gui->addSlider( "Align Str.",         m_particleEmitter.m_alignStrength,       0.000f,     10.0f,   10.0f ); // 4
+    m_gui->addSlider( "Att. Str.",          m_particleEmitter.m_attractStrength,     0.000f,     10.0f,   10.0f ); // 8
+    m_gui->addSlider( "Area Size",          m_particleEmitter.m_zoneRadiusSqrd,      625.0f, 10000.0f, 2500.0f ); // 5625
+    m_gui->addSlider( "Repel Area",         m_particleEmitter.m_lowThresh,             0.0f,     1.0f,  0.11f ); // 0.45
+    m_gui->addSlider( "Align Area",         m_particleEmitter.m_highThresh,            0.0f,     1.0f,   0.22f ); // 0.85
     
     m_gui->addBreak()->setHeight( 20.0f );
     
@@ -180,9 +195,35 @@ void ofApp::update()
     // &Particle::s_dampness;           // 0.99f
     // &Particle::s_colorRedirection;   //360.0f
 
-    *m_lowPointer    = std::min< float >( 1.0f   - ( m_fft.getLowVal()  * 1.5f   ), 3.0f   );
-    *m_midPointer    = std::min< float >( 180.0f + ( m_fft.getMidVal()  * 180.0f ), 360.0f );
-    *m_highPointer   = std::min< float >( 0.5f   + ( m_fft.getHighVal() * 1.5f   ), 3.0f   );
+    auto spectrum            = m_fft.getSpectrum();
+    size_t spectrumSize      = spectrum.size();
+    size_t thirdSpectrumSize = spectrumSize / 3;
+    
+    float* valPointers[ 3 ]  = { &m_particleEmitter.m_soundLow, &m_particleEmitter.m_soundMid, &m_particleEmitter.m_soundHigh };
+    *valPointers[ 0 ] = *valPointers[ 1 ] = *valPointers[ 2 ] = 0;
+    for ( size_t i = 0; i < spectrumSize; i++ )
+    {
+        *valPointers[ std::min< size_t >( i / thirdSpectrumSize, 2 ) ] += spectrum[ i ] / thirdSpectrumSize;
+    }
+    
+    Particle::s_particleSizeRatio = std::min< float >( std::max< float >( m_particleEmitter.m_soundLow * 3.0f, 0.3f ), 3.5f );
+    m_rgbShift->setAmount( m_particleEmitter.m_soundHigh / 30 );
+    if ( m_particleEmitter.m_soundHigh < 0.05f ) {
+        m_rgbShift->setAngle( fmod( m_currentTime, PI ) * ( ( ( rand() % 2 ) == 0 ) ? -1.0f : 1.0f ) );
+    }
+    
+    if ( spectrum.size() > 2 )
+    {
+        m_noiseWrap->setAmplitude( std::max< float >( m_particleEmitter.m_soundLow - 0.3f, 0.0f ) / 50 );
+    }
+    
+    //*m_lowPointer    = m_fft.getLowVal();
+    //*m_midPointer    = m_fft.getMidVal();
+    //*m_highPointer   = m_fft.getHighVal();
+    
+//    *m_lowPointer    = std::min< float >( 1.0f   - ( m_fft.getLowVal()  * 1.5f   ), 3.0f   );
+//    *m_midPointer    = std::min< float >( 180.0f + ( m_fft.getMidVal()  * 180.0f ), 360.0f );
+//    *m_highPointer   = std::min< float >( 0.5f   + ( m_fft.getHighVal() * 1.5f   ), 3.0f   );
     //    = &Particle::s_dampness; // 0.99f
     
 
@@ -235,14 +276,16 @@ void ofApp::draw()
     
     // save what happened to the framebuffer
     ofSetColor( 255, 255, 255 );
+    m_post.begin();
     m_frameBufferObject.draw( 0, 0 );
+    m_post.end();
     
     if ( ParticleEmitter::s_debugDraw )
     {
         m_particleEmitter.debugDraw();
     }
     
-    if ( 0& s_debugFFt )
+    if ( 0 && s_debugFFt )
     {
         m_fft.drawHistoryGraph( ofPoint( 824,   0 ), LOW  );
         m_fft.drawHistoryGraph( ofPoint( 824, 200 ), MID  );
@@ -252,9 +295,14 @@ void ofApp::draw()
         ofDrawBitmapString( "HIGH", 850, 420 );
         ofDrawBitmapString( "MID",  850, 220 );
         
-        //m_fft.drawBars();
-        //m_fft.drawDebug();
+        m_fft.drawBars();
+        m_fft.drawDebug();
+        ofDrawBitmapStringHighlight( "LOW:  " + ofToString( m_particleEmitter.m_soundLow  ), 400, 300 );
+        ofDrawBitmapStringHighlight( "MID:  " + ofToString( m_particleEmitter.m_soundMid  ), 400, 320 );
+        ofDrawBitmapStringHighlight( "HIGH: " + ofToString( m_particleEmitter.m_soundHigh ), 400, 340 );
     }
+    
+    //m_fft.drawBars();
     
     // draw the UI
     m_gui->draw();

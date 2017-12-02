@@ -24,8 +24,8 @@ Particle::Particle( ParticleEmitter* _owner, ofVec2f& _position, ofVec2f& _direc
     m_velocity( 0.0f, 0.0f ),
     m_maxSpeedSquared( 0.0f ),
     m_minSpeedSquared( 0.0f ),
-    m_spawnTime( ofGetElapsedTimef() ),
     m_lifeTime( 0.0f ),
+    m_lifeTimeLeft( 0.0f ),
     m_owner( _owner ),
     m_group( -1 ),
     m_id( s_idGenerator++ ),
@@ -37,17 +37,23 @@ Particle::~Particle( void )
 {
 }
 
-void Particle::update( double _currentTime, double _delta )
+void Particle::applyForce( ofVec2f _force, bool _limit )
+{
+    m_velocity += _force;
+    m_direction = m_velocity.getNormalized();
+    if ( _limit ) limitSpeed();
+}
+
+void Particle::update( float _currentTime, float _delta )
 {
     // update the speed
-    m_lifeTime += _delta;
     m_velocity += m_acceleration;
     m_acceleration.set( 0.0f, 0.0f );
     m_direction = m_velocity.getNormalized();
-    limitSpeed();
+    //limitSpeed();
     
     // update the position
-    m_position += m_velocity * static_cast< float >( _delta ) * Particle::s_particleSpeedRatio;
+    m_position += m_velocity * _delta * Particle::s_particleSpeedRatio;
     m_velocity *= Particle::s_dampness;
     
     if ( m_referenceSurface )
@@ -88,7 +94,10 @@ void Particle::update( double _currentTime, double _delta )
         for ( int i = 0; i < 3; ++i )
         {
             // to guide thru color
-            t_c      = t_currentColor - m_referenceSurface->getColor( static_cast< int >( t_nextPos[ i ].x ), static_cast< int >( t_nextPos[ i ].y ) );
+            t_c      = t_currentColor - m_referenceSurface->getColor(
+                std::max< int >( static_cast< int >( t_nextPos[ i ].x ), 0 ),
+                std::max< int >( static_cast< int >( t_nextPos[ i ].y ), 0 )
+            );
             t_l[ i ] = t_c.r * 2.0f + t_c.g * 2.0f + t_c.b * 2.0f;
             
             // to guide thru luminance
@@ -100,18 +109,28 @@ void Particle::update( double _currentTime, double _delta )
 
         if ( t_l[ 1 ] < t_l[ 0 ] )
         {
-            m_velocity.rotate( static_cast< float >( t_angle * _delta ) );
+            m_velocity.rotate( t_angle * _delta );
         }
         else if ( t_l[ 2 ] < t_l[ 0 ] )
         {
-            m_velocity.rotate( static_cast< float >( t_angle * -2.0f * _delta ) );
+            m_velocity.rotate( t_angle * -2.0f * _delta );
         }
-        
-        // fade in and out
-        if ( m_lifeTime < 1.0f )
-        {
-            m_alpha = static_cast< unsigned char >( 255 * sin( m_lifeTime * HPI ) );
-        }
+    }
+}
+
+void Particle::updateTimer( float _delta )
+{
+    m_lifeTime     += _delta;
+    m_lifeTimeLeft -= _delta;
+    
+    // fade in and out
+    if ( m_lifeTime < 1.0f )
+    {
+        m_alpha = static_cast< unsigned char >( 255 * m_lifeTime );
+    }
+    else if ( m_lifeTimeLeft < 1.0f )
+    {
+        m_alpha = static_cast< unsigned char >( 255 * m_lifeTimeLeft );
     }
 }
 

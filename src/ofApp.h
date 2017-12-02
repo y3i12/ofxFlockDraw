@@ -3,6 +3,7 @@
 #include "ofMain.h"
 #include "ofxDatGui.h"
 #include "ofxProcessFFT.h"
+#include "ofxPostProcessing.h"
 
 #include "ParticleEmitter.h"
 
@@ -71,8 +72,17 @@ private:
     float*                      m_midPointer;
     float*                      m_highPointer;
     
+    std::pair< int, int >       m_lowFftRange;
+    std::pair< int, int >       m_midFftRange;
+    std::pair< int, int >       m_highFftRange;
+    
     ProcessFFT                  m_fft;
     
     static bool                 s_debugFFt;
+    
+    ofxPostProcessing           m_post;
+    std::shared_ptr< RGBShiftPass > m_rgbShift;
+    std::shared_ptr< NoiseWarpPass > m_noiseWrap;
+
 
 };
