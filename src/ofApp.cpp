@@ -175,7 +175,7 @@ void ofApp::setup()
         {
             m_files.push_back( "heaven.png" );
         }
-        setImage( m_files.front(), m_currentTime );
+        setImage( m_files.front() );
         m_cycleCounter  = -1.0;
     }
     
@@ -189,6 +189,11 @@ void ofApp::update()
     float delta   = 0.0;
     m_currentTime = ofGetElapsedTimef();
     delta         = m_currentTime - m_lastTime;
+    
+    if ( !m_imageToSet.empty() )
+    {
+        changeImage();
+    }
     
     // &Particle::s_particleSizeRatio;  //3.0f
     // &Particle::s_particleSpeedRatio; //3.0f
@@ -207,10 +212,16 @@ void ofApp::update()
     }
     
     Particle::s_particleSizeRatio = std::min< float >( std::max< float >( m_particleEmitter.m_soundLow * 3.0f, 0.3f ), 3.5f );
-    m_rgbShift->setAmount( m_particleEmitter.m_soundHigh / 30 );
-    if ( m_particleEmitter.m_soundHigh < 0.05f ) {
-        m_rgbShift->setAngle( fmod( m_currentTime, PI ) * ( ( ( rand() % 2 ) == 0 ) ? -1.0f : 1.0f ) );
-    }
+    
+    float rgbShift = m_particleEmitter.m_soundHigh;
+    rgbShift *= rgbShift * 2;
+    rgbShift /= 30.0f;
+    
+    m_rgbShift->setAmount( rgbShift );
+    
+    //m_rgbShift->setAngle( fmod( m_currentTime, PI ) * ( ( ( rand() % 2 ) == 0 ) ? -1.0f : 1.0f ) );
+    //m_rgbShift->setAngle( fmod( m_currentTime / 2, PI ) );
+    m_rgbShift->setAngle( ( sin( m_currentTime ) - 0.5f ) * m_particleEmitter.m_soundMid * PI );
     
     if ( spectrum.size() > 2 )
     {
@@ -239,7 +250,7 @@ void ofApp::update()
             m_files.pop_front( );
             m_files.push_back( aPath );
             
-            setImage( aPath, m_currentTime );
+            setImage( aPath );
         }
     }
     
@@ -402,7 +413,7 @@ void ofApp::keyPressed(int key){
         {
             if ( m_files.size() == 1 )
             {
-                setImage( m_files.front(), m_currentTime );
+                setImage( m_files.front() );
             }
             else
             {
@@ -530,7 +541,7 @@ bool ofApp::openImage( void )
         ofFile file(fileOpenResult.getPath() );
         if ( file.exists() )
         {
-            setImage( file.getAbsolutePath(), m_currentTime );
+            setImage( file.getAbsolutePath() );
         }
         
         m_cycleCounter  = -1.0;
@@ -565,11 +576,17 @@ void ofApp::updateOutputArea( ofVec2f& _imageSize )
     m_particleEmitter.m_position = ofVec2f( static_cast< float >( m_outputArea.x ), static_cast< float >( m_outputArea.y ) );
 }
 
-void ofApp::setImage( std::string _path, double _currentTime )
+void ofApp::setImage( std::string _path )
+{
+    m_imageToSet = _path;
+}
+
+void ofApp::changeImage( void )
 {
     m_particleEmitter.pauseThreads();
+    m_particleEmitter.waitThreadedUpdate();
     // load the image, resize and set the texture
-    m_texture.load( _path );
+    m_texture.load( m_imageToSet );
     ofVec2f   aSize( m_texture.getWidth(), m_texture.getHeight() );
     ofPoint   windowSz    = ofGetWindowSize();
     float     theFactor   = fmin( windowSz.x / aSize.x, windowSz.y / aSize.y );
@@ -579,7 +596,7 @@ void ofApp::setImage( std::string _path, double _currentTime )
     m_surface = &m_texture.getPixels();
     
     // update  the image name
-    m_currentImageLabel->setName( _path );
+    m_currentImageLabel->setName( m_imageToSet );
     
     // update the output area
     updateOutputArea( newSize );
@@ -588,10 +605,12 @@ void ofApp::setImage( std::string _path, double _currentTime )
     m_cycleCounter = 0.0;
     
     // set the filename in the widget
-    ofFile file( _path );
+    ofFile file( m_imageToSet );
     m_currentImageLabel->setLabel( file.getFileName() );
     
     m_particleEmitter.continueThreads();
+    
+    m_imageToSet.clear();
 }
 
 ////////////////////////////////////////////////////////////////////////////////

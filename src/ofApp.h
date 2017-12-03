@@ -43,7 +43,7 @@ public:
     
     // misc routines
     void updateOutputArea( ofVec2f& _imageSize );
-    void setImage( std::string _path, double _currentTime = 0.0 );
+    void setImage( std::string _path );
     
     // properties
     ofPixels*                   m_surface;
@@ -64,6 +64,10 @@ public:
     ofxDatGuiFRM*               m_FPSPanel;
     
 private:
+    void changeImage( void );
+    std::string                 m_imageToSet;
+    
+    
     float                       m_lastTime;
     float                       m_currentTime;
     float                       m_cycleCounter;

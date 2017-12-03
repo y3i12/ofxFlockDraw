@@ -8,6 +8,12 @@
 #define HPI ( PI / 2 )
 #define LUMINANCE( r, g, b ) ( 0.299f * ( r ) + 0.587f * ( g ) + 0.114f * ( b ) )
 
+#define WRAP( p, w )                                \
+if ( p.x < 0.0f )       p.x += w.x;                 \
+else if ( p.x >= w.x )  p.x  = fmod( p.x, w.x );    \
+if ( p.y < 0.0f )       p.y += w.y;                 \
+else if ( p.y >= w.y )  p.y  = fmod( p.y, w.y );
+
 float  Particle::s_maxRadius          = 0.015f;
 float  Particle::s_particleSizeRatio  = 1.0f;
 float  Particle::s_particleSpeedRatio = 1.0f;
@@ -46,6 +52,14 @@ void Particle::applyForce( ofVec2f _force, bool _limit )
 
 void Particle::update( float _currentTime, float _delta )
 {
+
+    // capping to avoid errors
+    if ( std::isnan( m_velocity.x ) || fabs( m_velocity.x ) > 100.0f ||
+         std::isnan( m_velocity.y ) || fabs( m_velocity.y ) > 100.0f )
+    {
+        m_velocity.normalize();
+    }
+    
     // update the speed
     m_velocity += m_acceleration;
     m_acceleration.set( 0.0f, 0.0f );
@@ -56,28 +70,19 @@ void Particle::update( float _currentTime, float _delta )
     m_position += m_velocity * _delta * Particle::s_particleSpeedRatio;
     m_velocity *= Particle::s_dampness;
     
+    
+    // capping to avoid errors
+    if ( std::isnan( m_velocity.x ) || m_velocity.x > 500.0f ) m_velocity.x = 0.0f;
+    if ( std::isnan( m_velocity.y ) || m_velocity.y > 500.0f ) m_velocity.y = 0.0f;
+    if ( std::isnan( m_position.x ) || m_position.x <   0.0f ) m_position.x = 0.0f;
+    if ( std::isnan( m_position.y ) || m_position.y <   0.0f ) m_position.y = 0.0f;
+    
     if ( m_referenceSurface )
     {
         // wrap the particle
         ofVec2f wrapSize( m_referenceSurface->getWidth(), m_referenceSurface->getHeight() );
         
-        if ( m_position.x < 0.0f )
-        {
-            m_position.x += wrapSize.x;
-        }
-        else if ( m_position.x >= wrapSize.x )
-        {
-            m_position.x -= wrapSize.x;
-        }
-        
-        if ( m_position.y < 0.0f )
-        {
-            m_position.y += wrapSize.y;
-        }
-        else if ( m_position.y >= wrapSize.y )
-        {
-            m_position.y -= wrapSize.y;
-        }
+        WRAP( m_position, wrapSize );
         
         t_tempDir = m_direction * 2.0f;
         t_angle   = 45;
@@ -93,10 +98,14 @@ void Particle::update( float _currentTime, float _delta )
         // image guidance
         for ( int i = 0; i < 3; ++i )
         {
+            ofVec2f& pointRef = t_nextPos[ i ];
+            
+            WRAP( pointRef, wrapSize );
+            
             // to guide thru color
             t_c      = t_currentColor - m_referenceSurface->getColor(
-                std::max< int >( static_cast< int >( t_nextPos[ i ].x ), 0 ),
-                std::max< int >( static_cast< int >( t_nextPos[ i ].y ), 0 )
+                std::max< int >( static_cast< int >( pointRef.x ), 0 ),
+                std::max< int >( static_cast< int >( pointRef.y ), 0 )
             );
             t_l[ i ] = t_c.r * 2.0f + t_c.g * 2.0f + t_c.b * 2.0f;
             

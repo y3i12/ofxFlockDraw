@@ -79,10 +79,11 @@ public:
     static int                  s_particleGroups;
     static bool                 s_debugDraw;
     
+    void waitThreadedUpdate( void );
+    
 private:
     void addParticles( int _group = -1 );
     void startThreadedUpdate( void );
-    void waitThreadedUpdate( void );
     void threadProcessParticles( size_t _group );
     void updateParticles( float _currentTime, float _delta, std::vector< Particle* >& _particles );
     void updateParticleTiming( float _currentTime, float _delta, std::vector< Particle* >& _particles );
