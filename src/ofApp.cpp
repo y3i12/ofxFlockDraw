@@ -39,7 +39,7 @@ void ofApp::setup()
     
     // Initialize fft processor
     m_fft.setup();
-    m_fft.setVolumeRange( 100 );
+    m_fft.setVolumeRange( 50 );
     m_fft.setNormalize( true );
     //m_fft.setNormalize( false );
     
@@ -215,7 +215,7 @@ void ofApp::update()
     
     float rgbShift = m_particleEmitter.m_soundHigh;
     rgbShift *= rgbShift * 2;
-    rgbShift /= 30.0f;
+    rgbShift /= 20.0f;
     
     m_rgbShift->setAmount( rgbShift );
     
