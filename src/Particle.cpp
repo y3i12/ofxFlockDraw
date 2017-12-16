@@ -32,6 +32,7 @@ Particle::Particle( ParticleEmitter* _owner, ofVec2f& _position, ofVec2f& _direc
     m_minSpeedSquared( 0.0f ),
     m_lifeTime( 0.0f ),
     m_lifeTimeLeft( 0.0f ),
+    m_flockLeader( false ),
     m_owner( _owner ),
     m_group( -1 ),
     m_id( s_idGenerator++ ),

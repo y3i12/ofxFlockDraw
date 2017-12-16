@@ -16,9 +16,10 @@ class ParticleEmitter
 {
 public:
     enum UpdateType {
-        kFunction               = 1,
-        kFlocking               = 2,
-        kFunctionAndFlocking    = kFunction | kFlocking
+        kFunction               = 1 << 0,
+        kFlocking               = 1 << 1,
+        kFunctionAndFlocking    = kFunction | kFlocking,
+        kFollowTheLead          = 1 << 3,
     };
     
     typedef std::function< float ( float ) > PosFunc;
@@ -85,10 +86,12 @@ private:
     void addParticles( int _group = -1 );
     void startThreadedUpdate( void );
     void threadProcessParticles( size_t _group );
-    void updateParticles( float _currentTime, float _delta, std::vector< Particle* >& _particles );
-    void updateParticleTiming( float _currentTime, float _delta, std::vector< Particle* >& _particles );
-    void updateParticlesFunctions( float _currentTime, float _delta, std::vector< Particle* >& _particles );
-    void updateParticlesFlocking( float _currentTime, float _delta, std::vector< Particle* >& _particles );
+    
+    void updateParticles(               float _currentTime, float _delta, std::vector< Particle* >& _particles );
+    void updateParticleTiming(          float _currentTime, float _delta, std::vector< Particle* >& _particles );
+    void updateParticlesFollowTheLead(  float _currentTime, float _delta, std::vector< Particle* >& _particles );
+    void updateParticlesFunctions(      float _currentTime, float _delta, std::vector< Particle* >& _particles );
+    void updateParticlesFlocking(       float _currentTime, float _delta, std::vector< Particle* >& _particles );
     
     // Threading stuff
     std::vector< std::thread >  m_threads;          // Thread pool

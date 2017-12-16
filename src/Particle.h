@@ -54,6 +54,8 @@ public:
     float               m_lifeTime;
     float               m_lifeTimeLeft;
     
+    bool                m_flockLeader;
+    
     ofPixels*&          m_referenceSurface;
     
     ParticleEmitter*    m_owner;

@@ -362,8 +362,9 @@ void ParticleEmitter::updateParticles( float _currentTime, float _delta, std::ve
 {
     updateParticleTiming( _currentTime, _delta, _particles );
     
-    if ( ( m_updateType & kFunction ) != 0 ) updateParticlesFunctions( _currentTime, _delta, _particles );
-    if ( ( m_updateType & kFlocking ) != 0 ) updateParticlesFlocking(  _currentTime, _delta, _particles );
+    if ( ( m_updateType & kFunction      ) != 0 ) updateParticlesFunctions(     _currentTime, _delta, _particles );
+    if ( ( m_updateType & kFlocking      ) != 0 ) updateParticlesFlocking(      _currentTime, _delta, _particles );
+    if ( ( m_updateType & kFollowTheLead ) != 0 ) updateParticlesFollowTheLead( _currentTime, _delta, _particles );
     
     for ( auto p : _particles )
     {
@@ -388,10 +389,29 @@ void ParticleEmitter::updateParticleTiming( float _currentTime, float _delta, st
     }
 }
 
+void ParticleEmitter::updateParticlesFollowTheLead( float _currentTime, float _delta, std::vector< Particle* >& _particles )
+{
+    // TODO: XD
+    auto& p = _particles[ 0 ];
+    ofVec2f& particleVelocity( p->m_velocity );
+    ofVec2f& particlePosition( p->m_position );
+    
+    // update the position and velocity of the first particle
+    ofVec2f force( m_xMathFunc( particlePosition.y / 25 )  - 0.5, m_yMathFunc( particlePosition.x / 25 )  - 0.5 );
+    p->applyForce( force );
+    
+    particleVelocity *= 1.0f + ( m_velocityAudioFunc( particlePosition.y ) * 5.0f );
+    p->m_flockLeader = true;
+    
+    updateParticlesFlocking( _currentTime, _delta, _particles );
+    
+    p->m_flockLeader = false;
+}
+
 void ParticleEmitter::updateParticlesFunctions( float _currentTime, float _delta, std::vector< Particle* >& _particles )
 {
     // update the particles
-    for ( auto p : _particles )
+    for ( auto& p : _particles )
     {
         ofVec2f& particleVelocity( p->m_velocity );
         ofVec2f& particlePosition( p->m_position );
@@ -455,8 +475,8 @@ void ParticleEmitter::updateParticlesFlocking( float _currentTime, float _delta,
                         dir.normalize();
                         dir *= F;
                         
-                        p1->m_acceleration += dir;
-                        p2->m_acceleration -= dir;
+                        if ( !p1->m_flockLeader ) p1->m_acceleration += dir;
+                        if ( !p2->m_flockLeader ) p2->m_acceleration -= dir;
                     }
                     else if( percent < m_highThresh ) // Alignment
                     {
@@ -469,8 +489,8 @@ void ParticleEmitter::updateParticlesFlocking( float _currentTime, float _delta,
                         float adjustedPercent	= ( percent - m_lowThresh ) / threshDelta;
                         float F               = ( 1.0f - ( cos( adjustedPercent * PI2 ) * -0.5f + 0.5f ) ) * m_alignStrength * updateRatio;
                         
-                        p1->m_acceleration += p2->m_direction * F;
-                        p2->m_acceleration += p1->m_direction * F;
+                        if ( !p1->m_flockLeader ) p1->m_acceleration += p2->m_direction * F;
+                        if ( !p2->m_flockLeader ) p2->m_acceleration += p1->m_direction * F;
                         
                     }
                     else 								// Cohesion
@@ -487,8 +507,8 @@ void ParticleEmitter::updateParticlesFlocking( float _currentTime, float _delta,
                         dir.normalize();
                         dir *= F;
                         
-                        p1->m_acceleration -= dir;
-                        p2->m_acceleration += dir;
+                        if ( !p1->m_flockLeader ) p1->m_acceleration -= dir;
+                        if ( !p2->m_flockLeader ) p2->m_acceleration += dir;
                     }
                 }
             }
