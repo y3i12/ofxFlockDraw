@@ -27,7 +27,7 @@ public:
     virtual ~Particle( void );
     
     void applyForce( ofVec2f _force, bool _limit = true );
-    virtual void update( float _currentTime, float _delta );
+    virtual void update( float _currentTime, float _delta, float _sizeFactor );
     void updateTimer( float _delta );
     virtual void draw( void );
     virtual void debugDraw( void );

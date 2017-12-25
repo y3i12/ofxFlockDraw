@@ -71,7 +71,9 @@ public:
     float                       m_lowThresh;
     float                       m_highThresh;
     
+    // image related
     ofPixels*&                  m_referenceSurface;
+    float                       m_sizeFactor;
     
     static float                s_minParticleLife;
     static float                s_maxParticleLife;

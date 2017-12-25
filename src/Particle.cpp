@@ -51,7 +51,7 @@ void Particle::applyForce( ofVec2f _force, bool _limit )
     if ( _limit ) limitSpeed();
 }
 
-void Particle::update( float _currentTime, float _delta )
+void Particle::update( float _currentTime, float _delta, float _sizeFactor )
 {
 
     // capping to avoid errors
@@ -81,14 +81,16 @@ void Particle::update( float _currentTime, float _delta )
     if ( m_referenceSurface )
     {
         // wrap the particle
-        ofVec2f wrapSize( m_referenceSurface->getWidth(), m_referenceSurface->getHeight() );
+        ofVec2f wrapSize( m_referenceSurface->getWidth() * _sizeFactor, m_referenceSurface->getHeight() * _sizeFactor );
         
         WRAP( m_position, wrapSize );
         
         t_tempDir = m_direction * 2.0f;
         t_angle   = 45;
         
-        t_currentColor = m_referenceSurface->getColor( static_cast< int >( m_position.x ), static_cast< int >( m_position.y ) );
+        t_currentColor = m_referenceSurface->getColor( static_cast< int >( m_position.x / _sizeFactor ), static_cast< int >( m_position.y / _sizeFactor ) );
+        t_color        = t_currentColor;
+        m_color        = m_color / 2 + t_color / 2;
         
         t_nextPos[ 0 ] = m_position + t_tempDir;
         t_tempDir.rotate( t_angle );
@@ -105,8 +107,8 @@ void Particle::update( float _currentTime, float _delta )
             
             // to guide thru color
             t_c      = t_currentColor - m_referenceSurface->getColor(
-                std::max< int >( static_cast< int >( pointRef.x ), 0 ),
-                std::max< int >( static_cast< int >( pointRef.y ), 0 )
+                std::max< int >( static_cast< int >( pointRef.x / _sizeFactor ), 0 ),
+                std::max< int >( static_cast< int >( pointRef.y / _sizeFactor ), 0 )
             );
             t_l[ i ] = t_c.r * 2.0f + t_c.g * 2.0f + t_c.b * 2.0f;
             
@@ -146,14 +148,6 @@ void Particle::updateTimer( float _delta )
 
 void Particle::draw( void )
 {
-    //t_sourceArea.x1 = static_cast< int >( m_position.x - Particle::s_maxRadius );
-    //t_sourceArea.y1 = static_cast< int >( m_position.y - Particle::s_maxRadius );
-    //t_sourceArea.x2 = static_cast< int >( m_position.x + Particle::s_maxRadius );
-    //t_sourceArea.y2 = static_cast< int >( m_position.y + Particle::s_maxRadius );
-    // TODO: get particle color at the area
-    
-    t_color      = m_referenceSurface->getColor( static_cast< int >( m_position.x ), static_cast< int >( m_position.y ) );
-    m_color = m_color / 2 + t_color / 2;
     float radius = ( 1.0f + Particle::s_maxRadius * LUMINANCE( t_color.r, t_color.g, t_color.b ) ) * Particle::s_particleSizeRatio;
     
     ofSetColor( m_color.r, m_color.g, m_color.b, m_alpha );

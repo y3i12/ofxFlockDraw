@@ -20,10 +20,10 @@ std::vector< std::string >  ofApp::s_particleBehaviors = { "Function", "Flocking
 
 ofApp::ofApp( std::list< std::string >& _args ) :
     m_particleEmitter( m_surface ),
-    m_strobe( false )
+    m_strobe( false ),
+    m_renderOpticalFlow( nullptr ),
+    m_renderFluidSimulation( nullptr )
 {
-    //ofSetupOpenGL( 1024, 768, OF_WINDOW );			// <-------- setup the GL context
-    ofSetupOpenGL( 1680, 1050, OF_FULLSCREEN );
     _args.pop_front();
 }
 
@@ -32,9 +32,11 @@ void ofApp::setup()
 {
     // Initialize OFX
     ofRestoreWorkingDirectoryToDefault();// little trick to make debugging easier
+ 
+    ofSetVerticalSync( false );
     
     // Initialize GLSL
-    m_post.init(ofGetWidth(), ofGetHeight());
+    m_post.init( ofGetWidth(), ofGetHeight() );
     m_bloomPass = m_post.createPass< BloomPass >();
     m_noiseWrap = m_post.createPass< NoiseWarpPass >();
     m_rgbShift  = m_post.createPass< RGBShiftPass >();
@@ -56,8 +58,57 @@ void ofApp::setup()
     
     ofBackground( 0, 0, 0 );
     ofSetFrameRate( 60 );
-    ofPoint displaySz = ofGetWindowSize();
+    ofPoint displaySz   = ofGetWindowSize();
+    
+    // Flow setup
+    m_flowWidth         = displaySz.x / 4;
+    m_flowHeight        = displaySz.y / 4;
+    
+    // simulation setup
+    m_opticalFlow.setup( m_flowWidth, m_flowHeight );
+    m_opticalFlow.setStrength( 75.0f );
+    m_opticalFlow.setOffset( 10.0f );
+    m_opticalFlow.setLambda( 0.1f );
+    m_opticalFlow.setThreshold( 0.0f );
+    m_opticalFlow.setInverseX( false );
+    m_opticalFlow.setInverseY( false );
+    m_opticalFlow.setTimeBlurActive( true );
+    m_opticalFlow.setTimeBlurRadius( 6.2f );
+    m_opticalFlow.setTimeBlurDecay( 10.0f );
+    
+    m_fluidSimulation.setup( m_flowWidth, m_flowHeight, displaySz.x, displaySz.y );
+    m_fluidSimulation.setSpeed( 35.0f );
+    m_fluidSimulation.setCellSize( 1.0f );
+    m_fluidSimulation.setNumJacobiIterations( 40 );
+    m_fluidSimulation.setViscosity( 0.18f );
+    m_fluidSimulation.setVorticity( 0.0f );
+    m_fluidSimulation.setDissipation( 0.01f );
+    m_fluidSimulation.setDissipationVelocityOffset( -0.00166181f );
+    m_fluidSimulation.setDissipationDensityOffset( -0.00155768f );
+    m_fluidSimulation.setDissipationTemperatureOffset( 0.005f );
+    m_fluidSimulation.setSmokeSigma( 0.05f );
+    m_fluidSimulation.setSmokeWeight( 0.05f );
+    m_fluidSimulation.setAmbientTemperature( 2.0f );
+    m_fluidSimulation.setClampForce( 0.05f );
+    m_fluidSimulation.setMaxVelocity( 4.0f );
+    m_fluidSimulation.setMaxDensity( 2.0f );
+    m_fluidSimulation.setMaxTemperature( 2.0f );
+    m_fluidSimulation.setDensityFromVorticity( -0.1f );
+    m_fluidSimulation.setDensityFromPressure( 0.0f );
+    
+    m_velocityMask.setup( displaySz.x, displaySz.y );
+    m_velocityMask.setBlurPasses( 3 );
+    m_velocityMask.setBlurRadius( 5 );
 
+    
+    // visualization setup
+    m_scalarDisplay.setup( m_flowWidth, m_flowHeight );
+    m_velocityField.setup( m_flowWidth / 4, m_flowHeight / 4 );
+    m_ftBo.allocate( 640, 480 );
+    m_ftBo.black();
+    m_video.setPixelFormat( OF_PIXELS_RGBA );
+    
+    
     m_frameBufferObject.allocate( displaySz.x, displaySz.y, GL_RGBA32F_ARB);
     
     // config vars
@@ -127,6 +178,9 @@ void ofApp::setup()
     m_gui->addToggle( "Bloom Pass", m_bloomPass->getEnabled()       )->onToggleEvent( this, &ofApp::onToggleBloomPass      );
     m_gui->addToggle( "Zoom Blur",  m_zoomBlurPass->getEnabled()    )->onToggleEvent( this, &ofApp::onToggleZoomBlurPass   );
     m_gui->addToggle( "Strobe",     m_strobe                        )->onToggleEvent( this, &ofApp::onToggleStrobe         );
+    
+    m_renderOpticalFlow     = m_gui->addToggle( "Show Optical Flow",   false );
+    m_renderFluidSimulation = m_gui->addToggle( "Show Fluid Velocity", false );
     
     m_gui->addBreak()->setHeight( 20.0f );
     
@@ -222,6 +276,11 @@ void ofApp::update()
         changeImage();
     }
 
+    // Video Update >>>
+    m_video.update();
+    // Video Update <<<
+    
+    // Audio update >>>
     m_fft.update();
     m_soundBuffer.copyFrom( m_fft.fft.getAudio(), m_fft.fft.stream.getNumInputChannels(), m_fft.fft.stream.getSampleRate() );
     m_audioAnalyzer.analyze( m_soundBuffer );
@@ -261,53 +320,27 @@ void ofApp::update()
     m_tristimulus       = m_audioAnalyzer.getValues( TRISTIMULUS,           0, m_smoothing );
     
     m_isOnset           = m_audioAnalyzer.getOnsetValue( 0 );
+    // Audio update <<<
     
-    // &Particle::s_particleSizeRatio;  //3.0f
-    // &Particle::s_particleSpeedRatio; //3.0f
-    // &Particle::s_dampness;           // 0.99f
-    // &Particle::s_colorRedirection;   //360.0f
-
-    auto spectrum            = m_fft.getSpectrum();
-    size_t spectrumSize      = spectrum.size();
-    size_t thirdSpectrumSize = spectrumSize / 3;
-    
-    float* valPointers[ 3 ]  = { &m_particleEmitter.m_soundLow, &m_particleEmitter.m_soundMid, &m_particleEmitter.m_soundHigh };
-    *valPointers[ 0 ] = *valPointers[ 1 ] = *valPointers[ 2 ] = 0;
-    for ( size_t i = 0; i < spectrumSize; i++ )
-    {
-        *valPointers[ std::min< size_t >( i / thirdSpectrumSize, 2 ) ] += spectrum[ i ] / thirdSpectrumSize;
-    }
-    
-    Particle::s_particleSizeRatio = std::min< float >( std::max< float >( m_particleEmitter.m_soundLow * 3.0f, 0.3f ), 3.5f );
-    
+    // Post processing update >>>
     float rgbShift = m_particleEmitter.m_soundHigh;
     rgbShift *= rgbShift * 2;
     rgbShift /= 20.0f;
     
     m_rgbShift->setAmount( rgbShift );
-    
-    //m_rgbShift->setAngle( fmod( m_currentTime, PI ) * ( ( ( rand() % 2 ) == 0 ) ? -1.0f : 1.0f ) );
-    //m_rgbShift->setAngle( fmod( m_currentTime / 2, PI ) );
     m_rgbShift->setAngle( ( sin( m_currentTime ) - 0.5f ) * m_particleEmitter.m_soundMid * PI );
     
-    if ( spectrum.size() > 2 )
+    if ( m_spectrum.size() > 2 )
     {
         m_noiseWrap->setAmplitude( std::max< float >( m_particleEmitter.m_soundLow - 0.3f, 0.0f ) / 50 );
     }
-    //m_specCompNorm
+    
     m_zoomBlurPass->setCenterX( m_tristimulus[ 1 ] );
     m_zoomBlurPass->setCenterY( m_tristimulus[ 2 ] );
     m_zoomBlurPass->setDensity( m_tristimulus[ 0 ] / 25.0f );
-    //*m_lowPointer    = m_fft.getLowVal();
-    //*m_midPointer    = m_fft.getMidVal();
-    //*m_highPointer   = m_fft.getHighVal();
-    
-//    *m_lowPointer    = std::min< float >( 1.0f   - ( m_fft.getLowVal()  * 1.5f   ), 3.0f   );
-//    *m_midPointer    = std::min< float >( 180.0f + ( m_fft.getMidVal()  * 180.0f ), 360.0f );
-//    *m_highPointer   = std::min< float >( 0.5f   + ( m_fft.getHighVal() * 1.5f   ), 3.0f   );
-    //    = &Particle::s_dampness; // 0.99f
-    
+    // Post processing update <<<
 
+    // Image update >>>
     if ( m_cycleCounter != -1.0 )
     {
         m_cycleCounter += delta;
@@ -323,8 +356,58 @@ void ofApp::update()
             setImage( aPath );
         }
     }
+    // Image update <<<
     
+    // Flow update >>>
+    if ( m_video.isLoaded() )
+    {
+        m_surface = &m_video.getPixels();
+     
+        if ( m_video.isFrameNew() )
+        {
+            {
+                ofPushStyle();
+                ofEnableBlendMode( OF_BLENDMODE_DISABLED );
+                m_ftBo.begin();
+                
+                m_video.draw( 0, 0, m_ftBo.getWidth(), m_ftBo.getHeight() );
+                
+                m_ftBo.end();
+                ofPopStyle();
+            }
+            
+            m_opticalFlow.setSource( m_ftBo.getTexture() );
+            m_opticalFlow.update();
+        
+            m_velocityMask.setDensity( m_ftBo.getTexture() );
+            m_velocityMask.setVelocity( m_opticalFlow.getOpticalFlow() );
+            m_velocityMask.update();
+        }
+        
+        m_fluidSimulation.addVelocity( m_opticalFlow.getOpticalFlowDecay() );
+        m_fluidSimulation.addDensity( m_velocityMask.getColorMask() );
+        m_fluidSimulation.addTemperature( m_velocityMask.getLuminanceMask() );
+        m_fluidSimulation.update();
+    }
+    // Flow update <<<
+    
+    
+    // Particle update >>>
+    auto spectrum            = m_fft.getSpectrum();
+    size_t spectrumSize      = spectrum.size();
+    size_t thirdSpectrumSize = spectrumSize / 3;
+    
+    float* valPointers[ 3 ]  = { &m_particleEmitter.m_soundLow, &m_particleEmitter.m_soundMid, &m_particleEmitter.m_soundHigh };
+    *valPointers[ 0 ] = *valPointers[ 1 ] = *valPointers[ 2 ] = 0;
+    for ( size_t i = 0; i < spectrumSize; i++ )
+    {
+        *valPointers[ std::min< size_t >( i / thirdSpectrumSize, 2 ) ] += spectrum[ i ] / thirdSpectrumSize;
+    }
+    
+    Particle::s_particleSizeRatio = std::min< float >( std::max< float >( m_particleEmitter.m_soundLow * 3.0f, 0.3f ), 3.5f );
     m_particleEmitter.update( m_currentTime, delta );
+    // Particle update <<<
+
     
     m_lastTime = m_currentTime;
 }
@@ -401,6 +484,28 @@ void ofApp::draw()
         ofDrawBitmapStringHighlight( "HIGH: " + ofToString( m_particleEmitter.m_soundHigh ), 400, 340 );
     }
     
+    if ( m_renderFluidSimulation && m_renderFluidSimulation->getChecked() )
+    {
+        ofEnableBlendMode( OF_BLENDMODE_ALPHA );
+        m_scalarDisplay.setSource( m_fluidSimulation.getVelocity() );
+        m_scalarDisplay.draw( 0, 0, displaySz.x, displaySz.y );
+        
+        ofEnableBlendMode( OF_BLENDMODE_ALPHA );
+        m_velocityField.setVelocity( m_fluidSimulation.getVelocity() );
+        m_velocityField.draw( 0, 0, displaySz.x, displaySz.y );
+
+    }
+    
+    if ( m_renderOpticalFlow && m_renderOpticalFlow->getChecked() )
+    {
+        ofEnableBlendMode( OF_BLENDMODE_ALPHA );
+        m_scalarDisplay.setSource( m_opticalFlow.getOpticalFlowDecay() );
+        m_scalarDisplay.draw( 0, 0, displaySz.x, displaySz.y );
+        
+        ofEnableBlendMode( OF_BLENDMODE_ALPHA );
+        m_velocityField.setVelocity( m_opticalFlow.getOpticalFlowDecay() );
+        m_velocityField.draw( 0, 0, displaySz.x, displaySz.y );
+    }
     
     if ( m_gui->getVisible() )
     {
@@ -957,20 +1062,41 @@ void ofApp::changeImage( void )
 {
     m_particleEmitter.pauseThreads();
     m_particleEmitter.waitThreadedUpdate();
-    // load the image, resize and set the texture
-    m_texture.load( m_imageToSet );
-    ofVec2f   aSize( m_texture.getWidth(), m_texture.getHeight() );
-    ofPoint   windowSz    = ofGetWindowSize();
-    float     theFactor   = fmin( windowSz.x / aSize.x, windowSz.y / aSize.y );
     
-    ofVec2f newSize( aSize.x * theFactor, aSize.y * theFactor );
-    m_texture.resize( static_cast< int >( newSize.x ), static_cast< int >( newSize.y ) );
-    m_surface = &m_texture.getPixels();
+    if ( m_video.isLoaded() )
+    {
+        m_video.close();
+    }
+    
+    // load the image, resize and set the texture
+    ofVec2f   aSize;
+    if ( m_texture.load( m_imageToSet ) )
+    {
+        aSize.x         = m_texture.getWidth();
+        aSize.y         = m_texture.getHeight();
+        m_surface       = &m_texture.getPixels();
+    }
+    else if ( m_video.load( m_imageToSet ) )
+    {
+        aSize.x         = m_video.getWidth();
+        aSize.y         = m_video.getHeight();
+        m_surface       = &m_video.getPixels();
+        m_video.setLoopState( OF_LOOP_NORMAL );
+        m_video.play();
+    }
+    else
+    {
+        return;
+    }
+    
+    ofPoint   windowSz              = ofGetWindowSize();
+    m_particleEmitter.m_sizeFactor  = fmin( windowSz.x / aSize.x, windowSz.y / aSize.y );
     
     // update  the image name
     m_currentImageLabel->setName( m_imageToSet );
     
     // update the output area
+    ofVec2f newSize( aSize.x * m_particleEmitter.m_sizeFactor, aSize.y * m_particleEmitter.m_sizeFactor );
     updateOutputArea( newSize );
     
     // resets the cycle counter;

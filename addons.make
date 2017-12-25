@@ -3,6 +3,7 @@ ofxAudioDecoder
 ofxBeat
 ofxDatGui
 ofxFft
+ofxFlowTools
 ofxPostProcessing
 ofxThreadedImageLoader
 ofxTimeMeasurements

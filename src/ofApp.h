@@ -5,11 +5,14 @@
 #include "ofxDatGui.h"
 #include "ofxProcessFFT.h"
 #include "ofxPostProcessing.h"
+#include "ofxFlowTools.h"
 
 #include "ParticleEmitter.h"
 
 #include <string>
 #include <list>
+
+using namespace flowTools;
 
 class ofApp : public ofBaseApp{
     
@@ -56,6 +59,7 @@ public:
     
     // properties
     ofPixels*                   m_surface;
+    ofVideoPlayer               m_video;
     ofImage                     m_texture;
     ofRectangle                 m_outputArea;
     ParticleEmitter             m_particleEmitter;
@@ -92,6 +96,24 @@ private:
     
     ProcessFFT                  m_fft;
     ofxAudioAnalyzer            m_audioAnalyzer;
+    
+    // FLUID STUFF >>
+    int                         m_flowWidth;
+    int                         m_flowHeight;
+    
+    ftOpticalFlow               m_opticalFlow;
+    ofxDatGuiToggle*            m_renderOpticalFlow;
+    
+    ftFluidSimulation           m_fluidSimulation;
+    ofxDatGuiToggle*            m_renderFluidSimulation;
+    
+    ftVelocityMask              m_velocityMask;
+    
+    ftDisplayScalar             m_scalarDisplay;
+    ftVelocityField             m_velocityField;
+    
+    ftFbo                       m_ftBo;
+    // FLUID STUFF <<
     
     // AUDIO STUFF >>
     ofSoundBuffer               m_soundBuffer;

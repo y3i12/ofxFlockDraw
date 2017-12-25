@@ -84,7 +84,8 @@ ParticleEmitter::ParticleEmitter( ofPixels*& _surface ) :
     m_particleGroups( 0 ),
     m_xMathFunc( m_mathFn ),
     m_velocityAudioFunc( m_audioFn ),
-    m_yMathFunc( m_mathFn )
+    m_yMathFunc( m_mathFn ),
+    m_sizeFactor( 1.0f )
 {
     for ( int i = 0; i < THREADS; ++i )
     {
@@ -138,10 +139,10 @@ ParticleEmitter::~ParticleEmitter(void)
     killAll();
 }
 
-#define EMISSION_AREA_PERCENTAGE 0.3f
+#define EMISSION_AREA_PERCENTAGE 1.0f
 void ParticleEmitter::addParticles( int _group )
 {
-    ofVec2f      refSize( m_referenceSurface->getWidth(), m_referenceSurface->getHeight() );
+    ofVec2f      refSize( m_referenceSurface->getWidth() * m_sizeFactor, m_referenceSurface->getHeight() * m_sizeFactor );
     ofRectangle  emissionArea( m_position, m_position );
     
     // create groups as needed
@@ -151,7 +152,7 @@ void ParticleEmitter::addParticles( int _group )
     }
     
     auto& particleGroup = m_particles[ _group ];
-    int particlesToEmit = std::min< int >( 2, s_particlesPerGroup - particleGroup.size() );
+    int particlesToEmit = std::min< int >( 10, s_particlesPerGroup - particleGroup.size() );
     
     if ( m_referenceSurface )
     {
@@ -368,7 +369,7 @@ void ParticleEmitter::updateParticles( float _currentTime, float _delta, std::ve
     
     for ( auto p : _particles )
     {
-        p->update( _currentTime, _delta );
+        p->update( _currentTime, _delta, m_sizeFactor );
     }
 }
 
@@ -391,7 +392,6 @@ void ParticleEmitter::updateParticleTiming( float _currentTime, float _delta, st
 
 void ParticleEmitter::updateParticlesFollowTheLead( float _currentTime, float _delta, std::vector< Particle* >& _particles )
 {
-    // TODO: XD
     auto& p = _particles[ 0 ];
     ofVec2f& particleVelocity( p->m_velocity );
     ofVec2f& particlePosition( p->m_position );
