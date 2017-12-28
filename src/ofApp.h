@@ -5,14 +5,12 @@
 #include "ofxDatGui.h"
 #include "ofxProcessFFT.h"
 #include "ofxPostProcessing.h"
-#include "ofxFlowTools.h"
 
 #include "ParticleEmitter.h"
 
 #include <string>
 #include <list>
 
-using namespace flowTools;
 
 class ofApp : public ofBaseApp{
     
@@ -76,6 +74,8 @@ public:
     ofxDatGuiFolder*            m_mainPanel;
     ofxDatGuiFolder*            m_helpPanel;
     ofxDatGuiFRM*               m_FPSPanel;
+    ofxDatGuiToggle*            m_renderOpticalFlow;
+    ofxDatGuiToggle*            m_renderFluidSimulation;
     
 private:
     void changeImage( void );
@@ -96,24 +96,6 @@ private:
     
     ProcessFFT                  m_fft;
     ofxAudioAnalyzer            m_audioAnalyzer;
-    
-    // FLUID STUFF >>
-    int                         m_flowWidth;
-    int                         m_flowHeight;
-    
-    ftOpticalFlow               m_opticalFlow;
-    ofxDatGuiToggle*            m_renderOpticalFlow;
-    
-    ftFluidSimulation           m_fluidSimulation;
-    ofxDatGuiToggle*            m_renderFluidSimulation;
-    
-    ftVelocityMask              m_velocityMask;
-    
-    ftDisplayScalar             m_scalarDisplay;
-    ftVelocityField             m_velocityField;
-    
-    ftFbo                       m_ftBo;
-    // FLUID STUFF <<
     
     // AUDIO STUFF >>
     ofSoundBuffer               m_soundBuffer;

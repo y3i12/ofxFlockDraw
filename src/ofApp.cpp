@@ -14,7 +14,7 @@
 
 #define DEBUG_DRAW
 bool                        ofApp::s_debugFFt = true;
-std::vector< std::string >  ofApp::s_particleBehaviors = { "Function", "Flocking", "Function & Flocking", "Follow the lead" };
+std::vector< std::string >  ofApp::s_particleBehaviors = { "Function", "Flocking", "Function & Flocking", "Follow the lead", "Optical Flow", "Fluid" };
 
 
 
@@ -60,52 +60,6 @@ void ofApp::setup()
     ofSetFrameRate( 60 );
     ofPoint displaySz   = ofGetWindowSize();
     
-    // Flow setup
-    m_flowWidth         = displaySz.x / 4;
-    m_flowHeight        = displaySz.y / 4;
-    
-    // simulation setup
-    m_opticalFlow.setup( m_flowWidth, m_flowHeight );
-    m_opticalFlow.setStrength( 75.0f );
-    m_opticalFlow.setOffset( 10.0f );
-    m_opticalFlow.setLambda( 0.1f );
-    m_opticalFlow.setThreshold( 0.0f );
-    m_opticalFlow.setInverseX( false );
-    m_opticalFlow.setInverseY( false );
-    m_opticalFlow.setTimeBlurActive( true );
-    m_opticalFlow.setTimeBlurRadius( 6.2f );
-    m_opticalFlow.setTimeBlurDecay( 10.0f );
-    
-    m_fluidSimulation.setup( m_flowWidth, m_flowHeight, displaySz.x, displaySz.y );
-    m_fluidSimulation.setSpeed( 35.0f );
-    m_fluidSimulation.setCellSize( 1.0f );
-    m_fluidSimulation.setNumJacobiIterations( 40 );
-    m_fluidSimulation.setViscosity( 0.18f );
-    m_fluidSimulation.setVorticity( 0.0f );
-    m_fluidSimulation.setDissipation( 0.01f );
-    m_fluidSimulation.setDissipationVelocityOffset( -0.00166181f );
-    m_fluidSimulation.setDissipationDensityOffset( -0.00155768f );
-    m_fluidSimulation.setDissipationTemperatureOffset( 0.005f );
-    m_fluidSimulation.setSmokeSigma( 0.05f );
-    m_fluidSimulation.setSmokeWeight( 0.05f );
-    m_fluidSimulation.setAmbientTemperature( 2.0f );
-    m_fluidSimulation.setClampForce( 0.05f );
-    m_fluidSimulation.setMaxVelocity( 4.0f );
-    m_fluidSimulation.setMaxDensity( 2.0f );
-    m_fluidSimulation.setMaxTemperature( 2.0f );
-    m_fluidSimulation.setDensityFromVorticity( -0.1f );
-    m_fluidSimulation.setDensityFromPressure( 0.0f );
-    
-    m_velocityMask.setup( displaySz.x, displaySz.y );
-    m_velocityMask.setBlurPasses( 3 );
-    m_velocityMask.setBlurRadius( 5 );
-
-    
-    // visualization setup
-    m_scalarDisplay.setup( m_flowWidth, m_flowHeight );
-    m_velocityField.setup( m_flowWidth / 4, m_flowHeight / 4 );
-    m_ftBo.allocate( 640, 480 );
-    m_ftBo.black();
     m_video.setPixelFormat( OF_PIXELS_RGBA );
     
     
@@ -362,32 +316,7 @@ void ofApp::update()
     if ( m_video.isLoaded() )
     {
         m_surface = &m_video.getPixels();
-     
-        if ( m_video.isFrameNew() )
-        {
-            {
-                ofPushStyle();
-                ofEnableBlendMode( OF_BLENDMODE_DISABLED );
-                m_ftBo.begin();
-                
-                m_video.draw( 0, 0, m_ftBo.getWidth(), m_ftBo.getHeight() );
-                
-                m_ftBo.end();
-                ofPopStyle();
-            }
-            
-            m_opticalFlow.setSource( m_ftBo.getTexture() );
-            m_opticalFlow.update();
-        
-            m_velocityMask.setDensity( m_ftBo.getTexture() );
-            m_velocityMask.setVelocity( m_opticalFlow.getOpticalFlow() );
-            m_velocityMask.update();
-        }
-        
-        m_fluidSimulation.addVelocity( m_opticalFlow.getOpticalFlowDecay() );
-        m_fluidSimulation.addDensity( m_velocityMask.getColorMask() );
-        m_fluidSimulation.addTemperature( m_velocityMask.getLuminanceMask() );
-        m_fluidSimulation.update();
+        m_particleEmitter.updateVideo( m_video.isFrameNew(), m_video );
     }
     // Flow update <<<
     
@@ -486,25 +415,13 @@ void ofApp::draw()
     
     if ( m_renderFluidSimulation && m_renderFluidSimulation->getChecked() )
     {
-        ofEnableBlendMode( OF_BLENDMODE_ALPHA );
-        m_scalarDisplay.setSource( m_fluidSimulation.getVelocity() );
-        m_scalarDisplay.draw( 0, 0, displaySz.x, displaySz.y );
-        
-        ofEnableBlendMode( OF_BLENDMODE_ALPHA );
-        m_velocityField.setVelocity( m_fluidSimulation.getVelocity() );
-        m_velocityField.draw( 0, 0, displaySz.x, displaySz.y );
+        m_particleEmitter.drawFluidVelocity();
 
     }
     
     if ( m_renderOpticalFlow && m_renderOpticalFlow->getChecked() )
     {
-        ofEnableBlendMode( OF_BLENDMODE_ALPHA );
-        m_scalarDisplay.setSource( m_opticalFlow.getOpticalFlowDecay() );
-        m_scalarDisplay.draw( 0, 0, displaySz.x, displaySz.y );
-        
-        ofEnableBlendMode( OF_BLENDMODE_ALPHA );
-        m_velocityField.setVelocity( m_opticalFlow.getOpticalFlowDecay() );
-        m_velocityField.draw( 0, 0, displaySz.x, displaySz.y );
+        m_particleEmitter.drawOpticalFlow();
     }
     
     if ( m_gui->getVisible() )

@@ -10,8 +10,10 @@
 #include <unordered_map>
 
 #include "Particle.h"
+#include "ofxFlowTools.h"
 #include "ofMain.h"
 
+using namespace flowTools;
 class ParticleEmitter
 {
 public:
@@ -20,6 +22,8 @@ public:
         kFlocking               = 1 << 1,
         kFunctionAndFlocking    = kFunction | kFlocking,
         kFollowTheLead          = 1 << 3,
+        kOpticalFlow            = 1 << 4,
+        kFluidVelocity          = 1 << 5
     };
     
     typedef std::function< float ( float ) > PosFunc;
@@ -45,8 +49,11 @@ public:
     virtual ~ParticleEmitter( void );
     
     virtual void draw( void );
+    void drawFluidVelocity( void );
+    void drawOpticalFlow( void );
     virtual void debugDraw( void );
     virtual void update( float _currentTime, float _delta );
+    virtual void updateVideo( bool _isNewFrame, ofBaseDraws& _source );
     
     virtual void pauseThreads( void );
     virtual void continueThreads( void );
@@ -94,6 +101,9 @@ private:
     void updateParticlesFollowTheLead(  float _currentTime, float _delta, std::vector< Particle* >& _particles );
     void updateParticlesFunctions(      float _currentTime, float _delta, std::vector< Particle* >& _particles );
     void updateParticlesFlocking(       float _currentTime, float _delta, std::vector< Particle* >& _particles );
+    void updateParticlesFromSource(     float _currentTime, float _delta, std::vector< Particle* >& _particles, ofTexture& _source );
+    void updateParticlesOpticalFlow(    float _currentTime, float _delta, std::vector< Particle* >& _particles );
+    void updateParticlesFluidVelocity(  float _currentTime, float _delta, std::vector< Particle* >& _particles );
     
     // Threading stuff
     std::vector< std::thread >  m_threads;          // Thread pool
@@ -104,6 +114,7 @@ private:
     std::mutex                  m_updateLock;       // Controls the thread sync
     std::condition_variable     m_conditionVar;     // Thread control
     
+    // Time stuff
     float                       m_currentTime;
     float                       m_delta;
     
@@ -111,15 +122,30 @@ private:
     float                       m_updateFlockTimer;
     float                       m_lastFlockUpdateTime;
     
+    // Counter stuff
     int                         m_particlesPerGroup;
     int                         m_particleGroups;
     
+    // Function control stuff
     FuncCtl                     m_velocityAudioFunc;
     FuncCtl                     m_xMathFunc;
     FuncCtl                     m_yMathFunc;
 
     std::vector< PosFunc >      m_mathFn;
     std::vector< PosFunc >      m_audioFn;
+    
+    // Optical flow and fluid stuff
+    int                         m_flowWidth;
+    int                         m_flowHeight;
+    
+    ftOpticalFlow               m_opticalFlow;
+    ftFluidSimulation           m_fluidSimulation;
+    ftVelocityMask              m_velocityMask;
+
+    ftDisplayScalar             m_scalarDisplay;
+    ftVelocityField             m_velocityField;
+    
+    ftFbo                       m_ftBo;
 };
 
 #endif //__PARTICLE_EMITTER_H__

@@ -132,6 +132,54 @@ ParticleEmitter::ParticleEmitter( ofPixels*& _surface ) :
     /* 04 */ m_audioFn.push_back( [ this ]( float x ) { return  m_soundHigh;  } );
     
     m_velocityAudioFunc.randomize();
+    
+    ofPoint displaySz   = ofGetWindowSize();
+    
+    // Flow setup
+    m_flowWidth         = displaySz.x / 8;
+    m_flowHeight        = displaySz.y / 8;
+    
+    // simulation setup
+    m_opticalFlow.setup( m_flowWidth, m_flowHeight );
+    m_opticalFlow.setStrength( 75.0f );
+    m_opticalFlow.setOffset( 10.0f );
+    m_opticalFlow.setLambda( 0.1f );
+    m_opticalFlow.setThreshold( 0.0f );
+    m_opticalFlow.setInverseX( false );
+    m_opticalFlow.setInverseY( false );
+    m_opticalFlow.setTimeBlurActive( true );
+    m_opticalFlow.setTimeBlurRadius( 6.2f );
+    m_opticalFlow.setTimeBlurDecay( 10.0f );
+    
+    m_fluidSimulation.setup( m_flowWidth, m_flowHeight, displaySz.x, displaySz.y );
+    m_fluidSimulation.setSpeed( 35.0f );
+    m_fluidSimulation.setCellSize( 1.0f );
+    m_fluidSimulation.setNumJacobiIterations( 40 );
+    m_fluidSimulation.setViscosity( 0.18f );
+    m_fluidSimulation.setVorticity( 0.0f );
+    m_fluidSimulation.setDissipation( 0.01f );
+    m_fluidSimulation.setDissipationVelocityOffset( -0.00166181f );
+    m_fluidSimulation.setDissipationDensityOffset( -0.00155768f );
+    m_fluidSimulation.setDissipationTemperatureOffset( 0.005f );
+    m_fluidSimulation.setSmokeSigma( 0.05f );
+    m_fluidSimulation.setSmokeWeight( 0.05f );
+    m_fluidSimulation.setAmbientTemperature( 2.0f );
+    m_fluidSimulation.setClampForce( 0.05f );
+    m_fluidSimulation.setMaxVelocity( 4.0f );
+    m_fluidSimulation.setMaxDensity( 2.0f );
+    m_fluidSimulation.setMaxTemperature( 2.0f );
+    m_fluidSimulation.setDensityFromVorticity( -0.1f );
+    m_fluidSimulation.setDensityFromPressure( 0.0f );
+    
+    m_velocityMask.setup( displaySz.x, displaySz.y );
+    m_velocityMask.setBlurPasses( 3 );
+    m_velocityMask.setBlurRadius( 5 );
+    
+    // visualization setup
+    m_scalarDisplay.setup( m_flowWidth, m_flowHeight );
+    m_velocityField.setup( m_flowWidth / 4, m_flowHeight / 4 );
+    m_ftBo.allocate( 640, 480 );
+    m_ftBo.black();
 }
 
 ParticleEmitter::~ParticleEmitter(void)
@@ -206,6 +254,30 @@ void ParticleEmitter::draw( void )
             particle->draw();
         }
     }
+}
+
+void ParticleEmitter::drawFluidVelocity( void )
+{
+    ofPoint displaySz   = ofGetWindowSize();
+    ofEnableBlendMode( OF_BLENDMODE_ALPHA );
+    m_scalarDisplay.setSource( m_fluidSimulation.getVelocity() );
+    m_scalarDisplay.draw( 0, 0, displaySz.x, displaySz.y );
+    
+    ofEnableBlendMode( OF_BLENDMODE_ALPHA );
+    m_velocityField.setVelocity( m_fluidSimulation.getVelocity() );
+    m_velocityField.draw( 0, 0, displaySz.x, displaySz.y );
+}
+
+void ParticleEmitter::drawOpticalFlow( void )
+{
+    ofPoint displaySz   = ofGetWindowSize();
+    ofEnableBlendMode( OF_BLENDMODE_ALPHA );
+    m_scalarDisplay.setSource( m_opticalFlow.getOpticalFlowDecay() );
+    m_scalarDisplay.draw( 0, 0, displaySz.x, displaySz.y );
+    
+    ofEnableBlendMode( OF_BLENDMODE_ALPHA );
+    m_velocityField.setVelocity( m_opticalFlow.getOpticalFlowDecay() );
+    m_velocityField.draw( 0, 0, displaySz.x, displaySz.y );
 }
 
 void ParticleEmitter::debugDraw( void )
@@ -305,6 +377,35 @@ void ParticleEmitter::update( float _currentTime, float _delta )
     startThreadedUpdate();
     // wait threaded update if it still pending
     waitThreadedUpdate();
+}
+
+void ParticleEmitter::updateVideo( bool _isNewFrame, ofBaseDraws& _source )
+{
+    if ( _isNewFrame )
+    {
+        {
+            ofPushStyle();
+            ofEnableBlendMode( OF_BLENDMODE_DISABLED );
+            m_ftBo.begin();
+            
+            _source.draw( 0, 0, m_ftBo.getWidth(), m_ftBo.getHeight() );
+            
+            m_ftBo.end();
+            ofPopStyle();
+        }
+        
+        m_opticalFlow.setSource( m_ftBo.getTexture() );
+        m_opticalFlow.update();
+        
+        m_velocityMask.setDensity( m_ftBo.getTexture() );
+        m_velocityMask.setVelocity( m_opticalFlow.getOpticalFlow() );
+        m_velocityMask.update();
+    }
+    
+    m_fluidSimulation.addVelocity( m_opticalFlow.getOpticalFlowDecay() );
+    m_fluidSimulation.addDensity( m_velocityMask.getColorMask() );
+    m_fluidSimulation.addTemperature( m_velocityMask.getLuminanceMask() );
+    m_fluidSimulation.update();
 }
 
 void ParticleEmitter::startThreadedUpdate( void )
@@ -516,6 +617,39 @@ void ParticleEmitter::updateParticlesFlocking( float _currentTime, float _delta,
         
         ++itr;
     }
+}
+
+void ParticleEmitter::updateParticlesFromSource( float _currentTime, float _delta, std::vector< Particle* >& _particles, ofTexture& _source )
+{
+    ofVec2f refSize( m_referenceSurface->getWidth() * m_sizeFactor, m_referenceSurface->getHeight() * m_sizeFactor );
+    ofVec2f texSize( _source.getHeight(), _source.getHeight() );
+    ofVec2f ratio( refSize / texSize );
+    
+    // update the particles
+    for ( auto& p : _particles )
+    {
+        ofVec2f& particleVelocity( p->m_velocity );
+        ofVec2f& particlePosition( p->m_position );
+        //ofVec2f& particleAcceleration( p->m_acceleration );
+        //_source->
+        
+        // update the position and velocity of each particle
+        ofVec2f force(
+                      m_xMathFunc( particlePosition.y / 25 )  - 0.5,
+                      m_yMathFunc( particlePosition.x / 25 )  - 0.5
+                      );
+        p->applyForce( force );
+    }
+}
+
+void ParticleEmitter::updateParticlesOpticalFlow( float _currentTime, float _delta, std::vector< Particle* >& _particles )
+{
+    updateParticlesFromSource( _currentTime, _delta, _particles, m_opticalFlow.getOpticalFlowDecay() );
+}
+
+void ParticleEmitter::updateParticlesFluidVelocity( float _currentTime, float _delta, std::vector< Particle* >& _particles )
+{
+    updateParticlesFromSource( _currentTime, _delta, _particles, m_fluidSimulation.getVelocity() );
 }
 
 void ParticleEmitter::pauseThreads( void )
