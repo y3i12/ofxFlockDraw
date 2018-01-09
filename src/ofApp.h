@@ -66,8 +66,6 @@ public:
     float                       m_cycleImageEvery;
     
     ofxDatGui*                  m_gui;
-    ofxDatGui*                  m_audio;
-    ofxDatGui*                  m_guiHelp;
     ofxDatGuiButton*            m_openImageButton;
     ofxDatGuiButton*            m_nextImageButton;
     ofxDatGuiLabel*             m_currentImageLabel;
@@ -75,7 +73,6 @@ public:
     ofxDatGuiFolder*            m_helpPanel;
     ofxDatGuiFRM*               m_FPSPanel;
     ofxDatGuiToggle*            m_renderOpticalFlow;
-    ofxDatGuiToggle*            m_renderFluidSimulation;
     
 private:
     void changeImage( void );

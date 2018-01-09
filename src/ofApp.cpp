@@ -14,15 +14,14 @@
 
 #define DEBUG_DRAW
 bool                        ofApp::s_debugFFt = true;
-std::vector< std::string >  ofApp::s_particleBehaviors = { "Function", "Flocking", "Function & Flocking", "Follow the lead", "Optical Flow", "Fluid" };
+std::vector< std::string >  ofApp::s_particleBehaviors = { "Function", "Flocking", "Function & Flocking", "Follow the lead", "Optical Flow" };
 
-
+#define threshold(n,t) ( std::max< float >( n - t, 0.0f ) / n )
 
 ofApp::ofApp( std::list< std::string >& _args ) :
     m_particleEmitter( m_surface ),
     m_strobe( false ),
-    m_renderOpticalFlow( nullptr ),
-    m_renderFluidSimulation( nullptr )
+    m_renderOpticalFlow( nullptr )
 {
     _args.pop_front();
 }
@@ -33,6 +32,7 @@ void ofApp::setup()
     // Initialize OFX
     ofRestoreWorkingDirectoryToDefault();// little trick to make debugging easier
  
+    ParticleEmitter::init();
     ofSetVerticalSync( false );
     
     // Initialize GLSL
@@ -79,17 +79,16 @@ void ofApp::setup()
     
     // GUI
     m_gui             = new ofxDatGui( ofxDatGuiAnchor::TOP_LEFT  );
-    m_guiHelp         = new ofxDatGui( ofxDatGuiAnchor::TOP_RIGHT );
     
     //m_gui->lightColor = ci::ColorA( 1, 1, 0, 1 );
     //m_gui->textFont   = ci::Font( "Consolas", 12 );
     //m_mainPanel = m_gui->addPanel();
     
     // linking audio pointers to values
-    m_lowPointer    = &Particle::s_particleSizeRatio;  //3.0f
-    m_highPointer   = &Particle::s_particleSpeedRatio; //3.0f
+    //m_lowPointer    = &Particle::s_particleSizeRatio;  //3.0f
+    //m_highPointer   = &Particle::s_particleSpeedRatio; //3.0f
     //    = &Particle::s_dampness; // 0.99f
-    m_midPointer    = &Particle::s_colorRedirection; //360.0f
+    //m_midPointer    = &Particle::s_colorRedirection; //360.0f
     m_lowPointer  = &m_particleEmitter.m_soundLow;
     m_midPointer  = &m_particleEmitter.m_soundMid;
     m_highPointer = &m_particleEmitter.m_soundHigh;
@@ -102,24 +101,24 @@ void ofApp::setup()
     //myDropdown->onDropdownEvent( this, &ofApp::onDropdownEvent );
     ofxDatGuiDropdown* dropdown = m_gui->addDropdown( "Behavior Mode", s_particleBehaviors );
     dropdown->onDropdownEvent( this, &ofApp::onDropdownEvent );
+    m_gui->addSlider( Particle::s_maxRadius             );
+    m_gui->addSlider( Particle::s_particleSizeRatio     );
+    m_gui->addSlider( Particle::s_particleSpeedRatio    );
+    m_gui->addSlider( Particle::s_dampness              );
+    m_gui->addSlider( Particle::s_colorRedirection      );
     
-    m_gui->addSlider( "Particle Size",      Particle::s_particleSizeRatio,  0.25f,   3.0f,  1.0f );
-    m_gui->addSlider( "Particle Speed",     Particle::s_particleSpeedRatio,  0.2f,   3.0f,  1.0f );
-    m_gui->addSlider( "Dampness",           Particle::s_dampness,           0.01f,  1.0f,  0.90f );
-    m_gui->addSlider( "Color Guidance",     Particle::s_colorRedirection,    0.0f, 360.0f, 90.0f );
-    
-    m_gui->addSlider( "#Particles/Group",   ParticleEmitter::s_particlesPerGroup,  50,    5000,   500 );
-    m_gui->addSlider( "#Groups",            ParticleEmitter::s_particleGroups,      1,      20,     5 );
+    m_gui->addSlider( ParticleEmitter::s_particlesPerGroup  );
+    m_gui->addSlider( ParticleEmitter::s_particleGroups     );
     
     m_gui->addBreak()->setHeight( 20.0f );
     m_gui->addLabel( "Flocking Settings" );
     
-    m_gui->addSlider( "Repel Str.",         m_particleEmitter.m_repelStrength,       0.000f,     10.0f,   10.0f ); // 2
-    m_gui->addSlider( "Align Str.",         m_particleEmitter.m_alignStrength,       0.000f,     10.0f,   10.0f ); // 4
-    m_gui->addSlider( "Att. Str.",          m_particleEmitter.m_attractStrength,     0.000f,     10.0f,   10.0f ); // 8
-    m_gui->addSlider( "Area Size",          m_particleEmitter.m_zoneRadiusSqrd,      625.0f, 10000.0f, 2500.0f ); // 5625
-    m_gui->addSlider( "Repel Area",         m_particleEmitter.m_lowThresh,             0.0f,     1.0f,  0.11f ); // 0.45
-    m_gui->addSlider( "Align Area",         m_particleEmitter.m_highThresh,            0.0f,     1.0f,   0.22f ); // 0.85
+    m_gui->addSlider( ParticleEmitter::s_repelStrength      );
+    m_gui->addSlider( ParticleEmitter::s_alignStrength      );
+    m_gui->addSlider( ParticleEmitter::s_attractStrength    );
+    m_gui->addSlider( ParticleEmitter::s_zoneRadiusSqrd     );
+    m_gui->addSlider( ParticleEmitter::s_lowThresh          );
+    m_gui->addSlider( ParticleEmitter::s_highThresh         );
     
     m_gui->addBreak()->setHeight( 20.0f );
     m_gui->addLabel( "Audio Settings/vis" );
@@ -134,7 +133,6 @@ void ofApp::setup()
     m_gui->addToggle( "Strobe",     m_strobe                        )->onToggleEvent( this, &ofApp::onToggleStrobe         );
     
     m_renderOpticalFlow     = m_gui->addToggle( "Show Optical Flow",   false );
-    m_renderFluidSimulation = m_gui->addToggle( "Show Fluid Velocity", false );
     
     m_gui->addBreak()->setHeight( 20.0f );
     
@@ -156,34 +154,6 @@ void ofApp::setup()
     m_gui->addBreak()->setHeight( 10.0f );
     m_gui->addLabel( "y3i12: Yuri Ivatchkovitch" );
     m_gui->addLabel( "http://y3i12.com/"  );
-    
-    // Help!
-    m_guiHelp         = new ofxDatGui( ofxDatGuiAnchor::TOP_RIGHT );
-    
-    /*
-     int x = gui->getPosition().x + gui->getWidth() + 40;
-     l1 = new ofxDatGuiLabel("sliders from of_parameters");
-     l1->setPosition(x, gui->getPosition().y);
-*/
-    
-    m_guiHelp->addLabel( "Quick Help:"              );
-    m_guiHelp->addLabel( "F1  to show/hide help"    );
-    m_guiHelp->addLabel( "'h' to show/hide GUI"     );
-    m_guiHelp->addLabel( "'s' to save config"       );
-    m_guiHelp->addLabel( "'l' to load config"       );
-    m_guiHelp->addLabel( "'o' to open image"        );
-    m_guiHelp->addLabel( "'c' to start/end capture" );
-    m_guiHelp->addLabel( "'f' to hide/show fps"     );
-    m_guiHelp->addLabel( "SPACE to skip image"      );
-    m_guiHelp->addLabel( "ESC to quit"              );
-    
-    m_gui->addBreak()->setHeight( 20.0f );
-    
-    m_guiHelp->addLabel( "Drag multiple files"    );
-    m_guiHelp->addLabel( "to slideshow!"          );
-
-
-    m_guiHelp->setVisible( !m_guiHelp->getVisible() );
     
     // remove invalid paths
     for ( auto itr = m_files.begin(); itr != m_files.end(); ++itr ) {
@@ -274,6 +244,18 @@ void ofApp::update()
     m_tristimulus       = m_audioAnalyzer.getValues( TRISTIMULUS,           0, m_smoothing );
     
     m_isOnset           = m_audioAnalyzer.getOnsetValue( 0 );
+    
+    
+    auto spectrum            = m_fft.getSpectrum();
+    size_t spectrumSize      = spectrum.size();
+    size_t thirdSpectrumSize = spectrumSize / 3;
+    
+    float* valPointers[ 3 ]  = { &m_particleEmitter.m_soundLow, &m_particleEmitter.m_soundMid, &m_particleEmitter.m_soundHigh };
+    *valPointers[ 0 ] = *valPointers[ 1 ] = *valPointers[ 2 ] = 0;
+    for ( size_t i = 0; i < spectrumSize; i++ )
+    {
+        *valPointers[ std::min< size_t >( i / thirdSpectrumSize, 2 ) ] += spectrum[ i ] / thirdSpectrumSize;
+    }
     // Audio update <<<
     
     // Post processing update >>>
@@ -286,7 +268,7 @@ void ofApp::update()
     
     if ( m_spectrum.size() > 2 )
     {
-        m_noiseWrap->setAmplitude( std::max< float >( m_particleEmitter.m_soundLow - 0.3f, 0.0f ) / 50 );
+        m_noiseWrap->setAmplitude( threshold( m_particleEmitter.m_soundLow, 0.3f ) / 50 );
     }
     
     m_zoomBlurPass->setCenterX( m_tristimulus[ 1 ] );
@@ -316,24 +298,14 @@ void ofApp::update()
     if ( m_video.isLoaded() )
     {
         m_surface = &m_video.getPixels();
-        m_particleEmitter.updateVideo( m_video.isFrameNew(), m_video );
+        m_particleEmitter.updateVideo( m_video.isFrameNew(), m_video, delta );
     }
     // Flow update <<<
     
     
     // Particle update >>>
-    auto spectrum            = m_fft.getSpectrum();
-    size_t spectrumSize      = spectrum.size();
-    size_t thirdSpectrumSize = spectrumSize / 3;
     
-    float* valPointers[ 3 ]  = { &m_particleEmitter.m_soundLow, &m_particleEmitter.m_soundMid, &m_particleEmitter.m_soundHigh };
-    *valPointers[ 0 ] = *valPointers[ 1 ] = *valPointers[ 2 ] = 0;
-    for ( size_t i = 0; i < spectrumSize; i++ )
-    {
-        *valPointers[ std::min< size_t >( i / thirdSpectrumSize, 2 ) ] += spectrum[ i ] / thirdSpectrumSize;
-    }
-    
-    Particle::s_particleSizeRatio = std::min< float >( std::max< float >( m_particleEmitter.m_soundLow * 3.0f, 0.3f ), 3.5f );
+    Particle::s_particleSizeRatio = std::min< float >( std::max< float >( m_particleEmitter.m_soundLow * 3.0f, 0.30f ), 5.5f ) * 0.1f;
     m_particleEmitter.update( m_currentTime, delta );
     // Particle update <<<
 
@@ -411,12 +383,6 @@ void ofApp::draw()
         ofDrawBitmapStringHighlight( "LOW:  " + ofToString( m_particleEmitter.m_soundLow  ), 400, 300 );
         ofDrawBitmapStringHighlight( "MID:  " + ofToString( m_particleEmitter.m_soundMid  ), 400, 320 );
         ofDrawBitmapStringHighlight( "HIGH: " + ofToString( m_particleEmitter.m_soundHigh ), 400, 340 );
-    }
-    
-    if ( m_renderFluidSimulation && m_renderFluidSimulation->getChecked() )
-    {
-        m_particleEmitter.drawFluidVelocity();
-
     }
     
     if ( m_renderOpticalFlow && m_renderOpticalFlow->getChecked() )
@@ -748,12 +714,6 @@ void ofApp::keyPressed(int key){
         }
         break;
             
-        case OF_KEY_F1:
-        {
-            m_guiHelp->setVisible( !m_guiHelp->getVisible() );
-        }
-        break;
-            
         case ' ':
         {
             if ( m_files.size() == 1 )
@@ -852,6 +812,10 @@ void ofApp::onDropdownEvent( ofxDatGuiDropdownEvent e )
             
         case 3:
             m_particleEmitter.m_updateType = ParticleEmitter::kFollowTheLead;
+            break;
+            
+        case 4:
+            m_particleEmitter.m_updateType = ParticleEmitter::kOpticalFlow;
             break;
             
         default:
@@ -968,6 +932,7 @@ void ofApp::updateOutputArea( ofVec2f& _imageSize )
     m_outputArea.height     = _imageSize.y;
     
     m_particleEmitter.m_position = ofVec2f( static_cast< float >( m_outputArea.x ), static_cast< float >( m_outputArea.y ) );
+    m_particleEmitter.setInputArea( _imageSize );
 }
 
 void ofApp::setImage( std::string _path )

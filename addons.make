@@ -4,6 +4,7 @@ ofxBeat
 ofxDatGui
 ofxFft
 ofxFlowTools
+ofxImGui
 ofxPostProcessing
 ofxThreadedImageLoader
 ofxTimeMeasurements

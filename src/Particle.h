@@ -24,6 +24,8 @@ public:
 public:
     Particle( ParticleEmitter* _owner, ofVec2f& _position, ofVec2f& _direction );
     
+    static void init( void );
+    
     virtual ~Particle( void );
     
     void applyForce( ofVec2f _force, bool _limit = true );
@@ -63,11 +65,12 @@ public:
     int                 m_group;
     
 public:
-    static float        s_maxRadius;
-    static float        s_particleSizeRatio;
-    static float        s_particleSpeedRatio;
-    static float        s_dampness;
-    static float        s_colorRedirection;
+    static ofParameter< float >     s_maxRadius;
+    static ofParameter< float >     s_particleSizeRatio;
+    static ofParameter< float >     s_particleSpeedRatio;
+    static ofParameter< float >     s_dampness;
+    static ofParameter< float >     s_colorRedirection;
+    static ofParameterGroup         s_particleParameters;
     
 private:
     // temporary variables to avoid construction every update

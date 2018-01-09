@@ -14,12 +14,13 @@ else if ( p.x >= w.x )  p.x  = fmod( p.x, w.x );    \
 if ( p.y < 0.0f )       p.y += w.y;                 \
 else if ( p.y >= w.y )  p.y  = fmod( p.y, w.y );
 
-float  Particle::s_maxRadius          = 0.015f;
-float  Particle::s_particleSizeRatio  = 1.0f;
-float  Particle::s_particleSpeedRatio = 1.0f;
-float  Particle::s_dampness           = 0.9f;
-float  Particle::s_colorRedirection   = 1.0f;
-size_t Particle::s_idGenerator        = 0;
+ofParameter< float >    Particle::s_maxRadius{           "Max Radius",        0.25f, 0.001f,   1.0f };
+ofParameter< float >    Particle::s_particleSizeRatio{   "Size Ratio",        1.0f,  0.001f,   1.0f };
+ofParameter< float >    Particle::s_particleSpeedRatio{  "Speed Ratio",       1.0f,    0.0f,  10.0f };
+ofParameter< float >    Particle::s_dampness{            "Dampness",          0.9f,    0.0f,   1.0f };
+ofParameter< float >    Particle::s_colorRedirection{    "Color Guidance",   90.0f,    0.0f, 360.0f };
+ofParameterGroup        Particle::s_particleParameters;
+size_t                  Particle::s_idGenerator        = 0;
 
 Particle::Particle( ParticleEmitter* _owner, ofVec2f& _position, ofVec2f& _direction ) :
     m_position( _position ),
@@ -38,6 +39,15 @@ Particle::Particle( ParticleEmitter* _owner, ofVec2f& _position, ofVec2f& _direc
     m_id( s_idGenerator++ ),
     m_referenceSurface( _owner->m_referenceSurface )
 {
+    
+}
+void Particle::init( void )
+{
+    if ( 0 == s_particleParameters.size() )
+    {
+        s_particleParameters.setName( "Particle" );
+        s_particleParameters.add( s_maxRadius, s_particleSizeRatio, s_particleSpeedRatio, s_dampness, s_colorRedirection );
+    }
 }
 
 Particle::~Particle( void )
@@ -46,6 +56,8 @@ Particle::~Particle( void )
 
 void Particle::applyForce( ofVec2f _force, bool _limit )
 {
+    if ( _force.x == 0.0f && _force.y == 0.0f ) return;
+    
     m_velocity += _force;
     m_direction = m_velocity.getNormalized();
     if ( _limit ) limitSpeed();
@@ -102,14 +114,13 @@ void Particle::update( float _currentTime, float _delta, float _sizeFactor )
         for ( int i = 0; i < 3; ++i )
         {
             ofVec2f& pointRef = t_nextPos[ i ];
-            
             WRAP( pointRef, wrapSize );
+    
+            ofVec2f colorSource( static_cast< int >( pointRef.x / _sizeFactor ), static_cast< int >( pointRef.y / _sizeFactor ) );
+            WRAP( colorSource, wrapSize );
             
             // to guide thru color
-            t_c      = t_currentColor - m_referenceSurface->getColor(
-                std::max< int >( static_cast< int >( pointRef.x / _sizeFactor ), 0 ),
-                std::max< int >( static_cast< int >( pointRef.y / _sizeFactor ), 0 )
-            );
+            t_c      = t_currentColor - m_referenceSurface->getColor( colorSource.x, colorSource.y );
             t_l[ i ] = t_c.r * 2.0f + t_c.g * 2.0f + t_c.b * 2.0f;
             
             // to guide thru luminance
@@ -158,17 +169,17 @@ void Particle::draw( void )
 void Particle::debugDraw( void )
 {
     ofNoFill();
-    float zoneRadius = sqrt( m_owner->m_zoneRadiusSqrd );
+    float zoneRadius = sqrt( m_owner->s_zoneRadiusSqrd );
     ofVec2f pos    = m_position + m_owner->m_position;
     
     ofSetColor( 255, 255, 255, 128 );
     ofDrawCircle( pos, zoneRadius );
     
     ofSetColor( 255, 255, 0, 128 );
-    ofDrawCircle( pos, zoneRadius * m_owner->m_highThresh );
+    ofDrawCircle( pos, zoneRadius * m_owner->s_highThresh );
     
     ofSetColor( 255, 0, 255, 128 );
-    ofDrawCircle( pos, zoneRadius * m_owner->m_lowThresh );
+    ofDrawCircle( pos, zoneRadius * m_owner->s_lowThresh );
     
     // TODO: draw id text - if needed
     //ofSetColor( 255, 255, 255, 25 );
