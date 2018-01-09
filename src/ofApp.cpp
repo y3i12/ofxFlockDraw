@@ -31,15 +31,17 @@ void ofApp::setup()
 {
     // Initialize OFX
     ofRestoreWorkingDirectoryToDefault();// little trick to make debugging easier
+    ofSetLogLevel( OF_LOG_NOTICE );
+    ofSetBackgroundAuto( false );
+    ofSetVerticalSync( true );
  
     ParticleEmitter::init();
-    ofSetVerticalSync( false );
     
     // Initialize GLSL
     m_post.init( ofGetWidth(), ofGetHeight() );
-    m_bloomPass = m_post.createPass< BloomPass >();
-    m_noiseWrap = m_post.createPass< NoiseWarpPass >();
-    m_rgbShift  = m_post.createPass< RGBShiftPass >();
+    m_bloomPass    = m_post.createPass< BloomPass >();
+    m_noiseWrap    = m_post.createPass< NoiseWarpPass >();
+    m_rgbShift     = m_post.createPass< RGBShiftPass >();
     m_zoomBlurPass = m_post.createPass< ZoomBlurPass >();
     
     m_noiseWrap->setSpeed( 0.5f );
@@ -122,7 +124,7 @@ void ofApp::setup()
     
     m_gui->addBreak()->setHeight( 20.0f );
     m_gui->addLabel( "Audio Settings/vis" );
-    m_gui->addSlider( "Smoothing",         m_smoothing,        0.0f, 1.0f, 0.1f );
+    m_gui->addSlider( m_smoothing );
     
     m_gui->addBreak()->setHeight( 20.0f );
     m_gui->addLabel( "FX" );

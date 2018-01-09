@@ -97,7 +97,7 @@ private:
     // AUDIO STUFF >>
     ofSoundBuffer               m_soundBuffer;
     
-    float                       m_smoothing;
+    ofParameter< float >        m_smoothing{ "Smoothing", 0.1f, 0.0f, 1.0f };
     float                       m_rms;
     float                       m_power;
     float                       m_pitchFreq;
@@ -131,7 +131,7 @@ private:
     std::vector< float >        m_tristimulus;
     
     bool                        m_isOnset;
-    bool                        m_strobe;
+    ofParameter< bool >         m_strobe{ "Strobe", false, false, true };
     // AUDIO STUFF <<
     
     static bool                 s_debugFFt;
