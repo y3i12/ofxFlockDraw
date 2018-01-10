@@ -29,6 +29,8 @@ ofParameterGroup        ParticleEmitter::s_flockingParams;
 
 void ParticleEmitter::init( void )
 {
+    Particle::init();
+    
     if ( 0 == ParticleEmitter::FuncCtl::s_functionParams.size() )
     {
         ParticleEmitter::FuncCtl::s_functionParams.setName( "Func. Switch" );
@@ -37,17 +39,17 @@ void ParticleEmitter::init( void )
     
     if ( 0 == s_flockingParams.size() )
     {
-        s_flockingParams.setName( "Func. Switch" );
-        s_flockingParams.add( s_zoneRadiusSqrd, s_repelStrength, s_alignStrength, s_attractStrength, s_lowThresh, s_highThresh, s_flockingParams );
+        s_flockingParams.setName( "Flocking" );
+        s_flockingParams.add( s_zoneRadiusSqrd, s_repelStrength, s_alignStrength, s_attractStrength, s_lowThresh, s_highThresh );
     }
     
     if ( 0 == s_emitterParams.size() )
     {
         s_emitterParams.setName( "Emitter" );
-        s_emitterParams.add( s_minParticleLife, s_maxParticleLife, s_particlesPerGroup, s_particleGroups, s_debugDraw, s_flockingParams, ParticleEmitter::FuncCtl::s_functionParams );
+        s_emitterParams.add( Particle::s_particleParameters, s_minParticleLife, s_maxParticleLife, s_particlesPerGroup, s_particleGroups, s_debugDraw, s_flockingParams, ParticleEmitter::FuncCtl::s_functionParams );
+        
     }
     
-    Particle::init();
 }
 
 ParticleEmitter::FuncCtl::FuncCtl( std::vector< ParticleEmitter::PosFunc >& _fn ) :

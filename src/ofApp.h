@@ -2,7 +2,7 @@
 
 #include "ofMain.h"
 #include "ofxAudioAnalyzer.h"
-#include "ofxDatGui.h"
+#include "ofxGuiExtended.h"
 #include "ofxProcessFFT.h"
 #include "ofxPostProcessing.h"
 
@@ -37,18 +37,25 @@ public:
     void dragEvent( ofDragInfo dragInfo );
     void gotMessage( ofMessage msg      );
     
-    void onToggleStrobe( ofxDatGuiToggleEvent e );
-    void onToggleRGBShiftPass( ofxDatGuiToggleEvent e );
-    void onToggleNoiseWarpPass( ofxDatGuiToggleEvent e );
-    void onToggleBloomPass( ofxDatGuiToggleEvent e );
-    void onToggleZoomBlurPass( ofxDatGuiToggleEvent e );
+    void onToggleFunction( bool& b );
+    void onToggleFlocking( bool& b );
+    void onToggleFunctionAndFlocking( bool& b );
+    void onToggleFollowTheLead( bool& b );
+    void onToggleOpticalFlow( bool& b );
+    void updateFunctionType( void );
+
+    void onToggleStrobe( bool& b );
+    void onToggleRGBShiftPass( bool& b );
+    void onToggleNoiseWarpPass( bool& b );
+    void onToggleBloomPass( bool& b );
+    void onToggleZoomBlurPass( bool& b );
     // POST PROCESSING STUFF <<
-    void onDropdownEvent( ofxDatGuiDropdownEvent e );
+    //void onDropdownEvent( ofxDatGuiDropdownEvent e );
     
     // gui buttons
-    void openImageCallBack( ofxDatGuiButtonEvent e );
+    void openImageCallBack( void );
     bool openImage( void );
-    void nextImageCallBack( ofxDatGuiButtonEvent e );
+    void nextImageCallBack( void );
     bool nextImage( void );
     
     // misc routines
@@ -65,14 +72,13 @@ public:
     std::list< std::string >    m_files;
     float                       m_cycleImageEvery;
     
-    ofxDatGui*                  m_gui;
-    ofxDatGuiButton*            m_openImageButton;
-    ofxDatGuiButton*            m_nextImageButton;
-    ofxDatGuiLabel*             m_currentImageLabel;
-    ofxDatGuiFolder*            m_mainPanel;
-    ofxDatGuiFolder*            m_helpPanel;
-    ofxDatGuiFRM*               m_FPSPanel;
-    ofxDatGuiToggle*            m_renderOpticalFlow;
+    ofxGuiButton*               m_openImageButton;
+    ofxGuiButton*               m_nextImageButton;
+    ofxGuiLabel*                m_currentImageLabel;
+    ofxGuiPanel*                m_mainPanel;
+    ofParameter< bool >         m_renderOpticalFlow{ "Show Optical Flow", false, false, true };
+    std::vector< ofxGuiToggle* > m_functionButtons;
+    ofxGui                      m_gui;
     
 private:
     void changeImage( void );

@@ -65,7 +65,7 @@ void ofApp::setup()
     m_video.setPixelFormat( OF_PIXELS_RGBA );
     
     
-    m_frameBufferObject.allocate( displaySz.x, displaySz.y, GL_RGBA32F_ARB);
+    m_frameBufferObject.allocate( displaySz.x, displaySz.y, GL_RGBA32F_ARB );
     
     // config vars
     m_cycleImageEvery = 0.0;
@@ -80,7 +80,7 @@ void ofApp::setup()
     m_particleEmitter.m_minLifeTime        = 10.0;
     
     // GUI
-    m_gui             = new ofxDatGui( ofxDatGuiAnchor::TOP_LEFT  );
+    //m_gui             = new ofxDatGui( ofxDatGuiAnchor::TOP_LEFT  );
     
     //m_gui->lightColor = ci::ColorA( 1, 1, 0, 1 );
     //m_gui->textFont   = ci::Font( "Consolas", 12 );
@@ -95,13 +95,65 @@ void ofApp::setup()
     m_midPointer  = &m_particleEmitter.m_soundMid;
     m_highPointer = &m_particleEmitter.m_soundHigh;
     
-    // general settings
-    m_gui->addLabel( "General Settings" );
+    m_mainPanel = m_gui.addPanel( ParticleEmitter::s_emitterParams );
+    
+    m_mainPanel->addSpacer( 0, 20 );
+    
+    m_mainPanel->add< ofxGuiLabel  >( "Function Mode" );
+    m_mainPanel->add< ofxGuiToggle >( "Function",               false )->addListener( this, &ofApp::onToggleFunction );
+    m_mainPanel->add< ofxGuiToggle >( "Flocking",               false )->addListener( this, &ofApp::onToggleFlocking );
+    m_mainPanel->add< ofxGuiToggle >( "Function & Flocking",    true  )->addListener( this, &ofApp::onToggleFunctionAndFlocking );
+    m_mainPanel->add< ofxGuiToggle >( "Follow the lead",        false )->addListener( this, &ofApp::onToggleFollowTheLead );
+    m_mainPanel->add< ofxGuiToggle >( "Optical Flow",           false )->addListener( this, &ofApp::onToggleOpticalFlow );
+    
+    m_mainPanel->addSpacer( 0, 10 );
+    
+    m_mainPanel->add< ofxGuiLabel  >( "FX" );
+    m_mainPanel->add< ofxGuiToggle >( "RGB Shift",  m_rgbShift->getEnabled()        )->addListener( this, &ofApp::onToggleRGBShiftPass   );
+    m_mainPanel->add< ofxGuiToggle >( "Noise Wrap", m_noiseWrap->getEnabled()       )->addListener( this, &ofApp::onToggleNoiseWarpPass  );
+    m_mainPanel->add< ofxGuiToggle >( "Bloom Pass", m_bloomPass->getEnabled()       )->addListener( this, &ofApp::onToggleBloomPass      );
+    m_mainPanel->add< ofxGuiToggle >( "Zoom Blur",  m_zoomBlurPass->getEnabled()    )->addListener( this, &ofApp::onToggleZoomBlurPass   );
+    bool _strobe = m_strobe;
+    m_mainPanel->add< ofxGuiToggle >( "Strobe",     _strobe                         )->addListener( this, &ofApp::onToggleStrobe         );
+    m_mainPanel->add< ofxGuiToggle >( m_renderOpticalFlow );
+    
+    m_mainPanel->addSpacer( 0, 10 );
+    
+    m_mainPanel->add< ofxGuiLabel  >( "Audio Settings/vis" );
+    m_mainPanel->add( m_smoothing );
+    
+    m_mainPanel->addSpacer( 0, 10 );
+    
+    m_openImageButton = m_mainPanel->add< ofxGuiButton >( "Open Image" );
+    m_openImageButton->addListener( this, &ofApp::openImageCallBack );
+    
+    m_nextImageButton = m_mainPanel->add< ofxGuiButton >( "Next Image" );
+    m_nextImageButton->addListener( this, &ofApp::nextImageCallBack );
+    
+    m_mainPanel->addSpacer( 0, 10 );
+    
+    m_mainPanel->addFpsPlotter();
+    
+    // some info
+    m_mainPanel->addSpacer( 0, 10 );
+    m_mainPanel->add< ofxGuiLabel  >( "Current Image:" );
+    m_currentImageLabel = m_mainPanel->add< ofxGuiLabel  >( "" );
+    
+    // deserved credits
+    m_mainPanel->addSpacer( 0, 10 );
+    m_mainPanel->add< ofxGuiLabel  >( "y3i12: Yuri Ivatchkovitch" );
+    m_mainPanel->add< ofxGuiLabel  >( "http://y3i12.com/"  );
+    
+    
+    
+    
+    
+    //m_gui->addLabel( "General Settings" );
     //m_gui->addSlider( "Pic. Cycle Time",    m_cycleImageEvery,               3.0f, 120.0f, 15.0f );
     
     //ofxDatGuiDropdown* myDropdown = new ofxDatGuiDropdown( "Behavior Mode", s_particleBehaviors );
     //myDropdown->onDropdownEvent( this, &ofApp::onDropdownEvent );
-    ofxDatGuiDropdown* dropdown = m_gui->addDropdown( "Behavior Mode", s_particleBehaviors );
+    /*ofxDatGuiDropdown* dropdown = m_gui->addDropdown( "Behavior Mode", s_particleBehaviors );
     dropdown->onDropdownEvent( this, &ofApp::onDropdownEvent );
     m_gui->addSlider( Particle::s_maxRadius             );
     m_gui->addSlider( Particle::s_particleSizeRatio     );
@@ -155,7 +207,7 @@ void ofApp::setup()
     // deserved credits
     m_gui->addBreak()->setHeight( 10.0f );
     m_gui->addLabel( "y3i12: Yuri Ivatchkovitch" );
-    m_gui->addLabel( "http://y3i12.com/"  );
+    m_gui->addLabel( "http://y3i12.com/"  );*/
     
     // remove invalid paths
     for ( auto itr = m_files.begin(); itr != m_files.end(); ++itr ) {
@@ -387,12 +439,12 @@ void ofApp::draw()
         ofDrawBitmapStringHighlight( "HIGH: " + ofToString( m_particleEmitter.m_soundHigh ), 400, 340 );
     }
     
-    if ( m_renderOpticalFlow && m_renderOpticalFlow->getChecked() )
+    if ( m_renderOpticalFlow )
     {
         m_particleEmitter.drawOpticalFlow();
     }
     
-    if ( m_gui->getVisible() )
+    if ( m_gui.getVisible() )
     {
         ofPushMatrix();
         ofTranslate(350, 0);
@@ -629,7 +681,7 @@ void ofApp::draw()
     //m_fft.drawBars();
     
     // draw the UI
-    m_gui->draw();
+    //m_gui->draw();
 }
 
 //--------------------------------------------------------------
@@ -699,7 +751,7 @@ void ofApp::keyPressed(int key){
             
         case 'h':
         {
-            m_gui->setVisible( !m_gui->getVisible() );
+            m_mainPanel->setHidden( m_mainPanel->getVisible() );
         }
         break;
             
@@ -796,63 +848,82 @@ void ofApp::dragEvent(ofDragInfo dragInfo){
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void ofApp::onDropdownEvent( ofxDatGuiDropdownEvent e )
+void ofApp::onToggleFunction( bool& b )
 {
-    //cout << "the option at index # " << e.child << " was selected " << endl;
-    switch ( e.child ) {
-        case 0:
-            m_particleEmitter.m_updateType = ParticleEmitter::kFunction;
-            break;
-            
-        case 1:
-            m_particleEmitter.m_updateType = ParticleEmitter::kFlocking;
-            break;
-            
-        case 2:
-            m_particleEmitter.m_updateType = ParticleEmitter::kFunctionAndFlocking;
-            break;
-            
-        case 3:
-            m_particleEmitter.m_updateType = ParticleEmitter::kFollowTheLead;
-            break;
-            
-        case 4:
-            m_particleEmitter.m_updateType = ParticleEmitter::kOpticalFlow;
-            break;
-            
-        default:
-            break;
+    m_particleEmitter.m_updateType = ParticleEmitter::kFunction;
+    updateFunctionType();
+    return false;
+}
+
+void ofApp::onToggleFlocking( bool& b )
+{
+    m_particleEmitter.m_updateType = ParticleEmitter::kFlocking;
+    updateFunctionType();
+    return false;
+}
+
+void ofApp::onToggleFunctionAndFlocking( bool& b )
+{
+    m_particleEmitter.m_updateType = ParticleEmitter::kFunctionAndFlocking;
+    updateFunctionType();
+    return false;
+}
+
+void ofApp::onToggleFollowTheLead( bool& b )
+{
+    m_particleEmitter.m_updateType = ParticleEmitter::kFollowTheLead;
+    updateFunctionType();
+    return false;
+}
+
+void ofApp::onToggleOpticalFlow( bool& b )
+{
+    m_particleEmitter.m_updateType = ParticleEmitter::kOpticalFlow;
+    updateFunctionType();
+    return false;
+}
+
+void ofApp::updateFunctionType( void )
+{
+    for ( int i = 0; i < m_functionButtons.size(); ++i )
+    {
+        ( *m_functionButtons[ i ] ) = static_cast< bool >( ( m_particleEmitter.m_updateType >> i ) & 1 );
     }
 }
 
-void ofApp::onToggleStrobe( ofxDatGuiToggleEvent e )
+void ofApp::onToggleStrobe( bool& b )
 {
-    m_strobe = e.checked;
+    m_strobe = !m_strobe;
+    return false;
 }
 
-void ofApp::onToggleRGBShiftPass( ofxDatGuiToggleEvent e )
+void ofApp::onToggleRGBShiftPass( bool& b )
 {
-    m_rgbShift->setEnabled( e.checked );
+    m_rgbShift->setEnabled( m_rgbShift->getEnabled() );
+    return false;
 }
 
-void ofApp::onToggleNoiseWarpPass( ofxDatGuiToggleEvent e )
+void ofApp::onToggleNoiseWarpPass( bool& b )
 {
-    m_noiseWrap->setEnabled( e.checked );
+    m_noiseWrap->setEnabled( m_noiseWrap->getEnabled() );
+    return false;
 }
 
-void ofApp::onToggleBloomPass( ofxDatGuiToggleEvent e )
+void ofApp::onToggleBloomPass( bool& b )
 {
-    m_bloomPass->setEnabled( e.checked );
+    m_bloomPass->setEnabled( m_bloomPass->getEnabled() );
+    return false;
 }
 
-void ofApp::onToggleZoomBlurPass( ofxDatGuiToggleEvent e )
+void ofApp::onToggleZoomBlurPass( bool& b )
 {
-    m_zoomBlurPass->setEnabled( e.checked );
+    m_zoomBlurPass->setEnabled( m_bloomPass->getEnabled() );
+    return false;
 }
 
-void ofApp::openImageCallBack( ofxDatGuiButtonEvent e )
+void ofApp::openImageCallBack( void )
 {
-    return openImage();
+    openImage();
 }
 
 bool ofApp::openImage( void )
@@ -912,9 +983,9 @@ bool ofApp::openImage( void )
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void ofApp::nextImageCallBack( ofxDatGuiButtonEvent e )
+void ofApp::nextImageCallBack( void )
 {
-    return nextImage();
+    nextImage();
 }
 
 bool ofApp::nextImage( void )
@@ -988,7 +1059,7 @@ void ofApp::changeImage( void )
     
     // set the filename in the widget
     ofFile file( m_imageToSet );
-    m_currentImageLabel->setLabel( file.getFileName() );
+    m_currentImageLabel->setName( file.getFileName() );
     
     m_particleEmitter.continueThreads();
     
