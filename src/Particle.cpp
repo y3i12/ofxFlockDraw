@@ -24,7 +24,7 @@ bool WRAP( ofVec2f& p, ofVec2f& w )
     
     if ( p.y < 0.0f )
     {
-        p.y = w.x - fmod( fabs( p.x ), w.y );
+        p.y = w.x - fmod( fabs( p.y ), w.y );
         r = true;
     }
     else if ( p.y >= w.y )

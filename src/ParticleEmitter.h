@@ -91,9 +91,12 @@ public:
     ofPixels*&                  m_referenceSurface;
     float                       m_sizeFactor;
     
+    // Emitter stuff
     static ofParameter< float > s_minSpeed;
     static ofParameter< float > s_midSpeed;
     static ofParameter< float > s_maxSpeed;
+    
+    static ofParameter< float > s_functionStrength;
     
     static ofParameter< float > s_minParticleLife;
     static ofParameter< float > s_maxParticleLife;

@@ -12,6 +12,7 @@
 ofParameter< float >    ParticleEmitter::s_minSpeed{            "Min Part. Speed",     1.0f,   1.0f,  500.0f };
 ofParameter< float >    ParticleEmitter::s_midSpeed{            "Max Part. Speed",    16.0f,   1.0f,  500.0f };
 ofParameter< float >    ParticleEmitter::s_maxSpeed{            "Max Part. Speed",   100.0f,   1.0f,  500.0f };
+ofParameter< float >    ParticleEmitter::s_functionStrength{    "Fn. Strentgth",       5.0f,   0.1f,   10.0f };
 ofParameter< float >    ParticleEmitter::s_minParticleLife{     "Mix Part. Life",      1.0f,   0.5f,   60.0f };
 ofParameter< float >    ParticleEmitter::s_maxParticleLife{     "Max Part. Life",     10.0f,   0.5f,   60.0f };
 ofParameter< int   >    ParticleEmitter::s_particlesPerGroup{   "Particles/Group",     1000,    50,     5000 };
@@ -50,7 +51,7 @@ void ParticleEmitter::init( void )
     if ( 0 == s_emitterParams.size() )
     {
         s_emitterParams.setName( "Emitter" );
-        s_emitterParams.add( s_minParticleLife, s_maxParticleLife, s_particlesPerGroup, s_particleGroups, s_debugDraw );
+        s_emitterParams.add( s_functionStrength, s_minParticleLife, s_maxParticleLife, s_particlesPerGroup, s_particleGroups, s_debugDraw );
         
     }
     
@@ -525,7 +526,7 @@ void ParticleEmitter::updateParticlesFollowTheLead( float _currentTime, float _d
     
     // update the position and velocity of the first particle
     ofVec2f force( m_xMathFunc( particlePosition.y / 25 )  - 0.5, m_yMathFunc( particlePosition.x / 25 )  - 0.5 );
-    p->applyInstantForce( force * 10 );
+    p->applyInstantForce( force * s_functionStrength );
     
     particleVelocity *= 1.0f + ( m_velocityAudioFunc( particlePosition.y ) * 5.0f );
     p->m_flockLeader = true;
@@ -548,7 +549,7 @@ void ParticleEmitter::updateParticlesFunctions( float _currentTime, float _delta
             m_xMathFunc( particlePosition.y / 25 )  - 0.5,
             m_yMathFunc( particlePosition.x / 25 )  - 0.5
         );
-        p->applyInstantForce( force  * 10 );
+        p->applyInstantForce( force  * s_functionStrength );
         
         particleVelocity *= 1.0f + ( m_velocityAudioFunc( particlePosition.y ) * 5.0f );
     }

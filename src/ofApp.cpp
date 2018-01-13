@@ -644,31 +644,31 @@ void ofApp::updateFunctionType( void )
 
 void ofApp::onToggleStrobe( bool& b )
 {
-    m_strobe = !m_strobe;
+    m_strobe = b;
     return false;
 }
 
 void ofApp::onToggleRGBShiftPass( bool& b )
 {
-    m_rgbShift->setEnabled( !m_rgbShift->getEnabled() );
+    m_rgbShift->setEnabled( b );
     return false;
 }
 
 void ofApp::onToggleNoiseWarpPass( bool& b )
 {
-    m_noiseWrap->setEnabled( !m_noiseWrap->getEnabled() );
+    m_noiseWrap->setEnabled( b );
     return false;
 }
 
 void ofApp::onToggleBloomPass( bool& b )
 {
-    m_bloomPass->setEnabled( !m_bloomPass->getEnabled() );
+    m_bloomPass->setEnabled( b );
     return false;
 }
 
 void ofApp::onToggleZoomBlurPass( bool& b )
 {
-    m_zoomBlurPass->setEnabled( !m_bloomPass->getEnabled() );
+    m_zoomBlurPass->setEnabled( b );
     return false;
 }
 
