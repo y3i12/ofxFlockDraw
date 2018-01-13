@@ -13,7 +13,7 @@ bool WRAP( ofVec2f& p, ofVec2f& w )
     bool r = false;
     if ( p.x < 0.0f )
     {
-        p.x += w.x;
+        p.x = w.x - fmod( fabs( p.x ), w.x );
         r = true;
     }
     else if ( p.x >= w.x )
@@ -24,7 +24,7 @@ bool WRAP( ofVec2f& p, ofVec2f& w )
     
     if ( p.y < 0.0f )
     {
-        p.y += w.y;
+        p.y = w.x - fmod( fabs( p.x ), w.y );
         r = true;
     }
     else if ( p.y >= w.y )
@@ -39,6 +39,7 @@ bool WRAP( ofVec2f& p, ofVec2f& w )
 ofParameter< float >    Particle::s_maxRadius{           "Max Radius",        0.25f, 0.001f,   1.0f };
 ofParameter< float >    Particle::s_particleSizeRatio{   "Size Ratio",        1.0f,  0.001f,   1.0f };
 ofParameter< float >    Particle::s_particleSpeedRatio{  "Speed Ratio",       1.0f,    0.0f,  10.0f };
+ofParameter< float >    Particle::s_friction{            "Friction",          0.9f,    0.0f,   1.0f };
 ofParameter< float >    Particle::s_dampness{            "Dampness",          0.9f,    0.0f,   1.0f };
 ofParameter< float >    Particle::s_colorRedirection{    "Color Guidance",   90.0f,    0.0f, 360.0f };
 ofParameterGroup        Particle::s_particleParameters;
@@ -68,7 +69,7 @@ void Particle::init( void )
     if ( 0 == s_particleParameters.size() )
     {
         s_particleParameters.setName( "Particle" );
-        s_particleParameters.add( s_maxRadius, s_particleSizeRatio, s_particleSpeedRatio, s_dampness, s_colorRedirection );
+        s_particleParameters.add( s_maxRadius, s_particleSizeRatio, s_particleSpeedRatio, s_friction, s_dampness, s_colorRedirection );
     }
 }
 
@@ -76,13 +77,16 @@ Particle::~Particle( void )
 {
 }
 
-void Particle::applyForce( ofVec2f _force, bool _limit )
+void Particle::applyInstantForce( ofVec2f _force )
 {
-    if ( _force.x == 0.0f && _force.y == 0.0f ) return;
-    
-    m_velocity += _force;
-    m_direction = m_velocity.getNormalized();
-    if ( _limit ) limitSpeed();
+    m_instantAcceleration  += _force;
+    m_direction             = ( m_velocity + m_acceleration + m_instantAcceleration ).getNormalized();
+}
+
+void Particle::applyForce( ofVec2f _force )
+{
+    m_acceleration += _force;
+    m_direction     = ( m_velocity + m_acceleration + m_instantAcceleration ).getNormalized();
 }
 
 void Particle::update( float _currentTime, float _delta, float _sizeFactor )
@@ -90,28 +94,23 @@ void Particle::update( float _currentTime, float _delta, float _sizeFactor )
     m_oldPosition = m_position;
     
     // capping to avoid errors
-    if ( std::isnan( m_velocity.x ) || fabs( m_velocity.x ) > 100.0f ||
-         std::isnan( m_velocity.y ) || fabs( m_velocity.y ) > 100.0f )
+    if ( std::isnan( m_velocity.x ) || fabs( m_velocity.x ) > 1000.0f ||
+         std::isnan( m_velocity.y ) || fabs( m_velocity.y ) > 1000.0f )
     {
         m_velocity.normalize();
     }
     
+    
     // update the speed
-    m_velocity += m_acceleration;
-    m_acceleration.set( 0.0f, 0.0f );
-    m_direction = m_velocity.getNormalized();
-    //limitSpeed();
-    
-    // update the position
-    m_position += m_velocity * _delta * Particle::s_particleSpeedRatio;
-    m_velocity *= Particle::s_dampness;
-    
+    m_velocity *= Particle::s_dampness * _delta;
+    m_velocity += m_acceleration + m_instantAcceleration;
+    m_instantAcceleration.set( 0.0f, 0.0f );
     
     // capping to avoid errors
-    if ( std::isnan( m_velocity.x ) || m_velocity.x > 500.0f ) m_velocity.x = 0.0f;
-    if ( std::isnan( m_velocity.y ) || m_velocity.y > 500.0f ) m_velocity.y = 0.0f;
-    if ( std::isnan( m_position.x ) || m_position.x <   0.0f ) m_position.x = 0.0f;
-    if ( std::isnan( m_position.y ) || m_position.y <   0.0f ) m_position.y = 0.0f;
+    if ( std::isnan( m_velocity.x ) ) m_velocity.x = 0.0f;
+    if ( std::isnan( m_velocity.y ) ) m_velocity.y = 0.0f;
+    if ( std::isnan( m_position.x ) ) m_position.x = 0.0f;
+    if ( std::isnan( m_position.y ) ) m_position.y = 0.0f;
     
     if ( m_referenceSurface )
     {
@@ -167,6 +166,13 @@ void Particle::update( float _currentTime, float _delta, float _sizeFactor )
             m_velocity.rotate( t_angle * -2.0f * _delta );
         }
     }
+    
+    
+    limitSpeed();
+    // update the position
+    m_position     += m_velocity * _delta * Particle::s_particleSpeedRatio;
+    m_velocity     *= Particle::s_friction * _delta;
+    m_acceleration *= Particle::s_dampness * _delta;
 }
 
 void Particle::updateTimer( float _delta )

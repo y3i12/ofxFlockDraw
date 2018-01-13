@@ -28,7 +28,8 @@ public:
     
     virtual ~Particle( void );
     
-    void applyForce( ofVec2f _force, bool _limit = true );
+    void applyInstantForce( ofVec2f _force );
+    void applyForce( ofVec2f _force );
     virtual void update( float _currentTime, float _delta, float _sizeFactor );
     void updateTimer( float _delta );
     virtual void draw( void );
@@ -47,6 +48,7 @@ public:
     ofVec2f             m_direction;
     ofVec2f             m_velocity;
     ofVec2f             m_acceleration;
+    ofVec2f             m_instantAcceleration;
     
     ofColor             m_color;
     unsigned char       m_alpha;
@@ -69,6 +71,7 @@ public:
     static ofParameter< float >     s_maxRadius;
     static ofParameter< float >     s_particleSizeRatio;
     static ofParameter< float >     s_particleSpeedRatio;
+    static ofParameter< float >     s_friction;
     static ofParameter< float >     s_dampness;
     static ofParameter< float >     s_colorRedirection;
     static ofParameterGroup         s_particleParameters;

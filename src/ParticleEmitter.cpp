@@ -4,27 +4,31 @@
 #include <cmath>
 #include <algorithm>
 #include <cstdlib>
+#include <chrono>
 
 #define PI2             6.28318530718f
 #define THREADS         4
 
-ofParameter< float >    ParticleEmitter::s_minParticleLife{     "Mix Particle Life",  1.0f,  0.5f, 60.0f };
-ofParameter< float >    ParticleEmitter::s_maxParticleLife{     "Max Particle Life", 10.0f,  0.5f, 60.0f };
-ofParameter< int   >    ParticleEmitter::s_particlesPerGroup{   "Particles/Group",    1000,    50,  5000 };
-ofParameter< int   >    ParticleEmitter::s_particleGroups{      "Particle Groups",       4,     4,    20 };
-ofParameter< bool  >    ParticleEmitter::s_debugDraw{           "Debug Draw",        false, false,  true };
+ofParameter< float >    ParticleEmitter::s_minSpeed{            "Min Part. Speed",     1.0f,   1.0f,  500.0f };
+ofParameter< float >    ParticleEmitter::s_midSpeed{            "Max Part. Speed",    16.0f,   1.0f,  500.0f };
+ofParameter< float >    ParticleEmitter::s_maxSpeed{            "Max Part. Speed",   100.0f,   1.0f,  500.0f };
+ofParameter< float >    ParticleEmitter::s_minParticleLife{     "Mix Part. Life",      1.0f,   0.5f,   60.0f };
+ofParameter< float >    ParticleEmitter::s_maxParticleLife{     "Max Part. Life",     10.0f,   0.5f,   60.0f };
+ofParameter< int   >    ParticleEmitter::s_particlesPerGroup{   "Particles/Group",     1000,    50,     5000 };
+ofParameter< int   >    ParticleEmitter::s_particleGroups{      "Particle Groups",        1,     4,       20 };
+ofParameter< bool  >    ParticleEmitter::s_debugDraw{           "Debug Draw",         false, false,     true };
 ofParameterGroup        ParticleEmitter::s_emitterParams;
 
 ofParameter< float >    ParticleEmitter::FuncCtl::s_minChangeTime{ "Min change time",  3.0f, 1.0f, 60.0f };
 ofParameter< float >    ParticleEmitter::FuncCtl::s_maxChangeTime{ "Max change time", 20.0f, 1.0f, 60.0f };
 ofParameterGroup        ParticleEmitter::FuncCtl::s_functionParams;
 
-ofParameter< float >    ParticleEmitter::s_repelStrength{      "Repel Str.",    2.0f,    0.0f,    10.0f };
-ofParameter< float >    ParticleEmitter::s_alignStrength{      "Align Str.",    4.0f,    0.0f,    10.0f };
-ofParameter< float >    ParticleEmitter::s_attractStrength{    "Att. Str.",     8.0f,    0.0f,    10.0f };
-ofParameter< float >    ParticleEmitter::s_zoneRadiusSqrd{     "Area Size",  5625.0f,  625.0f, 10000.0f };
-ofParameter< float >    ParticleEmitter::s_lowThresh{          "Repel Area",   0.45f,    0.0f,     1.0f };
-ofParameter< float >    ParticleEmitter::s_highThresh{         "Align Area",   0.85f,    0.0f,     1.0f };
+ofParameter< float >    ParticleEmitter::s_repelStrength{      "Repel Str.",    2.0f,    0.0f,     10.0f };
+ofParameter< float >    ParticleEmitter::s_alignStrength{      "Align Str.",    4.0f,    0.0f,     10.0f };
+ofParameter< float >    ParticleEmitter::s_attractStrength{    "Att. Str.",     8.0f,    0.0f,     10.0f };
+ofParameter< float >    ParticleEmitter::s_zoneRadiusSqrd{     "Area Size",  5625.0f,  625.0f, 100000.0f };
+ofParameter< float >    ParticleEmitter::s_lowThresh{          "Repel Area",   0.45f,    0.0f,      1.0f };
+ofParameter< float >    ParticleEmitter::s_highThresh{         "Align Area",   0.85f,    0.0f,      1.0f };
 ofParameterGroup        ParticleEmitter::s_flockingParams;
 
 void ParticleEmitter::init( void )
@@ -46,7 +50,7 @@ void ParticleEmitter::init( void )
     if ( 0 == s_emitterParams.size() )
     {
         s_emitterParams.setName( "Emitter" );
-        s_emitterParams.add( Particle::s_particleParameters, s_minParticleLife, s_maxParticleLife, s_particlesPerGroup, s_particleGroups, s_debugDraw, s_flockingParams, ParticleEmitter::FuncCtl::s_functionParams );
+        s_emitterParams.add( s_minParticleLife, s_maxParticleLife, s_particlesPerGroup, s_particleGroups, s_debugDraw );
         
     }
     
@@ -243,8 +247,8 @@ void ParticleEmitter::addParticles( int _group )
             p = new Particle( this, m_position, angleVector );
         }
         
-        p->m_maxSpeedSquared = ofRandom( 10.0f, 50.0f );
-        p->m_minSpeedSquared = ofRandom( 1.0f, 10.0f );
+        p->m_maxSpeedSquared = ofRandom( s_midSpeed, s_maxSpeed  );
+        p->m_minSpeedSquared = ofRandom( s_minSpeed, s_midSpeed );
         
         p->m_acceleration         = p->m_direction;
         p->m_acceleration.normalize();
@@ -447,7 +451,7 @@ void ParticleEmitter::waitThreadedUpdate( void )
     std::unique_lock< std::mutex > ul( m_updateLock );
     
     // and wait until all threadsdo their job
-    m_conditionVar.wait( ul, [ this ](){ return m_processing == 0; } );
+    while ( !m_conditionVar.wait_for( ul, std::chrono::milliseconds( 10 ), [ this ](){ return m_processing == 0; } ) );
 }
 
 void ParticleEmitter::threadProcessParticles( size_t _threadNumber )
@@ -521,7 +525,7 @@ void ParticleEmitter::updateParticlesFollowTheLead( float _currentTime, float _d
     
     // update the position and velocity of the first particle
     ofVec2f force( m_xMathFunc( particlePosition.y / 25 )  - 0.5, m_yMathFunc( particlePosition.x / 25 )  - 0.5 );
-    p->applyForce( force, false );
+    p->applyInstantForce( force * 10 );
     
     particleVelocity *= 1.0f + ( m_velocityAudioFunc( particlePosition.y ) * 5.0f );
     p->m_flockLeader = true;
@@ -538,14 +542,13 @@ void ParticleEmitter::updateParticlesFunctions( float _currentTime, float _delta
     {
         ofVec2f& particleVelocity( p->m_velocity );
         ofVec2f& particlePosition( p->m_position );
-        //ofVec2f& particleAcceleration( p->m_acceleration );
         
         // update the position and velocity of each particle
         ofVec2f force(
             m_xMathFunc( particlePosition.y / 25 )  - 0.5,
             m_yMathFunc( particlePosition.x / 25 )  - 0.5
         );
-        p->applyForce( force, false );
+        p->applyInstantForce( force  * 10 );
         
         particleVelocity *= 1.0f + ( m_velocityAudioFunc( particlePosition.y ) * 5.0f );
     }
@@ -598,8 +601,8 @@ void ParticleEmitter::updateParticlesFlocking( float _currentTime, float _delta,
                         dir.normalize();
                         dir *= F;
                         
-                        if ( !p1->m_flockLeader ) p1->m_acceleration += dir;
-                        if ( !p2->m_flockLeader ) p2->m_acceleration -= dir;
+                        if ( !p1->m_flockLeader ) p1->applyForce( dir );
+                        if ( !p2->m_flockLeader ) p2->applyForce( -dir );
                     }
                     else if( percent < s_highThresh ) // Alignment
                     {
@@ -612,8 +615,8 @@ void ParticleEmitter::updateParticlesFlocking( float _currentTime, float _delta,
                         float adjustedPercent	= ( percent - s_lowThresh ) / threshDelta;
                         float F               = ( 1.0f - ( cos( adjustedPercent * PI2 ) * -0.5f + 0.5f ) ) * s_alignStrength * updateRatio;
                         
-                        if ( !p1->m_flockLeader ) p1->m_acceleration += p2->m_direction * F;
-                        if ( !p2->m_flockLeader ) p2->m_acceleration += p1->m_direction * F;
+                        if ( !p1->m_flockLeader ) p1->applyForce( p2->m_direction * F );
+                        if ( !p2->m_flockLeader ) p2->applyForce( p1->m_direction * F );
                         
                     }
                     else 								// Cohesion
@@ -630,8 +633,8 @@ void ParticleEmitter::updateParticlesFlocking( float _currentTime, float _delta,
                         dir.normalize();
                         dir *= F;
                         
-                        if ( !p1->m_flockLeader ) p1->m_acceleration -= dir;
-                        if ( !p2->m_flockLeader ) p2->m_acceleration += dir;
+                        if ( !p1->m_flockLeader ) p1->applyForce( -dir );
+                        if ( !p2->m_flockLeader ) p2->applyForce(  dir );
                     }
                 }
             }
@@ -649,9 +652,7 @@ void ParticleEmitter::updateParticlesOpticalFlow( float _currentTime, float _del
     // update the particles
     for ( auto& p : _particles )
     {
-        ofVec2f& particleVelocity( p->m_velocity );
         ofVec2f& particlePosition( p->m_position );
-        //ofVec2f& particleAcceleration( p->m_acceleration );
         ofFloatColor c = m_opticalFlowPixels.getColor( particlePosition.x * ratio.x, particlePosition.y * ratio.y );
         
         // update the position and velocity of each particle
@@ -662,7 +663,7 @@ void ParticleEmitter::updateParticlesOpticalFlow( float _currentTime, float _del
         //multiplier /= 10.0f;
         ofVec2f force( ( c.r ) * multiplier,
                        ( c.g ) * multiplier );
-        p->applyForce( force, false );
+        p->applyForce( force );
         //particleVelocity = force;
     }
 }

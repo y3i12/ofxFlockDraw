@@ -110,7 +110,13 @@ void ofApp::setup()
     m_mainPanel = m_gui.addPanel( "Settings" );
     m_visPanel->getVisible() = false;
     m_mainPanel->add( m_visPanel->getVisible() );
-    m_mainPanel->addGroup( ParticleEmitter::s_emitterParams );
+    ofxGuiGroup* g = m_mainPanel->addGroup( ParticleEmitter::s_emitterParams );
+    g->add< ofxGuiFloatRangeSlider >( ParticleEmitter::s_minSpeed, ParticleEmitter::s_midSpeed, ofJson( { { "precision", 2 } } ) );
+    g->add< ofxGuiFloatRangeSlider >( ParticleEmitter::s_midSpeed, ParticleEmitter::s_maxSpeed, ofJson( { { "precision", 2 } } ) );
+
+    m_mainPanel->addGroup( Particle::s_particleParameters );
+    m_mainPanel->addGroup( ParticleEmitter::FuncCtl::s_functionParams );
+    m_mainPanel->addGroup( ParticleEmitter::s_flockingParams );
     
     // m_mainPanel->addSpacer( 0, 20 );
     
