@@ -114,9 +114,11 @@ void Particle::update( float _currentTime, float _delta, float _sizeFactor )
         for ( int i = 0; i < 3; ++i )
         {
             ofVec2f& pointRef = t_nextPos[ i ];
-            WRAP( pointRef, wrapSize );
-    
             ofVec2f colorSource( static_cast< int >( pointRef.x / _sizeFactor ), static_cast< int >( pointRef.y / _sizeFactor ) );
+            
+            wrapSize.x = m_referenceSurface->getWidth();
+            wrapSize.y = m_referenceSurface->getHeight();
+            
             WRAP( colorSource, wrapSize );
             
             // to guide thru color

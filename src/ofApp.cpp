@@ -391,6 +391,7 @@ void ofApp::draw()
     ofPoint displaySz = ofGetWindowSize();
     
     // do the drawing =D
+    //*
     m_frameBufferObject.begin();
     {
         ofEnableBlendMode(OF_BLENDMODE_ALPHA);
@@ -400,13 +401,6 @@ void ofApp::draw()
             ofDrawRectangle( 0, 0, displaySz.x, displaySz.y );
         
             ofSetColor( 0, 0, 0, 255 );
-            /*
-            blendMode = OF_BLENDMODE_ALPHA;
-            blendMode = OF_BLENDMODE_ADD;
-            blendMode = OF_BLENDMODE_MULTIPLY;
-            blendMode = OF_BLENDMODE_SUBTRACT;
-            blendMode = OF_BLENDMODE_SCREEN;
-            //*/
             m_particleEmitter.draw();
         }
         ofDisableBlendMode();
@@ -420,20 +414,18 @@ void ofApp::draw()
     m_post.end();
     if ( m_strobe && m_isOnset )
     {
-        /*
-        blendMode = OF_BLENDMODE_ALPHA;
-        blendMode = OF_BLENDMODE_ADD;
-        blendMode = OF_BLENDMODE_MULTIPLY;
-        blendMode = OF_BLENDMODE_SUBTRACT;
-        blendMode = OF_BLENDMODE_SCREEN;
-        //*/
+        //blendMode = OF_BLENDMODE_ALPHA;
+        //blendMode = OF_BLENDMODE_ADD;
+        //blendMode = OF_BLENDMODE_MULTIPLY;
+        //blendMode = OF_BLENDMODE_SUBTRACT;
+        //blendMode = OF_BLENDMODE_SCREEN;
         ofEnableBlendMode( OF_BLENDMODE_SCREEN );
         {
             ofSetColor( m_tristimulus[ 0 ] * 255, m_tristimulus[ 1 ] * 255, m_tristimulus[ 2 ] * 255, 64 );
             ofDrawRectangle( 0, 0, displaySz.x, displaySz.y );
         }
         ofDisableBlendMode();
-    }
+    }//*/
     
     if ( ParticleEmitter::s_debugDraw )
     {
@@ -462,7 +454,7 @@ void ofApp::draw()
         m_particleEmitter.drawOpticalFlow();
     }
     
-    if ( m_gui.getVisible() )
+    if ( 0&&m_gui.getVisible() )
     {
         ofPushMatrix();
         ofTranslate(350, 0);
@@ -769,7 +761,7 @@ void ofApp::keyPressed(int key){
             
         case 'h':
         {
-            m_mainPanel->setHidden( m_mainPanel->getVisible() );
+            m_gui.getVisible() = !m_gui.getVisible();
         }
         break;
             

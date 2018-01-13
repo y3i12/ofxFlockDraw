@@ -163,7 +163,7 @@ ParticleEmitter::ParticleEmitter( ofPixels*& _surface ) :
     
     m_velocityAudioFunc.randomize();
     
-    ofPoint displaySz   = ofGetWindowSize();
+    ofPoint displaySz   = ofPoint( 1280, 720 );
     
     // Flow setup
     m_flowWidth         = displaySz.x / 4;
@@ -274,15 +274,15 @@ void ParticleEmitter::drawOpticalFlow( void )
     ofPoint displaySz   = ofGetWindowSize();
     ofPushStyle();
     ofEnableBlendMode( OF_BLENDMODE_ALPHA );
-    ofFloatImage oi;
-    oi.setFromPixels( m_opticalFlowPixels );
-    oi.draw( 0, 0, displaySz.x, displaySz.y );
+    //ofFloatImage oi;
+    //oi.setFromPixels( m_opticalFlowPixels );
+    //oi.draw( m_position.x, m_position.y, m_referenceSurface->getWidth() * m_sizeFactor, m_referenceSurface->getHeight() * m_sizeFactor );
     m_scalarDisplay.setSource( m_opticalFlow.getOpticalFlowDecay() );
-    m_scalarDisplay.draw( 0, 0, displaySz.x, displaySz.y );
+    m_scalarDisplay.draw( m_position.x, m_position.y, m_referenceSurface->getWidth() * m_sizeFactor, m_referenceSurface->getHeight() * m_sizeFactor );
     
-    //ofEnableBlendMode( OF_BLENDMODE_ALPHA );
+    ofEnableBlendMode( OF_BLENDMODE_ADD );
     m_velocityField.setVelocity( m_opticalFlow.getOpticalFlowDecay() );
-    m_velocityField.draw( 0, 0, displaySz.x, displaySz.y );
+    m_velocityField.draw( m_position.x, m_position.y, m_referenceSurface->getWidth() * m_sizeFactor, m_referenceSurface->getHeight() * m_sizeFactor );
     ofPopStyle();
 }
 
@@ -387,26 +387,27 @@ void ParticleEmitter::update( float _currentTime, float _delta )
 
 void ParticleEmitter::updateVideo( bool _isNewFrame, ofVideoPlayer& _source, float _delta )
 {
-    if ( _isNewFrame )
+    if ( _isNewFrame && ( m_updateType & kOpticalFlow ) )
     {
         {
-            //m_ftBo.stretchIntoMe( _source.getTexture() );
-            //*
+            m_ftBo.stretchIntoMe( _source.getTexture() );
+            /*
             ofPushStyle();
             m_ftBo.begin();
             ofEnableBlendMode( OF_BLENDMODE_DISABLED );
             
-            _source.draw( 0, 0, m_ftBo.getWidth() * m_sizeFactor, m_ftBo.getHeight() * m_sizeFactor );
+            _source.draw( 0, 0, m_ftBo.getWidth(), m_ftBo.getHeight() );
             
             m_ftBo.end();
             ofPopStyle();
+            */
         }
         
         //m_opticalFlow.setSource( _source.getTexture() );
         m_opticalFlow.setSource( m_ftBo.getTexture() );
-        m_opticalFlow.update( );//_delta );
+        m_opticalFlow.update( _delta );
+        updateOpticalFlow( _delta );
     }
-    if ( m_updateType & kOpticalFlow ) updateOpticalFlow( _delta );
 }
 
 
@@ -414,7 +415,7 @@ void ParticleEmitter::updateOpticalFlow( float _delta )
 {
     m_scalarDisplay.setSource( m_opticalFlow.getOpticalFlowDecay() );
     m_scalarDisplay.update();
-    m_scalarDisplay.getTexture().readToPixels( m_opticalFlowPixels );
+    m_opticalFlow.getOpticalFlowDecay().readToPixels( m_opticalFlowPixels );
 }
 
 
@@ -657,10 +658,10 @@ void ParticleEmitter::updateParticlesOpticalFlow( float _currentTime, float _del
         //ofVec2f force( ( static_cast< float >( c.r ) / 255.0f ) * ( 1.0f - static_cast< float >( c.a ) / 255.0f ),
         //               ( static_cast< float >( c.g ) / 255.0f ) * ( 1.0f - static_cast< float >( c.a ) / 255.0f ) );
         float multiplier = ( ( c.a ) * 10.0f );
-        multiplier *= multiplier;
-        multiplier /= 10.0f;
-        ofVec2f force( c.r * multiplier,
-                      c.g * multiplier );
+        //multiplier *= multiplier;
+        //multiplier /= 10.0f;
+        ofVec2f force( ( c.r ) * multiplier,
+                       ( c.g ) * multiplier );
         p->applyForce( force, false );
         //particleVelocity = force;
     }
