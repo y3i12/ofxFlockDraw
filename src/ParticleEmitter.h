@@ -101,6 +101,9 @@ public:
     
     void waitThreadedUpdate( void );
     
+    // Optical flow stuff
+    ftOpticalFlow               m_opticalFlow;
+    
 private:
     void addParticles( int _group = -1 );
     void startThreadedUpdate( void );
@@ -148,7 +151,7 @@ private:
     int                         m_flowWidth;
     int                         m_flowHeight;
     
-    ftOpticalFlow               m_opticalFlow;
+    
     ofFloatPixels               m_opticalFlowPixels;
     
     ftDisplayScalar             m_scalarDisplay;

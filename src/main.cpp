@@ -18,6 +18,7 @@ int main( int argc, char** argv ){
     windowSettings.width        = 1680;
     windowSettings.height       = 1050;
     windowSettings.windowMode   = OF_FULLSCREEN; // OF_WINDOW;
+    //windowSettings.windowMode   =  OF_WINDOW;
     
     ofCreateWindow( windowSettings );
     

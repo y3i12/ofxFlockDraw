@@ -59,7 +59,7 @@ public:
     bool nextImage( void );
     
     // misc routines
-    void updateOutputArea( ofVec2f& _imageSize );
+    void updateOutputArea( ofVec2f _imageSize );
     void setImage( std::string _path );
     
     // properties

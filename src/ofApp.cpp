@@ -134,6 +134,7 @@ void ofApp::setup()
     uiGroup->add< ofxGuiToggle >( "Strobe",     _strobe                         )->addListener( this, &ofApp::onToggleStrobe         );
     uiGroup->add< ofxGuiToggle >( m_renderOpticalFlow );
     
+    uiGroup = m_mainPanel->addGroup( m_particleEmitter.m_opticalFlow.parameters );
     //m_mainPanel->addSpacer( 0, 10 );
     
     m_mainPanel->add< ofxGuiLabel  >( "Audio Settings/vis" );
@@ -928,25 +929,25 @@ void ofApp::onToggleStrobe( bool& b )
 
 void ofApp::onToggleRGBShiftPass( bool& b )
 {
-    m_rgbShift->setEnabled( m_rgbShift->getEnabled() );
+    m_rgbShift->setEnabled( !m_rgbShift->getEnabled() );
     return false;
 }
 
 void ofApp::onToggleNoiseWarpPass( bool& b )
 {
-    m_noiseWrap->setEnabled( m_noiseWrap->getEnabled() );
+    m_noiseWrap->setEnabled( !m_noiseWrap->getEnabled() );
     return false;
 }
 
 void ofApp::onToggleBloomPass( bool& b )
 {
-    m_bloomPass->setEnabled( m_bloomPass->getEnabled() );
+    m_bloomPass->setEnabled( !m_bloomPass->getEnabled() );
     return false;
 }
 
 void ofApp::onToggleZoomBlurPass( bool& b )
 {
-    m_zoomBlurPass->setEnabled( m_bloomPass->getEnabled() );
+    m_zoomBlurPass->setEnabled( !m_bloomPass->getEnabled() );
     return false;
 }
 
@@ -1025,16 +1026,20 @@ bool ofApp::nextImage( void )
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void ofApp::updateOutputArea( ofVec2f& _imageSize )
+void ofApp::updateOutputArea( ofVec2f _imageSize )
 {
-    ofPoint     windowSz    = ofGetWindowSize();
+    ofPoint   windowSz              = ofGetWindowSize();
+    m_particleEmitter.m_sizeFactor  = fmin( windowSz.x / _imageSize.x, windowSz.y / _imageSize.y );
+    
+    m_particleEmitter.setInputArea( _imageSize );
+    
+    _imageSize *= m_particleEmitter.m_sizeFactor;
     m_outputArea.x          = windowSz.x / 2 - _imageSize.x / 2;
     m_outputArea.y          = windowSz.y / 2 - _imageSize.y / 2;
     m_outputArea.width      = _imageSize.x;
     m_outputArea.height     = _imageSize.y;
     
     m_particleEmitter.m_position = ofVec2f( static_cast< float >( m_outputArea.x ), static_cast< float >( m_outputArea.y ) );
-    m_particleEmitter.setInputArea( _imageSize );
 }
 
 void ofApp::setImage( std::string _path )
@@ -1073,15 +1078,13 @@ void ofApp::changeImage( void )
         return;
     }
     
-    ofPoint   windowSz              = ofGetWindowSize();
-    m_particleEmitter.m_sizeFactor  = fmin( windowSz.x / aSize.x, windowSz.y / aSize.y );
     
     // update  the image name
     m_currentImageLabel->setName( m_imageToSet );
     
     // update the output area
-    ofVec2f newSize( aSize.x * m_particleEmitter.m_sizeFactor, aSize.y * m_particleEmitter.m_sizeFactor );
-    updateOutputArea( newSize );
+    //ofVec2f newSize( aSize.x * m_particleEmitter.m_sizeFactor, aSize.y * m_particleEmitter.m_sizeFactor );
+    updateOutputArea( aSize );
     
     // resets the cycle counter;
     m_cycleCounter = 0.0;

@@ -185,7 +185,7 @@ ParticleEmitter::ParticleEmitter( ofPixels*& _surface ) :
     m_velocityField.setup( m_flowWidth / 4, m_flowHeight / 4 );
     
     m_opticalFlowPixels.allocate( m_flowWidth, m_flowHeight, OF_IMAGE_COLOR_ALPHA );
-    m_ftBo.allocate( 640, 480 );
+    m_ftBo.allocate( 640, 480, GL_RGB32F );
     m_ftBo.black();
     
     m_scalarDisplay.setScale( 1.0f );
@@ -390,11 +390,13 @@ void ParticleEmitter::updateVideo( bool _isNewFrame, ofVideoPlayer& _source, flo
     if ( _isNewFrame )
     {
         {
+            //m_ftBo.stretchIntoMe( _source.getTexture() );
+            //*
             ofPushStyle();
-            ofEnableBlendMode( OF_BLENDMODE_DISABLED );
             m_ftBo.begin();
+            ofEnableBlendMode( OF_BLENDMODE_DISABLED );
             
-            _source.draw( 0, 0, m_ftBo.getWidth(), m_ftBo.getHeight() );
+            _source.draw( 0, 0, m_ftBo.getWidth() * m_sizeFactor, m_ftBo.getHeight() * m_sizeFactor );
             
             m_ftBo.end();
             ofPopStyle();
@@ -431,12 +433,12 @@ void ParticleEmitter::startThreadedUpdate( void )
 
 void ParticleEmitter::setInputArea( ofVec2f& _imageSize )
 {
-    m_flowWidth         = _imageSize.x / 4;
-    m_flowHeight        = _imageSize.y / 4;
-    m_opticalFlow.setup( m_flowWidth, m_flowHeight );
-    m_scalarDisplay.setup( m_flowWidth, m_flowHeight );
-    m_velocityField.setup( m_flowWidth / 4, m_flowHeight / 4 );
-    m_opticalFlowPixels.allocate( m_flowWidth, m_flowHeight, OF_IMAGE_COLOR_ALPHA );
+    //m_flowWidth         = _imageSize.x / 4;
+    //m_flowHeight        = _imageSize.y / 4;
+    //m_opticalFlow.setup( m_flowWidth, m_flowHeight );
+    //m_scalarDisplay.setup( m_flowWidth, m_flowHeight );
+    //m_velocityField.setup( m_flowWidth / 4, m_flowHeight / 4 );
+    //m_opticalFlowPixels.allocate( m_flowWidth, m_flowHeight, OF_IMAGE_COLOR_ALPHA );
 }
 
 void ParticleEmitter::waitThreadedUpdate( void )
