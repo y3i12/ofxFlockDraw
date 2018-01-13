@@ -8,15 +8,49 @@
 #define PI2             6.28318530718f
 #define THREADS         4
 
-float ParticleEmitter::s_minParticleLife = 3.0f;
-float ParticleEmitter::s_maxParticleLife = 10.0f;
+ofParameter< float >    ParticleEmitter::s_minParticleLife{     "Mix Particle Life",  1.0f,  0.5f, 60.0f };
+ofParameter< float >    ParticleEmitter::s_maxParticleLife{     "Max Particle Life", 10.0f,  0.5f, 60.0f };
+ofParameter< int   >    ParticleEmitter::s_particlesPerGroup{   "Particles/Group",    1000,    50,  5000 };
+ofParameter< int   >    ParticleEmitter::s_particleGroups{      "Particle Groups",       4,     4,    20 };
+ofParameter< bool  >    ParticleEmitter::s_debugDraw{           "Debug Draw",        false, false,  true };
+ofParameterGroup        ParticleEmitter::s_emitterParams;
 
-int  ParticleEmitter::s_particlesPerGroup  = 0.0f;
-int  ParticleEmitter::s_particleGroups     = 0.0f;
-bool ParticleEmitter::s_debugDraw          = false;
+ofParameter< float >    ParticleEmitter::FuncCtl::s_minChangeTime{ "Min change time",  3.0f, 1.0f, 60.0f };
+ofParameter< float >    ParticleEmitter::FuncCtl::s_maxChangeTime{ "Max change time", 20.0f, 1.0f, 60.0f };
+ofParameterGroup        ParticleEmitter::FuncCtl::s_functionParams;
 
-float ParticleEmitter::FuncCtl::s_minChangeTime = 3.0f;
-float ParticleEmitter::FuncCtl::s_maxChangeTime = 20.0f;
+ofParameter< float >    ParticleEmitter::s_repelStrength{      "Repel Str.",    2.0f,    0.0f,    10.0f };
+ofParameter< float >    ParticleEmitter::s_alignStrength{      "Align Str.",    4.0f,    0.0f,    10.0f };
+ofParameter< float >    ParticleEmitter::s_attractStrength{    "Att. Str.",     8.0f,    0.0f,    10.0f };
+ofParameter< float >    ParticleEmitter::s_zoneRadiusSqrd{     "Area Size",  5625.0f,  625.0f, 10000.0f };
+ofParameter< float >    ParticleEmitter::s_lowThresh{          "Repel Area",   0.45f,    0.0f,     1.0f };
+ofParameter< float >    ParticleEmitter::s_highThresh{         "Align Area",   0.85f,    0.0f,     1.0f };
+ofParameterGroup        ParticleEmitter::s_flockingParams;
+
+void ParticleEmitter::init( void )
+{
+    Particle::init();
+    
+    if ( 0 == ParticleEmitter::FuncCtl::s_functionParams.size() )
+    {
+        ParticleEmitter::FuncCtl::s_functionParams.setName( "Func. Switch" );
+        ParticleEmitter::FuncCtl::s_functionParams.add( ParticleEmitter::FuncCtl::s_minChangeTime, ParticleEmitter::FuncCtl::s_maxChangeTime );
+    }
+    
+    if ( 0 == s_flockingParams.size() )
+    {
+        s_flockingParams.setName( "Flocking" );
+        s_flockingParams.add( s_zoneRadiusSqrd, s_repelStrength, s_alignStrength, s_attractStrength, s_lowThresh, s_highThresh );
+    }
+    
+    if ( 0 == s_emitterParams.size() )
+    {
+        s_emitterParams.setName( "Emitter" );
+        s_emitterParams.add( Particle::s_particleParameters, s_minParticleLife, s_maxParticleLife, s_particlesPerGroup, s_particleGroups, s_debugDraw, s_flockingParams, ParticleEmitter::FuncCtl::s_functionParams );
+        
+    }
+    
+}
 
 ParticleEmitter::FuncCtl::FuncCtl( std::vector< ParticleEmitter::PosFunc >& _fn ) :
     m_fnList( _fn ),
@@ -65,26 +99,23 @@ ParticleEmitter::ParticleEmitter( ofPixels*& _surface ) :
     m_soundMid( 0.0f ),
     m_soundHigh( 0.0f ),
     m_updateType( kFunctionAndFlocking ),
-    m_zoneRadiusSqrd( 75.0f * 75.0f ),
-    m_repelStrength( 0.04f ),
-    m_alignStrength( 0.04f ),
-    m_attractStrength( 0.02f ),
-    m_lowThresh( 0.125f ),
-    m_highThresh( 0.65f ),
     m_referenceSurface( _surface ),
     m_stop( false ),
     m_pause( false ),
     m_processing( 0 ),
-    m_currentTime( 0.0 ),
-    m_delta( 0.0 ),
-    m_updateFlockEvery( 0.1 ),
-    m_updateFlockTimer( 0.0 ),
-    m_lastFlockUpdateTime( 0.0 ),
+    m_currentTime( 0.0f ),
+    m_delta( 0.0f ),
+    m_currentDrawTime( 0.0f ),
+    m_drawDelta( 0.0f ),
+    m_updateFlockEvery( 0.1f ),
+    m_updateFlockTimer( 0.0f ),
+    m_lastFlockUpdateTime( 0.0f ),
     m_particlesPerGroup( 0 ),
     m_particleGroups( 0 ),
     m_xMathFunc( m_mathFn ),
     m_velocityAudioFunc( m_audioFn ),
-    m_yMathFunc( m_mathFn )
+    m_yMathFunc( m_mathFn ),
+    m_sizeFactor( 1.0f )
 {
     for ( int i = 0; i < THREADS; ++i )
     {
@@ -131,6 +162,34 @@ ParticleEmitter::ParticleEmitter( ofPixels*& _surface ) :
     /* 04 */ m_audioFn.push_back( [ this ]( float x ) { return  m_soundHigh;  } );
     
     m_velocityAudioFunc.randomize();
+    
+    ofPoint displaySz   = ofPoint( 1280, 720 );
+    
+    // Flow setup
+    m_flowWidth         = displaySz.x / 4;
+    m_flowHeight        = displaySz.y / 4;
+    
+    // simulation setup
+    m_opticalFlow.setup( m_flowWidth, m_flowHeight );
+    m_opticalFlow.setStrength( 40.0f );
+    m_opticalFlow.setOffset( 1.0f );
+    m_opticalFlow.setLambda( 0.015f );
+    m_opticalFlow.setThreshold( 0.01f );
+    m_opticalFlow.setTimeBlurActive( true );
+    m_opticalFlow.setTimeBlurRadius( 3.2f );
+    m_opticalFlow.setTimeBlurDecay( 10.0f );
+    
+    // visualization setup
+    m_scalarDisplay.setup( m_flowWidth, m_flowHeight );
+    //m_scalarDisplay.allocate( m_flowWidth, m_flowHeight );
+    m_velocityField.setup( m_flowWidth / 4, m_flowHeight / 4 );
+    
+    m_opticalFlowPixels.allocate( m_flowWidth, m_flowHeight, OF_IMAGE_COLOR_ALPHA );
+    m_ftBo.allocate( 640, 480, GL_RGB32F );
+    m_ftBo.black();
+    
+    m_scalarDisplay.setScale( 1.0f );
+    
 }
 
 ParticleEmitter::~ParticleEmitter(void)
@@ -138,10 +197,10 @@ ParticleEmitter::~ParticleEmitter(void)
     killAll();
 }
 
-#define EMISSION_AREA_PERCENTAGE 0.3f
+#define EMISSION_AREA_PERCENTAGE 1.0f
 void ParticleEmitter::addParticles( int _group )
 {
-    ofVec2f      refSize( m_referenceSurface->getWidth(), m_referenceSurface->getHeight() );
+    ofVec2f      refSize( m_referenceSurface->getWidth() * m_sizeFactor, m_referenceSurface->getHeight() * m_sizeFactor );
     ofRectangle  emissionArea( m_position, m_position );
     
     // create groups as needed
@@ -151,7 +210,7 @@ void ParticleEmitter::addParticles( int _group )
     }
     
     auto& particleGroup = m_particles[ _group ];
-    int particlesToEmit = std::min< int >( 2, s_particlesPerGroup - particleGroup.size() );
+    int particlesToEmit = std::min< int >( 10, s_particlesPerGroup - particleGroup.size() );
     
     if ( m_referenceSurface )
     {
@@ -198,6 +257,9 @@ void ParticleEmitter::addParticles( int _group )
 
 void ParticleEmitter::draw( void )
 {
+    m_drawDelta = ofGetElapsedTimef() - m_currentDrawTime;
+    m_currentDrawTime += m_drawDelta;
+    
     for ( auto& particleGroup : m_particles )
     {
         for ( auto particle : particleGroup )
@@ -205,6 +267,23 @@ void ParticleEmitter::draw( void )
             particle->draw();
         }
     }
+}
+
+void ParticleEmitter::drawOpticalFlow( void )
+{
+    ofPoint displaySz   = ofGetWindowSize();
+    ofPushStyle();
+    ofEnableBlendMode( OF_BLENDMODE_ALPHA );
+    //ofFloatImage oi;
+    //oi.setFromPixels( m_opticalFlowPixels );
+    //oi.draw( m_position.x, m_position.y, m_referenceSurface->getWidth() * m_sizeFactor, m_referenceSurface->getHeight() * m_sizeFactor );
+    m_scalarDisplay.setSource( m_opticalFlow.getOpticalFlowDecay() );
+    m_scalarDisplay.draw( m_position.x, m_position.y, m_referenceSurface->getWidth() * m_sizeFactor, m_referenceSurface->getHeight() * m_sizeFactor );
+    
+    ofEnableBlendMode( OF_BLENDMODE_ADD );
+    m_velocityField.setVelocity( m_opticalFlow.getOpticalFlowDecay() );
+    m_velocityField.draw( m_position.x, m_position.y, m_referenceSurface->getWidth() * m_sizeFactor, m_referenceSurface->getHeight() * m_sizeFactor );
+    ofPopStyle();
 }
 
 void ParticleEmitter::debugDraw( void )
@@ -306,6 +385,40 @@ void ParticleEmitter::update( float _currentTime, float _delta )
     waitThreadedUpdate();
 }
 
+void ParticleEmitter::updateVideo( bool _isNewFrame, ofVideoPlayer& _source, float _delta )
+{
+    if ( _isNewFrame && ( m_updateType & kOpticalFlow ) )
+    {
+        {
+            m_ftBo.stretchIntoMe( _source.getTexture() );
+            /*
+            ofPushStyle();
+            m_ftBo.begin();
+            ofEnableBlendMode( OF_BLENDMODE_DISABLED );
+            
+            _source.draw( 0, 0, m_ftBo.getWidth(), m_ftBo.getHeight() );
+            
+            m_ftBo.end();
+            ofPopStyle();
+            */
+        }
+        
+        //m_opticalFlow.setSource( _source.getTexture() );
+        m_opticalFlow.setSource( m_ftBo.getTexture() );
+        m_opticalFlow.update( _delta );
+        updateOpticalFlow( _delta );
+    }
+}
+
+
+void ParticleEmitter::updateOpticalFlow( float _delta )
+{
+    m_scalarDisplay.setSource( m_opticalFlow.getOpticalFlowDecay() );
+    m_scalarDisplay.update();
+    m_opticalFlow.getOpticalFlowDecay().readToPixels( m_opticalFlowPixels );
+}
+
+
 void ParticleEmitter::startThreadedUpdate( void )
 {
     // initialize the number of threads that are currently active
@@ -317,6 +430,16 @@ void ParticleEmitter::startThreadedUpdate( void )
     {
         m_conditionVar.notify_one();
     }
+}
+
+void ParticleEmitter::setInputArea( ofVec2f& _imageSize )
+{
+    //m_flowWidth         = _imageSize.x / 4;
+    //m_flowHeight        = _imageSize.y / 4;
+    //m_opticalFlow.setup( m_flowWidth, m_flowHeight );
+    //m_scalarDisplay.setup( m_flowWidth, m_flowHeight );
+    //m_velocityField.setup( m_flowWidth / 4, m_flowHeight / 4 );
+    //m_opticalFlowPixels.allocate( m_flowWidth, m_flowHeight, OF_IMAGE_COLOR_ALPHA );
 }
 
 void ParticleEmitter::waitThreadedUpdate( void )
@@ -365,10 +488,11 @@ void ParticleEmitter::updateParticles( float _currentTime, float _delta, std::ve
     if ( ( m_updateType & kFunction      ) != 0 ) updateParticlesFunctions(     _currentTime, _delta, _particles );
     if ( ( m_updateType & kFlocking      ) != 0 ) updateParticlesFlocking(      _currentTime, _delta, _particles );
     if ( ( m_updateType & kFollowTheLead ) != 0 ) updateParticlesFollowTheLead( _currentTime, _delta, _particles );
+    if ( ( m_updateType & kOpticalFlow   ) != 0 ) updateParticlesOpticalFlow(   _currentTime, _delta, _particles );
     
     for ( auto p : _particles )
     {
-        p->update( _currentTime, _delta );
+        p->update( _currentTime, _delta, m_sizeFactor );
     }
 }
 
@@ -391,14 +515,13 @@ void ParticleEmitter::updateParticleTiming( float _currentTime, float _delta, st
 
 void ParticleEmitter::updateParticlesFollowTheLead( float _currentTime, float _delta, std::vector< Particle* >& _particles )
 {
-    // TODO: XD
     auto& p = _particles[ 0 ];
     ofVec2f& particleVelocity( p->m_velocity );
     ofVec2f& particlePosition( p->m_position );
     
     // update the position and velocity of the first particle
     ofVec2f force( m_xMathFunc( particlePosition.y / 25 )  - 0.5, m_yMathFunc( particlePosition.x / 25 )  - 0.5 );
-    p->applyForce( force );
+    p->applyForce( force, false );
     
     particleVelocity *= 1.0f + ( m_velocityAudioFunc( particlePosition.y ) * 5.0f );
     p->m_flockLeader = true;
@@ -422,7 +545,7 @@ void ParticleEmitter::updateParticlesFunctions( float _currentTime, float _delta
             m_xMathFunc( particlePosition.y / 25 )  - 0.5,
             m_yMathFunc( particlePosition.x / 25 )  - 0.5
         );
-        p->applyForce( force );
+        p->applyForce( force, false );
         
         particleVelocity *= 1.0f + ( m_velocityAudioFunc( particlePosition.y ) * 5.0f );
     }
@@ -460,34 +583,34 @@ void ParticleEmitter::updateParticlesFlocking( float _currentTime, float _delta,
                 dir = p1->m_position - p2->m_position;
                 float distSqrd = dir.lengthSquared();
                 
-                if ( distSqrd < m_zoneRadiusSqrd ) // Neighbor is in the zone
+                if ( distSqrd < s_zoneRadiusSqrd ) // Neighbor is in the zone
                 {
-                    float percent = distSqrd / m_zoneRadiusSqrd;
+                    float percent = distSqrd / s_zoneRadiusSqrd;
                     
-                    if( percent < m_lowThresh )			// Separation
+                    if( percent < s_lowThresh )			// Separation
                     {
-                        if ( m_repelStrength < 0.0001f )
+                        if ( s_repelStrength < 0.0001f )
                         {
                             continue;
                         }
                         
-                        float F = m_lowThresh * m_repelStrength * updateRatio;
+                        float F = s_lowThresh * s_repelStrength * updateRatio;
                         dir.normalize();
                         dir *= F;
                         
                         if ( !p1->m_flockLeader ) p1->m_acceleration += dir;
                         if ( !p2->m_flockLeader ) p2->m_acceleration -= dir;
                     }
-                    else if( percent < m_highThresh ) // Alignment
+                    else if( percent < s_highThresh ) // Alignment
                     {
-                        if ( m_alignStrength < 0.0001f )
+                        if ( s_alignStrength < 0.0001f )
                         {
                             continue;
                         }
                         
-                        float threshDelta     = m_highThresh - m_lowThresh;
-                        float adjustedPercent	= ( percent - m_lowThresh ) / threshDelta;
-                        float F               = ( 1.0f - ( cos( adjustedPercent * PI2 ) * -0.5f + 0.5f ) ) * m_alignStrength * updateRatio;
+                        float threshDelta     = s_highThresh - s_lowThresh;
+                        float adjustedPercent	= ( percent - s_lowThresh ) / threshDelta;
+                        float F               = ( 1.0f - ( cos( adjustedPercent * PI2 ) * -0.5f + 0.5f ) ) * s_alignStrength * updateRatio;
                         
                         if ( !p1->m_flockLeader ) p1->m_acceleration += p2->m_direction * F;
                         if ( !p2->m_flockLeader ) p2->m_acceleration += p1->m_direction * F;
@@ -495,14 +618,14 @@ void ParticleEmitter::updateParticlesFlocking( float _currentTime, float _delta,
                     }
                     else 								// Cohesion
                     {
-                        if ( m_attractStrength < 0.0001f )
+                        if ( s_attractStrength < 0.0001f )
                         {
                             continue;
                         }
                         
-                        float threshDelta     = 1.0f - m_highThresh;
-                        float adjustedPercent	= ( percent - m_highThresh )/threshDelta;
-                        float F               = ( 1.0f - ( cos( adjustedPercent * PI2 ) * -0.5f + 0.5f ) ) * m_attractStrength * updateRatio;
+                        float threshDelta     = 1.0f - s_highThresh;
+                        float adjustedPercent	= ( percent - s_highThresh )/threshDelta;
+                        float F               = ( 1.0f - ( cos( adjustedPercent * PI2 ) * -0.5f + 0.5f ) ) * s_attractStrength * updateRatio;
                         
                         dir.normalize();
                         dir *= F;
@@ -515,6 +638,32 @@ void ParticleEmitter::updateParticlesFlocking( float _currentTime, float _delta,
         }
         
         ++itr;
+    }
+}
+
+void ParticleEmitter::updateParticlesOpticalFlow( float _currentTime, float _delta, std::vector< Particle* >& _particles )
+{
+    ofVec2f ratio( m_opticalFlowPixels.getWidth()  / ( m_referenceSurface->getWidth()  * m_sizeFactor ),
+                   m_opticalFlowPixels.getHeight() / ( m_referenceSurface->getHeight() * m_sizeFactor ) );
+    
+    // update the particles
+    for ( auto& p : _particles )
+    {
+        ofVec2f& particleVelocity( p->m_velocity );
+        ofVec2f& particlePosition( p->m_position );
+        //ofVec2f& particleAcceleration( p->m_acceleration );
+        ofFloatColor c = m_opticalFlowPixels.getColor( particlePosition.x * ratio.x, particlePosition.y * ratio.y );
+        
+        // update the position and velocity of each particle
+        //ofVec2f force( ( static_cast< float >( c.r ) / 255.0f ) * ( 1.0f - static_cast< float >( c.a ) / 255.0f ),
+        //               ( static_cast< float >( c.g ) / 255.0f ) * ( 1.0f - static_cast< float >( c.a ) / 255.0f ) );
+        float multiplier = ( ( c.a ) * 10.0f );
+        //multiplier *= multiplier;
+        //multiplier /= 10.0f;
+        ofVec2f force( ( c.r ) * multiplier,
+                       ( c.g ) * multiplier );
+        p->applyForce( force, false );
+        //particleVelocity = force;
     }
 }
 

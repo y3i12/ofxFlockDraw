@@ -2,7 +2,7 @@
 
 #include "ofMain.h"
 #include "ofxAudioAnalyzer.h"
-#include "ofxDatGui.h"
+#include "ofxGuiExtended.h"
 #include "ofxProcessFFT.h"
 #include "ofxPostProcessing.h"
 
@@ -10,6 +10,7 @@
 
 #include <string>
 #include <list>
+
 
 class ofApp : public ofBaseApp{
     
@@ -36,26 +37,34 @@ public:
     void dragEvent( ofDragInfo dragInfo );
     void gotMessage( ofMessage msg      );
     
-    void onToggleStrobe( ofxDatGuiToggleEvent e );
-    void onToggleRGBShiftPass( ofxDatGuiToggleEvent e );
-    void onToggleNoiseWarpPass( ofxDatGuiToggleEvent e );
-    void onToggleBloomPass( ofxDatGuiToggleEvent e );
-    void onToggleZoomBlurPass( ofxDatGuiToggleEvent e );
+    void onToggleFunction( bool& b );
+    void onToggleFlocking( bool& b );
+    void onToggleFunctionAndFlocking( bool& b );
+    void onToggleFollowTheLead( bool& b );
+    void onToggleOpticalFlow( bool& b );
+    void updateFunctionType( void );
+
+    void onToggleStrobe( bool& b );
+    void onToggleRGBShiftPass( bool& b );
+    void onToggleNoiseWarpPass( bool& b );
+    void onToggleBloomPass( bool& b );
+    void onToggleZoomBlurPass( bool& b );
     // POST PROCESSING STUFF <<
-    void onDropdownEvent( ofxDatGuiDropdownEvent e );
+    //void onDropdownEvent( ofxDatGuiDropdownEvent e );
     
     // gui buttons
-    void openImageCallBack( ofxDatGuiButtonEvent e );
+    void openImageCallBack( void );
     bool openImage( void );
-    void nextImageCallBack( ofxDatGuiButtonEvent e );
+    void nextImageCallBack( void );
     bool nextImage( void );
     
     // misc routines
-    void updateOutputArea( ofVec2f& _imageSize );
+    void updateOutputArea( ofVec2f _imageSize );
     void setImage( std::string _path );
     
     // properties
     ofPixels*                   m_surface;
+    ofVideoPlayer               m_video;
     ofImage                     m_texture;
     ofRectangle                 m_outputArea;
     ParticleEmitter             m_particleEmitter;
@@ -63,15 +72,21 @@ public:
     std::list< std::string >    m_files;
     float                       m_cycleImageEvery;
     
-    ofxDatGui*                  m_gui;
-    ofxDatGui*                  m_audio;
-    ofxDatGui*                  m_guiHelp;
-    ofxDatGuiButton*            m_openImageButton;
-    ofxDatGuiButton*            m_nextImageButton;
-    ofxDatGuiLabel*             m_currentImageLabel;
-    ofxDatGuiFolder*            m_mainPanel;
-    ofxDatGuiFolder*            m_helpPanel;
-    ofxDatGuiFRM*               m_FPSPanel;
+    ofxGuiButton*               m_openImageButton;
+    ofxGuiButton*               m_nextImageButton;
+    ofxGuiLabel*                m_currentImageLabel;
+    ofxGuiPanel*                m_mainPanel;
+    ofxGuiPanel*                m_visPanel;
+    
+    ofxGuiValuePlotter*         m_spectrumPlotter;
+    ofxGuiValuePlotter*         m_melBandsPlotter;
+    ofxGuiValuePlotter*         m_mfccPlotter;
+    ofxGuiValuePlotter*         m_hpcpPlotter;
+    ofxGuiValuePlotter*         m_tristimulusPlotter;
+    
+    ofParameter< bool >         m_renderOpticalFlow{ "Show Optical Flow", false, false, true };
+    std::vector< ofxGuiToggle* > m_functionButtons;
+    ofxGui                      m_gui;
     
 private:
     void changeImage( void );
@@ -96,31 +111,31 @@ private:
     // AUDIO STUFF >>
     ofSoundBuffer               m_soundBuffer;
     
-    float                       m_smoothing;
-    float                       m_rms;
-    float                       m_power;
-    float                       m_pitchFreq;
-    float                       m_pitchFreqNorm;
-    float                       m_pitchConf;
-    float                       m_pitchSalience;
-    float                       m_hfc;
-    float                       m_hfcNorm;
-    float                       m_specComp;
-    float                       m_specCompNorm;
-    float                       m_centroid;
-    float                       m_centroidNorm;
-    float                       m_inharmonicity;
-    float                       m_dissonance;
-    float                       m_rollOff;
-    float                       m_rollOffNorm;
-    float                       m_oddToEven;
-    float                       m_oddToEvenNorm;
-    float                       m_strongPeak;
-    float                       m_strongPeakNorm;
-    float                       m_strongDecay;
-    float                       m_strongDecayNorm;
-    float                       m_danceability;
-    float                       m_danceabilityNorm;
+    ofParameter< float >        m_smoothing{ "Smoothing", 0.1f, 0.0f, 1.0f };
+    ofParameter< float >        m_rms{ "RMS", 0.0f, 0.0f, 1.0f };//{ "", 0.0f, 0.0f, 1.0f };
+    ofParameter< float >        m_power{ "Power", 0.0f, 0.0f, 1.0f };;
+    ofParameter< float >        m_pitchFreq;
+    ofParameter< float >        m_pitchFreqNorm{ "Pitch Frequency", 0.0f, 0.0f, 1.0f };;
+    ofParameter< float >        m_pitchConf{ "Pitch Confidence", 0.0f, 0.0f, 1.0f };
+    ofParameter< float >        m_pitchSalience{ "Pitch Salience", 0.0f, 0.0f, 1.0f };
+    ofParameter< float >        m_hfc;
+    ofParameter< float >        m_hfcNorm{ "HFC", 0.0f, 0.0f, 1.0f };
+    ofParameter< float >        m_specComp;
+    ofParameter< float >        m_specCompNorm{ "Spectral Complexity", 0.0f, 0.0f, 1.0f };
+    ofParameter< float >        m_centroid;
+    ofParameter< float >        m_centroidNorm{ "Centroid", 0.0f, 0.0f, 1.0f };
+    ofParameter< float >        m_inharmonicity{ "Inharmonicity", 0.0f, 0.0f, 1.0f };;
+    ofParameter< float >        m_dissonance{ "Dissonance", 0.0f, 0.0f, 1.0f };;
+    ofParameter< float >        m_rollOff;
+    ofParameter< float >        m_rollOffNorm{ "Roll Off", 0.0f, 0.0f, 1.0f };;
+    ofParameter< float >        m_oddToEven;
+    ofParameter< float >        m_oddToEvenNorm{ "Odd to Even", 0.0f, 0.0f, 1.0f };;
+    ofParameter< float >        m_strongPeak;
+    ofParameter< float >        m_strongPeakNorm{ "Strong Peak", 0.0f, 0.0f, 1.0f };;
+    ofParameter< float >        m_strongDecay;
+    ofParameter< float >        m_strongDecayNorm{ "Strong Decay", 0.0f, 0.0f, 1.0f };;
+    ofParameter< float >        m_danceability;
+    ofParameter< float >        m_danceabilityNorm{ "Danceability", 0.0f, 0.0f, 1.0f };;
     
     std::vector< float >        m_spectrum;
     std::vector< float >        m_melBands;
@@ -129,8 +144,8 @@ private:
     
     std::vector< float >        m_tristimulus;
     
-    bool                        m_isOnset;
-    bool                        m_strobe;
+    ofParameter< bool >         m_isOnset{ "Onset", false, false, true };
+    ofParameter< bool >         m_strobe{ "Strobe", false, false, true };
     // AUDIO STUFF <<
     
     static bool                 s_debugFFt;

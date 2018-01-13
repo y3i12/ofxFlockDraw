@@ -10,16 +10,24 @@
 #include <unordered_map>
 
 #include "Particle.h"
+#include "ofxFlowTools.h"
+#include "tools/ftToScalar.h"
 #include "ofMain.h"
 
+using namespace flowTools;
 class ParticleEmitter
 {
 public:
+    
+    static void init( void );
+    
     enum UpdateType {
         kFunction               = 1 << 0,
         kFlocking               = 1 << 1,
         kFunctionAndFlocking    = kFunction | kFlocking,
         kFollowTheLead          = 1 << 3,
+        kOpticalFlow            = 1 << 4,
+        kFuctionBPM             = 1 << 5, // todo: sync function input with x * (bpm / ( 2*pi ) )
     };
     
     typedef std::function< float ( float ) > PosFunc;
@@ -36,8 +44,10 @@ public:
         float                       m_funcTimer;
         float                       m_funcTimeout;
         
-        static float                s_minChangeTime;
-        static float                s_maxChangeTime;
+        static ofParameter< float > s_minChangeTime;
+        static ofParameter< float > s_maxChangeTime;
+        static ofParameterGroup     s_functionParams;
+
     };
     
 public:
@@ -45,8 +55,13 @@ public:
     virtual ~ParticleEmitter( void );
     
     virtual void draw( void );
+    void drawOpticalFlow( void );
     virtual void debugDraw( void );
     virtual void update( float _currentTime, float _delta );
+    virtual void updateVideo( bool _isNewFrame, ofVideoPlayer& _source, float _delta );
+    void         updateOpticalFlow( float _delta );
+    
+    void setInputArea( ofVec2f& _imageSize );
     
     virtual void pauseThreads( void );
     virtual void continueThreads( void );
@@ -64,23 +79,30 @@ public:
     UpdateType                  m_updateType;
     
     // flocking vars
-    float                       m_zoneRadiusSqrd;
-    float                       m_repelStrength;
-    float                       m_alignStrength;
-    float                       m_attractStrength;
-    float                       m_lowThresh;
-    float                       m_highThresh;
+    static ofParameter< float > s_zoneRadiusSqrd;
+    static ofParameter< float > s_repelStrength;
+    static ofParameter< float > s_alignStrength;
+    static ofParameter< float > s_attractStrength;
+    static ofParameter< float > s_lowThresh;
+    static ofParameter< float > s_highThresh;
+    static ofParameterGroup     s_flockingParams;
     
+    // image related
     ofPixels*&                  m_referenceSurface;
+    float                       m_sizeFactor;
     
-    static float                s_minParticleLife;
-    static float                s_maxParticleLife;
+    static ofParameter< float > s_minParticleLife;
+    static ofParameter< float > s_maxParticleLife;
     
-    static int                  s_particlesPerGroup;
-    static int                  s_particleGroups;
-    static bool                 s_debugDraw;
+    static ofParameter< int >   s_particlesPerGroup;
+    static ofParameter< int >   s_particleGroups;
+    static ofParameter< bool >  s_debugDraw;
+    static ofParameterGroup     s_emitterParams;
     
     void waitThreadedUpdate( void );
+    
+    // Optical flow stuff
+    ftOpticalFlow               m_opticalFlow;
     
 private:
     void addParticles( int _group = -1 );
@@ -92,6 +114,7 @@ private:
     void updateParticlesFollowTheLead(  float _currentTime, float _delta, std::vector< Particle* >& _particles );
     void updateParticlesFunctions(      float _currentTime, float _delta, std::vector< Particle* >& _particles );
     void updateParticlesFlocking(       float _currentTime, float _delta, std::vector< Particle* >& _particles );
+    void updateParticlesOpticalFlow(    float _currentTime, float _delta, std::vector< Particle* >& _particles );
     
     // Threading stuff
     std::vector< std::thread >  m_threads;          // Thread pool
@@ -102,22 +125,39 @@ private:
     std::mutex                  m_updateLock;       // Controls the thread sync
     std::condition_variable     m_conditionVar;     // Thread control
     
+    // Time stuff
     float                       m_currentTime;
     float                       m_delta;
+    float                       m_currentDrawTime;
+    float                       m_drawDelta;
     
     float                       m_updateFlockEvery;
     float                       m_updateFlockTimer;
     float                       m_lastFlockUpdateTime;
     
+    // Counter stuff
     int                         m_particlesPerGroup;
     int                         m_particleGroups;
     
+    // Function control stuff
     FuncCtl                     m_velocityAudioFunc;
     FuncCtl                     m_xMathFunc;
     FuncCtl                     m_yMathFunc;
 
     std::vector< PosFunc >      m_mathFn;
     std::vector< PosFunc >      m_audioFn;
+    
+    // Optical flow
+    int                         m_flowWidth;
+    int                         m_flowHeight;
+    
+    
+    ofFloatPixels               m_opticalFlowPixels;
+    
+    ftDisplayScalar             m_scalarDisplay;
+    ftVelocityField             m_velocityField;
+    
+    ftFbo                       m_ftBo;
 };
 
 #endif //__PARTICLE_EMITTER_H__
