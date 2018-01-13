@@ -95,29 +95,46 @@ void ofApp::setup()
     m_midPointer  = &m_particleEmitter.m_soundMid;
     m_highPointer = &m_particleEmitter.m_soundHigh;
     
-    m_mainPanel = m_gui.addPanel( ParticleEmitter::s_emitterParams );
+    m_mainPanel = m_gui.addPanel( "Settings" );
     
-    m_mainPanel->addSpacer( 0, 20 );
+    m_mainPanel->addGroup( ParticleEmitter::s_emitterParams );
     
-    m_mainPanel->add< ofxGuiLabel  >( "Function Mode" );
-    m_mainPanel->add< ofxGuiToggle >( "Function",               false )->addListener( this, &ofApp::onToggleFunction );
-    m_mainPanel->add< ofxGuiToggle >( "Flocking",               false )->addListener( this, &ofApp::onToggleFlocking );
-    m_mainPanel->add< ofxGuiToggle >( "Function & Flocking",    true  )->addListener( this, &ofApp::onToggleFunctionAndFlocking );
-    m_mainPanel->add< ofxGuiToggle >( "Follow the lead",        false )->addListener( this, &ofApp::onToggleFollowTheLead );
-    m_mainPanel->add< ofxGuiToggle >( "Optical Flow",           false )->addListener( this, &ofApp::onToggleOpticalFlow );
+    // m_mainPanel->addSpacer( 0, 20 );
     
-    m_mainPanel->addSpacer( 0, 10 );
+    ofxGuiGroup* uiGroup = m_mainPanel->addGroup( "Function Mode" );
     
-    m_mainPanel->add< ofxGuiLabel  >( "FX" );
-    m_mainPanel->add< ofxGuiToggle >( "RGB Shift",  m_rgbShift->getEnabled()        )->addListener( this, &ofApp::onToggleRGBShiftPass   );
-    m_mainPanel->add< ofxGuiToggle >( "Noise Wrap", m_noiseWrap->getEnabled()       )->addListener( this, &ofApp::onToggleNoiseWarpPass  );
-    m_mainPanel->add< ofxGuiToggle >( "Bloom Pass", m_bloomPass->getEnabled()       )->addListener( this, &ofApp::onToggleBloomPass      );
-    m_mainPanel->add< ofxGuiToggle >( "Zoom Blur",  m_zoomBlurPass->getEnabled()    )->addListener( this, &ofApp::onToggleZoomBlurPass   );
+    //m_mainPanel->add< ofxGuiLabel  >( "Function Mode" );
+    
+    m_functionButtons.push_back( uiGroup->add< ofxGuiToggle >( "Function",               false ) );
+    m_functionButtons.back()->addListener( this, &ofApp::onToggleFunction );
+    
+    m_functionButtons.push_back( uiGroup->add< ofxGuiToggle >( "Flocking",               false ) );
+    m_functionButtons.back()->addListener( this, &ofApp::onToggleFlocking );
+    
+    //m_functionButtons.push_back( m_mainPanel->add< ofxGuiToggle >( "Function & Flocking",    true  ) );
+    //m_functionButtons.back()->addListener( this, &ofApp::onToggleFunctionAndFlocking );
+    
+    m_functionButtons.push_back( uiGroup->add< ofxGuiToggle >( "Follow the lead",        false ) );
+    m_functionButtons.back()->addListener( this, &ofApp::onToggleFollowTheLead );
+    
+    m_functionButtons.push_back( uiGroup->add< ofxGuiToggle >( "Optical Flow",           false ) );
+    m_functionButtons.back()->addListener( this, &ofApp::onToggleOpticalFlow );
+    
+    updateFunctionType();
+    
+    //m_mainPanel->addSpacer( 0, 10 );
+    
+    //m_mainPanel->add< ofxGuiLabel  >( "FX" );
+    uiGroup = m_mainPanel->addGroup( "FX" );
+    uiGroup->add< ofxGuiToggle >( "RGB Shift",  m_rgbShift->getEnabled()        )->addListener( this, &ofApp::onToggleRGBShiftPass   );
+    uiGroup->add< ofxGuiToggle >( "Noise Wrap", m_noiseWrap->getEnabled()       )->addListener( this, &ofApp::onToggleNoiseWarpPass  );
+    uiGroup->add< ofxGuiToggle >( "Bloom Pass", m_bloomPass->getEnabled()       )->addListener( this, &ofApp::onToggleBloomPass      );
+    uiGroup->add< ofxGuiToggle >( "Zoom Blur",  m_zoomBlurPass->getEnabled()    )->addListener( this, &ofApp::onToggleZoomBlurPass   );
     bool _strobe = m_strobe;
-    m_mainPanel->add< ofxGuiToggle >( "Strobe",     _strobe                         )->addListener( this, &ofApp::onToggleStrobe         );
-    m_mainPanel->add< ofxGuiToggle >( m_renderOpticalFlow );
+    uiGroup->add< ofxGuiToggle >( "Strobe",     _strobe                         )->addListener( this, &ofApp::onToggleStrobe         );
+    uiGroup->add< ofxGuiToggle >( m_renderOpticalFlow );
     
-    m_mainPanel->addSpacer( 0, 10 );
+    //m_mainPanel->addSpacer( 0, 10 );
     
     m_mainPanel->add< ofxGuiLabel  >( "Audio Settings/vis" );
     m_mainPanel->add( m_smoothing );
@@ -850,44 +867,56 @@ void ofApp::dragEvent(ofDragInfo dragInfo){
 ////////////////////////////////////////////////////////////////////////////////
 void ofApp::onToggleFunction( bool& b )
 {
-    m_particleEmitter.m_updateType = ParticleEmitter::kFunction;
-    updateFunctionType();
+    m_particleEmitter.m_updateType = b ?
+        static_cast< ParticleEmitter::UpdateType >( m_particleEmitter.m_updateType |  ParticleEmitter::kFunction ) :
+        static_cast< ParticleEmitter::UpdateType >( m_particleEmitter.m_updateType & ~ParticleEmitter::kFunction );
+    //updateFunctionType();
     return false;
 }
 
 void ofApp::onToggleFlocking( bool& b )
 {
-    m_particleEmitter.m_updateType = ParticleEmitter::kFlocking;
-    updateFunctionType();
+    m_particleEmitter.m_updateType = b ?
+    static_cast< ParticleEmitter::UpdateType >( m_particleEmitter.m_updateType |  ParticleEmitter::kFlocking ) :
+    static_cast< ParticleEmitter::UpdateType >( m_particleEmitter.m_updateType & ~ParticleEmitter::kFlocking );
+    //updateFunctionType();
     return false;
 }
 
 void ofApp::onToggleFunctionAndFlocking( bool& b )
 {
-    m_particleEmitter.m_updateType = ParticleEmitter::kFunctionAndFlocking;
-    updateFunctionType();
+    m_particleEmitter.m_updateType = b ?
+    static_cast< ParticleEmitter::UpdateType >( m_particleEmitter.m_updateType |  ParticleEmitter::kFunctionAndFlocking ) :
+    static_cast< ParticleEmitter::UpdateType >( m_particleEmitter.m_updateType & ~ParticleEmitter::kFunctionAndFlocking );
+    //updateFunctionType();
     return false;
 }
 
 void ofApp::onToggleFollowTheLead( bool& b )
 {
-    m_particleEmitter.m_updateType = ParticleEmitter::kFollowTheLead;
-    updateFunctionType();
+    m_particleEmitter.m_updateType = b ?
+    static_cast< ParticleEmitter::UpdateType >( m_particleEmitter.m_updateType |  ParticleEmitter::kFollowTheLead ) :
+    static_cast< ParticleEmitter::UpdateType >( m_particleEmitter.m_updateType & ~ParticleEmitter::kFollowTheLead );
+    //updateFunctionType();
     return false;
 }
 
 void ofApp::onToggleOpticalFlow( bool& b )
 {
-    m_particleEmitter.m_updateType = ParticleEmitter::kOpticalFlow;
-    updateFunctionType();
+    m_particleEmitter.m_updateType = b ?
+    static_cast< ParticleEmitter::UpdateType >( m_particleEmitter.m_updateType |  ParticleEmitter::kOpticalFlow ) :
+    static_cast< ParticleEmitter::UpdateType >( m_particleEmitter.m_updateType & ~ParticleEmitter::kOpticalFlow );
+    //updateFunctionType();
     return false;
 }
 
 void ofApp::updateFunctionType( void )
 {
+    int update_type = static_cast< int >( m_particleEmitter.m_updateType );
     for ( int i = 0; i < m_functionButtons.size(); ++i )
     {
-        ( *m_functionButtons[ i ] ) = static_cast< bool >( ( m_particleEmitter.m_updateType >> i ) & 1 );
+        bool value = static_cast< bool >( ( update_type >> i ) & 1 );
+        ( *m_functionButtons[ i ] ) = value;
     }
 }
 
