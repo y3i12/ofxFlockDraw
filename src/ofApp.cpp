@@ -80,23 +80,36 @@ void ofApp::setup()
     m_particleEmitter.m_minLifeTime        = 10.0;
     
     // GUI
-    //m_gui             = new ofxDatGui( ofxDatGuiAnchor::TOP_LEFT  );
-    
-    //m_gui->lightColor = ci::ColorA( 1, 1, 0, 1 );
-    //m_gui->textFont   = ci::Font( "Consolas", 12 );
-    //m_mainPanel = m_gui->addPanel();
-    
-    // linking audio pointers to values
-    //m_lowPointer    = &Particle::s_particleSizeRatio;  //3.0f
-    //m_highPointer   = &Particle::s_particleSpeedRatio; //3.0f
-    //    = &Particle::s_dampness; // 0.99f
-    //m_midPointer    = &Particle::s_colorRedirection; //360.0f
     m_lowPointer  = &m_particleEmitter.m_soundLow;
     m_midPointer  = &m_particleEmitter.m_soundMid;
     m_highPointer = &m_particleEmitter.m_soundHigh;
     
-    m_mainPanel = m_gui.addPanel( "Settings" );
+    m_visPanel = m_gui.addPanel( "Visualization" );
+    m_visPanel->add( m_rms );
+    m_visPanel->add( m_power );
+    m_visPanel->add( m_pitchFreqNorm );
+    m_visPanel->add( m_pitchSalience );
+    m_visPanel->add( m_hfcNorm );
+    m_visPanel->add( m_specCompNorm );
+    m_visPanel->add( m_centroidNorm );
+    m_visPanel->add( m_inharmonicity );
+    m_visPanel->add( m_dissonance );
+    m_visPanel->add( m_rollOffNorm );
+    m_visPanel->add( m_oddToEvenNorm );
+    m_visPanel->add( m_strongPeakNorm );
+    m_visPanel->add( m_strongDecayNorm );
+    m_visPanel->add( m_danceabilityNorm );
+    m_visPanel->add( m_isOnset );
     
+    m_spectrumPlotter       = m_visPanel->add< ofxGuiValuePlotter >( "Spectrum",    DB_MIN, DB_MAX, 100 );
+    m_melBandsPlotter       = m_visPanel->add< ofxGuiValuePlotter >( "MEL Bands",   DB_MIN, DB_MAX, 100 );
+    m_mfccPlotter           = m_visPanel->add< ofxGuiValuePlotter >( "MFCC",        0.0f, MFCC_MAX_ESTIMATED_VALUE, 100 );
+    m_hpcpPlotter           = m_visPanel->add< ofxGuiValuePlotter >( "HPCP",        0.0f, 1.0f, 100 );
+    m_tristimulusPlotter    = m_visPanel->add< ofxGuiValuePlotter >( "Tristimulus", 0.0f, 1.0f, 100 );
+    
+    m_mainPanel = m_gui.addPanel( "Settings" );
+    m_visPanel->getVisible() = false;
+    m_mainPanel->add( m_visPanel->getVisible() );
     m_mainPanel->addGroup( ParticleEmitter::s_emitterParams );
     
     // m_mainPanel->addSpacer( 0, 20 );
@@ -164,68 +177,6 @@ void ofApp::setup()
     
     
     
-    
-    
-    //m_gui->addLabel( "General Settings" );
-    //m_gui->addSlider( "Pic. Cycle Time",    m_cycleImageEvery,               3.0f, 120.0f, 15.0f );
-    
-    //ofxDatGuiDropdown* myDropdown = new ofxDatGuiDropdown( "Behavior Mode", s_particleBehaviors );
-    //myDropdown->onDropdownEvent( this, &ofApp::onDropdownEvent );
-    /*ofxDatGuiDropdown* dropdown = m_gui->addDropdown( "Behavior Mode", s_particleBehaviors );
-    dropdown->onDropdownEvent( this, &ofApp::onDropdownEvent );
-    m_gui->addSlider( Particle::s_maxRadius             );
-    m_gui->addSlider( Particle::s_particleSizeRatio     );
-    m_gui->addSlider( Particle::s_particleSpeedRatio    );
-    m_gui->addSlider( Particle::s_dampness              );
-    m_gui->addSlider( Particle::s_colorRedirection      );
-    
-    m_gui->addSlider( ParticleEmitter::s_particlesPerGroup  );
-    m_gui->addSlider( ParticleEmitter::s_particleGroups     );
-    
-    m_gui->addBreak()->setHeight( 20.0f );
-    m_gui->addLabel( "Flocking Settings" );
-    
-    m_gui->addSlider( ParticleEmitter::s_repelStrength      );
-    m_gui->addSlider( ParticleEmitter::s_alignStrength      );
-    m_gui->addSlider( ParticleEmitter::s_attractStrength    );
-    m_gui->addSlider( ParticleEmitter::s_zoneRadiusSqrd     );
-    m_gui->addSlider( ParticleEmitter::s_lowThresh          );
-    m_gui->addSlider( ParticleEmitter::s_highThresh         );
-    
-    m_gui->addBreak()->setHeight( 20.0f );
-    m_gui->addLabel( "Audio Settings/vis" );
-    m_gui->addSlider( m_smoothing );
-    
-    m_gui->addBreak()->setHeight( 20.0f );
-    m_gui->addLabel( "FX" );
-    m_gui->addToggle( "RGB Shift",  m_rgbShift->getEnabled()        )->onToggleEvent( this, &ofApp::onToggleRGBShiftPass   );
-    m_gui->addToggle( "Noise Wrap", m_noiseWrap->getEnabled()       )->onToggleEvent( this, &ofApp::onToggleNoiseWarpPass  );
-    m_gui->addToggle( "Bloom Pass", m_bloomPass->getEnabled()       )->onToggleEvent( this, &ofApp::onToggleBloomPass      );
-    m_gui->addToggle( "Zoom Blur",  m_zoomBlurPass->getEnabled()    )->onToggleEvent( this, &ofApp::onToggleZoomBlurPass   );
-    m_gui->addToggle( "Strobe",     m_strobe                        )->onToggleEvent( this, &ofApp::onToggleStrobe         );
-    
-    m_renderOpticalFlow     = m_gui->addToggle( "Show Optical Flow",   false );
-    
-    m_gui->addBreak()->setHeight( 20.0f );
-    
-    m_openImageButton = m_gui->addButton( "Open Image" );
-    m_openImageButton->onButtonEvent( this, &ofApp::openImageCallBack );
-    
-    m_nextImageButton = m_gui->addButton( "Next Image" );
-    m_nextImageButton->onButtonEvent( this, &ofApp::nextImageCallBack );
-    
-    m_gui->addBreak()->setHeight( 20.0f );
-    m_gui->addFRM();
-    
-    // some info
-    m_gui->addBreak()->setHeight( 10.0f );
-    m_gui->addLabel( "Current Image:" );
-    m_currentImageLabel = m_gui->addLabel( "" );
-    
-    // deserved credits
-    m_gui->addBreak()->setHeight( 10.0f );
-    m_gui->addLabel( "y3i12: Yuri Ivatchkovitch" );
-    m_gui->addLabel( "http://y3i12.com/"  );*/
     
     // remove invalid paths
     for ( auto itr = m_files.begin(); itr != m_files.end(); ++itr ) {
@@ -316,6 +267,12 @@ void ofApp::update()
     m_tristimulus       = m_audioAnalyzer.getValues( TRISTIMULUS,           0, m_smoothing );
     
     m_isOnset           = m_audioAnalyzer.getOnsetValue( 0 );
+    
+    m_spectrumPlotter->setBuffer( m_spectrum );
+    m_melBandsPlotter->setBuffer( m_melBands );
+    m_mfccPlotter->setBuffer( m_mfcc );
+    m_hpcpPlotter->setBuffer( m_hpcp );
+    m_tristimulusPlotter->setBuffer( m_tristimulus );
     
     
     auto spectrum            = m_fft.getSpectrum();
@@ -452,240 +409,6 @@ void ofApp::draw()
     if ( m_renderOpticalFlow )
     {
         m_particleEmitter.drawOpticalFlow();
-    }
-    
-    if ( 0&&m_gui.getVisible() )
-    {
-        ofPushMatrix();
-        ofTranslate(350, 0);
-        int mw = 250;
-        int xpos = 0;
-        int ypos = 30;
-        
-        float value, valueNorm;
-        
-        ofSetColor(255);
-        value = m_rms;
-        string strValue = "RMS: " + ofToString(value, 2);
-        ofDrawBitmapString(strValue, xpos, ypos);
-        ofSetColor(ofColor::cyan);
-        ofDrawRectangle(xpos, ypos+5, value * mw, 10);
-        
-        ypos += 50;
-        ofSetColor(255);
-        value = m_power;
-        strValue = "Power: " + ofToString(value, 2);
-        ofDrawBitmapString(strValue, xpos, ypos);
-        ofSetColor(ofColor::cyan);
-        ofDrawRectangle(xpos, ypos+5, value * mw, 10);
-        
-        ypos += 50;
-        ofSetColor(255);
-        value = m_pitchFreq;
-        valueNorm = m_pitchFreqNorm;
-        strValue = "Pitch Frequency: " + ofToString(value, 2) + " hz.";
-        ofDrawBitmapString(strValue, xpos, ypos);
-        ofSetColor(ofColor::cyan);
-        ofDrawRectangle(xpos, ypos+5, valueNorm * mw, 10);
-        
-        ypos += 50;
-        ofSetColor(255);
-        value = m_pitchConf;
-        strValue = "Pitch Confidence: " + ofToString(value, 2);
-        ofDrawBitmapString(strValue, xpos, ypos);
-        ofSetColor(ofColor::cyan);
-        ofDrawRectangle(xpos, ypos+5, value * mw, 10);
-        
-        ypos += 50;
-        ofSetColor(255);
-        value = m_pitchSalience;
-        strValue = "Pitch Salience: " + ofToString(value, 2);
-        ofDrawBitmapString(strValue, xpos, ypos);
-        ofSetColor(ofColor::cyan);
-        ofDrawRectangle(xpos, ypos+5, value * mw, 10);
-        
-        ypos += 50;
-        ofSetColor(255);
-        value = m_inharmonicity;
-        strValue = "Inharmonicity: " + ofToString(value, 2);
-        ofDrawBitmapString(strValue, xpos, ypos);
-        ofSetColor(ofColor::cyan);
-        ofDrawRectangle(xpos, ypos+5, value * mw, 10);
-        
-        ypos += 50;
-        ofSetColor(255);
-        value = m_hfc;
-        valueNorm = m_hfcNorm;
-        strValue = "HFC: " + ofToString(value, 2);
-        ofDrawBitmapString(strValue, xpos, ypos);
-        ofSetColor(ofColor::cyan);
-        ofDrawRectangle(xpos, ypos+5, valueNorm * mw, 10);
-        
-        ypos += 50;
-        ofSetColor(255);
-        value = m_specComp;
-        valueNorm = m_specCompNorm;
-        strValue = "Spectral Complexity: " + ofToString(value, 2);
-        ofDrawBitmapString(strValue, xpos, ypos);
-        ofSetColor(ofColor::cyan);
-        ofDrawRectangle(xpos, ypos+5, valueNorm * mw, 10);
-        
-        ypos += 50;
-        ofSetColor(255);
-        value = m_centroid;
-        valueNorm = m_centroidNorm;
-        strValue = "Centroid: " + ofToString(value, 2);
-        ofDrawBitmapString(strValue, xpos, ypos);
-        ofSetColor(ofColor::cyan);
-        ofDrawRectangle(xpos, ypos+5, valueNorm * mw, 10);
-        
-        ypos += 50;
-        ofSetColor(255);
-        value = m_dissonance;
-        strValue = "Dissonance: " + ofToString(value, 2);
-        ofDrawBitmapString(strValue, xpos, ypos);
-        ofSetColor(ofColor::cyan);
-        ofDrawRectangle(xpos, ypos+5, value * mw, 10);
-        
-        ypos += 50;
-        ofSetColor(255);
-        value = m_rollOff;
-        valueNorm = m_rollOffNorm;
-        strValue = "Roll Off: " + ofToString(value, 2);
-        ofDrawBitmapString(strValue, xpos, ypos);
-        ofSetColor(ofColor::cyan);
-        ofDrawRectangle(xpos, ypos+5, valueNorm * mw , 10);
-        
-        ypos += 50;
-        ofSetColor(255);
-        value = m_oddToEven;
-        valueNorm = m_oddToEvenNorm;
-        strValue = "Odd To Even Harmonic Energy Ratio: " + ofToString(value, 2);
-        ofDrawBitmapString(strValue, xpos, ypos);
-        ofSetColor(ofColor::cyan);
-        ofDrawRectangle(xpos, ypos+5, valueNorm * mw, 10);
-        
-        ypos += 50;
-        ofSetColor(255);
-        value = m_strongPeak;
-        valueNorm = m_strongPeakNorm;
-        strValue = "Strong Peak: " + ofToString(value, 2);
-        ofDrawBitmapString(strValue, xpos, ypos);
-        ofSetColor(ofColor::cyan);
-        ofDrawRectangle(xpos, ypos+5, valueNorm * mw, 10);
-        
-        ypos += 50;
-        ofSetColor(255);
-        value = m_strongDecay;
-        valueNorm = m_strongDecayNorm;
-        strValue = "Strong Decay: " + ofToString(value, 2);
-        ofDrawBitmapString(strValue, xpos, ypos);
-        ofSetColor(ofColor::cyan);
-        ofDrawRectangle(xpos, ypos+5, valueNorm * mw, 10);
-        
-        ypos += 50;
-        ofSetColor(255);
-        value = m_isOnset;
-        strValue = "Onsets: " + ofToString(value);
-        ofDrawBitmapString(strValue, xpos, ypos);
-        ofSetColor(ofColor::cyan);
-        ofDrawRectangle(xpos, ypos+5, value * mw, 10);
-        
-        ypos += 50;
-        ofSetColor(255);
-        value = m_danceability;
-        valueNorm = m_danceabilityNorm;
-        strValue = "Danceability: " + ofToString(value, 2);
-        ofDrawBitmapString(strValue, xpos, ypos);
-        ofSetColor(ofColor::cyan);
-        ofDrawRectangle(xpos, ypos+5, valueNorm * mw, 10);
-        
-        
-        ofPopMatrix();
-        
-        //-Vector Values Algorithms:
-        
-        ofPushMatrix();
-        
-        ofTranslate(700, 0);
-        
-        int graphH = 75;
-        int yoffset = graphH + 50;
-        ypos = 30;
-        
-        ofSetColor(255);
-        ofDrawBitmapString("Spectrum: ", 0, ypos);
-        ofPushMatrix();
-        ofTranslate(0, ypos);
-        ofSetColor(ofColor::cyan);
-        float bin_w = (float) mw / m_spectrum.size();
-        for (int i = 0; i < m_spectrum.size(); i++){
-            float scaledValue = ofMap(m_spectrum[i], DB_MIN, DB_MAX, 0.0, 1.0, true);//clamped value
-            float bin_h = -1 * (scaledValue * graphH);
-            ofDrawRectangle(i*bin_w, graphH, bin_w, bin_h);
-        }
-        ofPopMatrix();
-        
-        ypos += yoffset;
-        ofSetColor(255);
-        ofDrawBitmapString("Mel Bands: ", 0, ypos);
-        ofPushMatrix();
-        ofTranslate(0, ypos);
-        ofSetColor(ofColor::cyan);
-        bin_w = (float) mw / m_melBands.size();
-        for (int i = 0; i < m_melBands.size(); i++){
-            float scaledValue = ofMap(m_melBands[i], DB_MIN, DB_MAX, 0.0, 1.0, true);//clamped value
-            float bin_h = -1 * (scaledValue * graphH);
-            ofDrawRectangle(i*bin_w, graphH, bin_w, bin_h);
-        }
-        ofPopMatrix();
-        
-        ypos += yoffset;
-        ofSetColor(255);
-        ofDrawBitmapString("MFCC: ", 0, ypos);
-        ofPushMatrix();
-        ofTranslate(0, ypos);
-        ofSetColor(ofColor::cyan);
-        bin_w = (float) mw / m_mfcc.size();
-        for (int i = 0; i < m_mfcc.size(); i++){
-            float scaledValue = ofMap(m_mfcc[i], 0, MFCC_MAX_ESTIMATED_VALUE, 0.0, 1.0, true);//clamped value
-            float bin_h = -1 * (scaledValue * graphH);
-            ofDrawRectangle(i*bin_w, graphH, bin_w, bin_h);
-        }
-        ofPopMatrix();
-        
-        ypos += yoffset;
-        ofSetColor(255);
-        ofDrawBitmapString("HPCP: ", 0, ypos);
-        ofPushMatrix();
-        ofTranslate(0, ypos);
-        ofSetColor(ofColor::cyan);
-        bin_w = (float) mw / m_hpcp.size();
-        for (int i = 0; i < m_hpcp.size(); i++){
-            //float scaledValue = ofMap(hpcp[i], DB_MIN, DB_MAX, 0.0, 1.0, true);//clamped value
-            float scaledValue = m_hpcp[i];
-            float bin_h = -1 * (scaledValue * graphH);
-            ofDrawRectangle(i*bin_w, graphH, bin_w, bin_h);
-        }
-        ofPopMatrix();
-        
-        ypos += yoffset;
-        ofSetColor(255);
-        ofDrawBitmapString("Tristimulus: ", 0, ypos);
-        ofPushMatrix();
-        ofTranslate(0, ypos);
-        ofSetColor(ofColor::cyan);
-        bin_w = (float) mw / m_tristimulus.size();
-        for (int i = 0; i < m_tristimulus.size(); i++){
-            //float scaledValue = ofMap(hpcp[i], DB_MIN, DB_MAX, 0.0, 1.0, true);//clamped value
-            float scaledValue = m_tristimulus[i];
-            float bin_h = -1 * (scaledValue * graphH);
-            ofDrawRectangle(i*bin_w, graphH, bin_w, bin_h);
-        }
-        ofPopMatrix();
-        
-        
-        ofPopMatrix();
     }
     
     //m_fft.drawBars();
