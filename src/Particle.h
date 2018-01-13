@@ -42,6 +42,7 @@ protected:
     
 public:
     ofVec2f             m_position;
+    ofVec2f             m_oldPosition;
     ofVec2f             m_stablePosition;
     ofVec2f             m_direction;
     ofVec2f             m_velocity;

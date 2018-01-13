@@ -8,11 +8,33 @@
 #define HPI ( PI / 2 )
 #define LUMINANCE( r, g, b ) ( 0.299f * ( r ) + 0.587f * ( g ) + 0.114f * ( b ) )
 
-#define WRAP( p, w )                                \
-if ( p.x < 0.0f )       p.x += w.x;                 \
-else if ( p.x >= w.x )  p.x  = fmod( p.x, w.x );    \
-if ( p.y < 0.0f )       p.y += w.y;                 \
-else if ( p.y >= w.y )  p.y  = fmod( p.y, w.y );
+bool WRAP( ofVec2f& p, ofVec2f& w )
+{
+    bool r = false;
+    if ( p.x < 0.0f )
+    {
+        p.x += w.x;
+        r = true;
+    }
+    else if ( p.x >= w.x )
+    {
+        p.x  = fmod( p.x, w.x );
+        r = true;
+    }
+    
+    if ( p.y < 0.0f )
+    {
+        p.y += w.y;
+        r = true;
+    }
+    else if ( p.y >= w.y )
+    {
+        p.y  = fmod( p.y, w.y );
+        r = true;
+    }
+    
+    return r;
+}
 
 ofParameter< float >    Particle::s_maxRadius{           "Max Radius",        0.25f, 0.001f,   1.0f };
 ofParameter< float >    Particle::s_particleSizeRatio{   "Size Ratio",        1.0f,  0.001f,   1.0f };
@@ -65,7 +87,8 @@ void Particle::applyForce( ofVec2f _force, bool _limit )
 
 void Particle::update( float _currentTime, float _delta, float _sizeFactor )
 {
-
+    m_oldPosition = m_position;
+    
     // capping to avoid errors
     if ( std::isnan( m_velocity.x ) || fabs( m_velocity.x ) > 100.0f ||
          std::isnan( m_velocity.y ) || fabs( m_velocity.y ) > 100.0f )
@@ -95,7 +118,10 @@ void Particle::update( float _currentTime, float _delta, float _sizeFactor )
         // wrap the particle
         ofVec2f wrapSize( m_referenceSurface->getWidth() * _sizeFactor, m_referenceSurface->getHeight() * _sizeFactor );
         
-        WRAP( m_position, wrapSize );
+        if ( WRAP( m_position, wrapSize ) )
+        {
+            m_oldPosition = m_position;
+        }
         
         t_tempDir = m_direction * 2.0f;
         t_angle   = 45;
@@ -164,8 +190,10 @@ void Particle::draw( void )
     float radius = ( 1.0f + Particle::s_maxRadius * LUMINANCE( t_color.r, t_color.g, t_color.b ) ) * Particle::s_particleSizeRatio;
     
     ofSetColor( m_color.r, m_color.g, m_color.b, m_alpha );
-    ofFill();
-    ofDrawCircle( m_position + m_owner->m_position, radius );
+    //ofFill();
+    //ofDrawCircle( m_position + m_owner->m_position, radius );
+    ofSetLineWidth( radius );
+    ofDrawLine( m_position + m_owner->m_position, m_oldPosition + m_owner->m_position );
 }
 
 void Particle::debugDraw( void )
