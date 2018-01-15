@@ -785,12 +785,14 @@ void ofApp::changeImage( void )
         aSize.x         = m_texture.getWidth();
         aSize.y         = m_texture.getHeight();
         m_surface       = &m_texture.getPixels();
+        m_particleEmitter.m_referenceSurface = m_surface;
     }
     else if ( m_video.load( m_imageToSet ) )
     {
         aSize.x         = m_video.getWidth();
         aSize.y         = m_video.getHeight();
         m_surface       = &m_video.getPixels();
+        m_particleEmitter.m_referenceSurface = m_surface;
         m_video.setLoopState( OF_LOOP_NORMAL );
         m_video.play();
     }
