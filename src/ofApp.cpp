@@ -5,7 +5,7 @@
 #include <sstream>
 #include <math.h>
 
-#define SGUI_CONFIG_FILE_EXT "cfg"
+#define GUI_CONFIG_FILE_EXT  "xml"
 #define FRAMERATE            60.0f
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -182,6 +182,7 @@ void ofApp::setup()
     m_mainPanel->add< ofxGuiLabel  >( "http://y3i12.com/"  );
     
     
+     m_mainPanel->loadFromFile( "settings.xml" );
     
     
     // remove invalid paths
@@ -427,17 +428,15 @@ void ofApp::draw()
 void ofApp::keyPressed(int key){
     switch( key )
     {
-#if defined DEBUG_DRAW
         case 'd':
         {
             ParticleEmitter::s_debugDraw = !ParticleEmitter::s_debugDraw;
         }
         break; //prints values of all the controls to the console
-#endif
         case 'l':
         {
             std::vector< std::string > theExtensions;
-            theExtensions.push_back( SGUI_CONFIG_FILE_EXT );
+            theExtensions.push_back( GUI_CONFIG_FILE_EXT );
             
             ofFileDialogResult openFileResult= ofSystemLoadDialog( "Load settings" );
             
@@ -451,11 +450,9 @@ void ofApp::keyPressed(int key){
                 
                 ofFile file( aPath );
                 
-                if ( file.exists() && file.getExtension() == SGUI_CONFIG_FILE_EXT )
+                if ( file.exists() && file.getExtension() == GUI_CONFIG_FILE_EXT )
                 {
-                    ofSystemAlertDialog( "to be implemented" );
-                    // TODO
-                    // m_gui->load( aPath );
+                    m_mainPanel->loadFromFile( file.path() );
                 }
                 else
                 {
@@ -468,21 +465,19 @@ void ofApp::keyPressed(int key){
             
         case 's':
         {
-            ofFileDialogResult saveFileResult = ofSystemSaveDialog( "*.cfg", "Save settings");
+            ofFileDialogResult saveFileResult = ofSystemSaveDialog( "*.xml", "Save settings");
             
             if ( saveFileResult.bSuccess )
             {
                 ofFile file( saveFileResult.filePath );
                 
-                if ( file.getExtension() != SGUI_CONFIG_FILE_EXT )
+                if ( file.getExtension() != GUI_CONFIG_FILE_EXT )
                 {
                     ofSystemAlertDialog( "Invalid extension" );
                 }
                 else
                 {
-                    ofSystemAlertDialog( "to be implemented" );
-                    // TODO
-                    //m_gui->save( saveFileResult.filePath );
+                    m_mainPanel->saveToFile( file.path() );
                 }
             }
         }
