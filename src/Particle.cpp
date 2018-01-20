@@ -24,7 +24,7 @@ bool WRAP( ofVec2f& p, ofVec2f& w )
     
     if ( p.y < 0.0f )
     {
-        p.y = w.x - fmod( fabs( p.y ), w.y );
+        p.y = w.y - fmod( fabs( p.y ), w.y );
         r = true;
     }
     else if ( p.y >= w.y )
@@ -57,6 +57,7 @@ Particle::Particle( ParticleEmitter* _owner, ofVec2f& _position, ofVec2f& _direc
     m_lifeTime( 0.0f ),
     m_lifeTimeLeft( 0.0f ),
     m_flockLeader( false ),
+    m_flocked( false ),
     m_owner( _owner ),
     m_group( -1 ),
     m_id( s_idGenerator++ ),
@@ -91,29 +92,29 @@ void Particle::applyForce( ofVec2f _force )
 
 void Particle::update( float _currentTime, float _delta, float _sizeFactor )
 {
-    m_oldPosition = m_position;
-    
-    // capping to avoid errors
-    if ( std::isnan( m_velocity.x ) || fabs( m_velocity.x ) > 1000.0f ||
-         std::isnan( m_velocity.y ) || fabs( m_velocity.y ) > 1000.0f )
-    {
-        m_velocity.normalize();
-    }
-    
-    
-    // update the speed
-    m_velocity *= Particle::s_dampness * _delta;
-    m_velocity += m_acceleration + m_instantAcceleration;
-    m_instantAcceleration.set( 0.0f, 0.0f );
-    
-    // capping to avoid errors
-    if ( std::isnan( m_velocity.x ) ) m_velocity.x = 0.0f;
-    if ( std::isnan( m_velocity.y ) ) m_velocity.y = 0.0f;
-    if ( std::isnan( m_position.x ) ) m_position.x = 0.0f;
-    if ( std::isnan( m_position.y ) ) m_position.y = 0.0f;
-    
     if ( m_referenceSurface )
     {
+        m_oldPosition = m_position;
+        
+        // capping to avoid errors
+        if ( std::isnan( m_velocity.x ) || fabs( m_velocity.x ) > 1000.0f ||
+            std::isnan( m_velocity.y ) || fabs( m_velocity.y ) > 1000.0f )
+        {
+            m_velocity.normalize();
+        }
+        
+        
+        // update the speed
+        m_velocity *= Particle::s_dampness * _delta;
+        m_velocity += m_acceleration + m_instantAcceleration;
+        m_instantAcceleration.set( 0.0f, 0.0f );
+        
+        // capping to avoid errors
+        if ( std::isnan( m_velocity.x ) ) m_velocity.x = 0.0f;
+        if ( std::isnan( m_velocity.y ) ) m_velocity.y = 0.0f;
+        if ( std::isnan( m_position.x ) ) m_position.x = 0.0f;
+        if ( std::isnan( m_position.y ) ) m_position.y = 0.0f;
+        
         // wrap the particle
         ofVec2f wrapSize( m_referenceSurface->getWidth() * _sizeFactor, m_referenceSurface->getHeight() * _sizeFactor );
         
@@ -140,11 +141,9 @@ void Particle::update( float _currentTime, float _delta, float _sizeFactor )
         {
             ofVec2f& pointRef = t_nextPos[ i ];
             ofVec2f colorSource( static_cast< int >( pointRef.x / _sizeFactor ), static_cast< int >( pointRef.y / _sizeFactor ) );
+            ofVec2f wrapSizeScaled( m_referenceSurface->getWidth(), m_referenceSurface->getHeight() );
             
-            wrapSize.x = m_referenceSurface->getWidth();
-            wrapSize.y = m_referenceSurface->getHeight();
-            
-            WRAP( colorSource, wrapSize );
+            WRAP( colorSource, wrapSizeScaled );
             
             // to guide thru color
             t_c      = t_currentColor - m_referenceSurface->getColor( colorSource.x, colorSource.y );
@@ -165,14 +164,19 @@ void Particle::update( float _currentTime, float _delta, float _sizeFactor )
         {
             m_velocity.rotate( t_angle * -2.0f * _delta );
         }
+        
+        limitSpeed();
+        // update the position
+        m_position     += m_velocity * _delta * Particle::s_particleSpeedRatio;
+        if ( WRAP( m_position, wrapSize ) )
+        {
+            m_oldPosition = m_position;
+        }
+        
+        m_velocity     *= Particle::s_friction * _delta;
+        m_acceleration *= Particle::s_dampness * _delta;
     }
     
-    
-    limitSpeed();
-    // update the position
-    m_position     += m_velocity * _delta * Particle::s_particleSpeedRatio;
-    m_velocity     *= Particle::s_friction * _delta;
-    m_acceleration *= Particle::s_dampness * _delta;
 }
 
 void Particle::updateTimer( float _delta )
@@ -205,7 +209,7 @@ void Particle::draw( void )
 void Particle::debugDraw( void )
 {
     ofNoFill();
-    float zoneRadius = sqrt( m_owner->s_zoneRadiusSqrd );
+    float zoneRadius = m_owner->s_zoneRadius;
     ofVec2f pos    = m_position + m_owner->m_position;
     
     ofSetColor( 255, 255, 255, 128 );

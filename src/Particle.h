@@ -60,6 +60,7 @@ public:
     float               m_lifeTimeLeft;
     
     bool                m_flockLeader;
+    bool                m_flocked;
     
     ofPixels*&          m_referenceSurface;
     

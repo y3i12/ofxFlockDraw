@@ -16,7 +16,7 @@ ofParameter< float >    ParticleEmitter::s_functionStrength{    "Fn. Strentgth",
 ofParameter< float >    ParticleEmitter::s_minParticleLife{     "Mix Part. Life",      1.0f,   0.5f,   60.0f };
 ofParameter< float >    ParticleEmitter::s_maxParticleLife{     "Max Part. Life",     10.0f,   0.5f,   60.0f };
 ofParameter< int   >    ParticleEmitter::s_particlesPerGroup{   "Particles/Group",     1000,    50,     5000 };
-ofParameter< int   >    ParticleEmitter::s_particleGroups{      "Particle Groups",        1,     4,       20 };
+ofParameter< int   >    ParticleEmitter::s_particleGroups{      "Particle Groups",        1,     1,       20 };
 ofParameter< bool  >    ParticleEmitter::s_debugDraw{           "Debug Draw",         false, false,     true };
 ofParameterGroup        ParticleEmitter::s_emitterParams;
 
@@ -27,7 +27,7 @@ ofParameterGroup        ParticleEmitter::FuncCtl::s_functionParams;
 ofParameter< float >    ParticleEmitter::s_repelStrength{      "Repel Str.",    2.0f,    0.0f,     10.0f };
 ofParameter< float >    ParticleEmitter::s_alignStrength{      "Align Str.",    4.0f,    0.0f,     10.0f };
 ofParameter< float >    ParticleEmitter::s_attractStrength{    "Att. Str.",     8.0f,    0.0f,     10.0f };
-ofParameter< float >    ParticleEmitter::s_zoneRadiusSqrd{     "Area Size",  5625.0f,  625.0f, 100000.0f };
+ofParameter< float >    ParticleEmitter::s_zoneRadius{         "Area Size",   150.0f,   25.0f,    750.0f };
 ofParameter< float >    ParticleEmitter::s_lowThresh{          "Repel Area",   0.45f,    0.0f,      1.0f };
 ofParameter< float >    ParticleEmitter::s_highThresh{         "Align Area",   0.85f,    0.0f,      1.0f };
 ofParameterGroup        ParticleEmitter::s_flockingParams;
@@ -45,7 +45,7 @@ void ParticleEmitter::init( void )
     if ( 0 == s_flockingParams.size() )
     {
         s_flockingParams.setName( "Flocking" );
-        s_flockingParams.add( s_zoneRadiusSqrd, s_repelStrength, s_alignStrength, s_attractStrength, s_lowThresh, s_highThresh );
+        s_flockingParams.add( s_zoneRadius, s_repelStrength, s_alignStrength, s_attractStrength, s_lowThresh, s_highThresh );
     }
     
     if ( 0 == s_emitterParams.size() )
@@ -212,9 +212,11 @@ void ParticleEmitter::addParticles( int _group )
     while ( m_particles.size() <= _group )
     {
         m_particles.push_back( std::vector< Particle* >() );
+        m_particleMatrix.push_back( spatial_matrix< Particle >( 100, ofGetWidth(), ofGetHeight() ) );
     }
     
     auto& particleGroup = m_particles[ _group ];
+    auto& particleMatrix = m_particleMatrix[ _group ];
     int particlesToEmit = std::min< int >( 10, s_particlesPerGroup - particleGroup.size() );
     
     if ( m_referenceSurface )
@@ -257,6 +259,7 @@ void ParticleEmitter::addParticles( int _group )
         p->m_group                = _group;
         p->m_lifeTimeLeft         = ofRandom( ParticleEmitter::s_minParticleLife, ParticleEmitter::s_maxParticleLife );
         particleGroup.push_back( p );
+        particleMatrix.insert( *p, p->m_position );
     }
 }
 
@@ -334,6 +337,7 @@ void ParticleEmitter::update( float _currentTime, float _delta )
             }
             
             m_particles.pop_back();
+            m_particleMatrix.pop_back();
         }
         
         m_particleGroups = s_particleGroups;
@@ -357,8 +361,7 @@ void ParticleEmitter::update( float _currentTime, float _delta )
         {
             for ( int i = 0; i < particlesToRemove; ++i )
             {
-                delete particleGroup.back();
-                particleGroup.pop_back();
+                particleGroup.back()->m_lifeTimeLeft = -1.0f;
             }
         }
         
@@ -383,6 +386,12 @@ void ParticleEmitter::update( float _currentTime, float _delta )
         return;
     }
     
+    if ( m_updateFlockTimer >= m_updateFlockEvery )
+    {
+        m_updateFlockTimer    = 0.0;
+        m_lastFlockUpdateTime = _currentTime;
+        m_updateFlocking      = true;
+    }
     
     // start threaded update
     startThreadedUpdate();
@@ -475,7 +484,8 @@ void ParticleEmitter::threadProcessParticles( size_t _threadNumber )
         while ( groupIdx < numGroups )
         {
             auto& particles = m_particles[ groupIdx ];
-            updateParticles( m_currentTime, m_delta, particles );
+            auto& matrix    = m_particleMatrix[ groupIdx ];
+            updateParticles( m_currentTime, m_delta, particles, matrix );
             
             groupIdx      += THREADS;
         }
@@ -486,28 +496,41 @@ void ParticleEmitter::threadProcessParticles( size_t _threadNumber )
     }
 }
 
-void ParticleEmitter::updateParticles( float _currentTime, float _delta, std::vector< Particle* >& _particles )
+void ParticleEmitter::updateParticles( float _currentTime, float _delta, std::vector< Particle* >& _particles, spatial_matrix< Particle >& _part_mtx )
 {
     updateParticleTiming( _currentTime, _delta, _particles );
     
     if ( ( m_updateType & kFunction      ) != 0 ) updateParticlesFunctions(     _currentTime, _delta, _particles );
-    if ( ( m_updateType & kFlocking      ) != 0 ) updateParticlesFlocking(      _currentTime, _delta, _particles );
-    if ( ( m_updateType & kFollowTheLead ) != 0 ) updateParticlesFollowTheLead( _currentTime, _delta, _particles );
+    if ( ( m_updateType & kFlocking      ) != 0 ) updateParticlesFlocking(      _currentTime, _delta, _particles, _part_mtx );
+    if ( ( m_updateType & kFollowTheLead ) != 0 ) updateParticlesFollowTheLead( _currentTime, _delta, _particles, _part_mtx );
     if ( ( m_updateType & kOpticalFlow   ) != 0 ) updateParticlesOpticalFlow(   _currentTime, _delta, _particles );
     
-    for ( auto p : _particles )
+    
+    // TODO: to use this strategy a clear/insertion needs to be done on mode switch
+    //if ( ( m_updateType & ( kFlocking | kFollowTheLead ) ) != 0 )
     {
-        p->update( _currentTime, _delta, m_sizeFactor );
+        // if we're flocking we need to update the matrix
+        _part_mtx.clear_apply( [&]( spatial_matrix< Particle >& mtx, Particle& p ){
+            p.update( _currentTime, _delta, m_sizeFactor );
+            if ( p.m_lifeTimeLeft > 0.0f ) {
+                mtx.insert( p, p.m_position );
+            }
+        } );
     }
-}
-
-void ParticleEmitter::updateParticleTiming( float _currentTime, float _delta, std::vector< Particle* >& _particles )
-{
+    /*
+    else
+    {
+        // for non flocking, the matrix is not updated
+        for ( auto p : _particles )
+        {
+            p->update( _currentTime, _delta, m_sizeFactor );
+        }
+    }
+    */
+    
     for ( int i = 0; i < _particles.size(); ++i )
     {
         Particle* p = _particles[ i ];
-        p->updateTimer( _delta );
-        
         if ( p->m_lifeTimeLeft < 0.0f )
         {
             delete p;
@@ -518,7 +541,16 @@ void ParticleEmitter::updateParticleTiming( float _currentTime, float _delta, st
     }
 }
 
-void ParticleEmitter::updateParticlesFollowTheLead( float _currentTime, float _delta, std::vector< Particle* >& _particles )
+void ParticleEmitter::updateParticleTiming( float _currentTime, float _delta, std::vector< Particle* >& _particles )
+{
+    for ( int i = 0; i < _particles.size(); ++i )
+    {
+        Particle* p = _particles[ i ];
+        p->updateTimer( _delta );
+    }
+}
+
+void ParticleEmitter::updateParticlesFollowTheLead( float _currentTime, float _delta, std::vector< Particle* >& _particles, spatial_matrix< Particle >& _part_mtx )
 {
     auto& p = _particles[ 0 ];
     ofVec2f& particleVelocity( p->m_velocity );
@@ -531,7 +563,7 @@ void ParticleEmitter::updateParticlesFollowTheLead( float _currentTime, float _d
     particleVelocity *= 1.0f + ( m_velocityAudioFunc( particlePosition.y ) * 5.0f );
     p->m_flockLeader = true;
     
-    updateParticlesFlocking( _currentTime, _delta, _particles );
+    updateParticlesFlocking( _currentTime, _delta, _particles, _part_mtx );
     
     p->m_flockLeader = false;
 }
@@ -555,25 +587,83 @@ void ParticleEmitter::updateParticlesFunctions( float _currentTime, float _delta
     }
 }
 
-void ParticleEmitter::updateParticlesFlocking( float _currentTime, float _delta, std::vector< Particle* >& _particles )
+void ParticleEmitter::updateParticlesFlocking( float _currentTime, float _delta, std::vector< Particle* >& _particles, spatial_matrix< Particle >& _part_mtx )
 {
-    size_t  itr     = 0;
-    size_t  itr_end = _particles.size();
-    size_t  itr2;
-    bool    updateFlock = false;
-    float   updateRatio = 0.0f;
-    ofVec2f dir;
-    
-    if ( m_updateFlockTimer >= m_updateFlockEvery )
+    // update the flocking routine
+    if ( !m_updateFlocking )
     {
-        m_updateFlockTimer    = 0.0;
-        updateRatio           = static_cast< float >( ( _currentTime - m_lastFlockUpdateTime ) / m_updateFlockEvery );
-        m_lastFlockUpdateTime = _currentTime;
-        updateFlock           = true;
+        return;
     }
     
-    // update the flocking routine
-    while ( itr < itr_end )
+    ofVec2f dir;
+    float updateRatio    = static_cast< float >( ( _currentTime - m_lastFlockUpdateTime ) / m_updateFlockEvery );
+    float zoneRadiusSqrd = s_zoneRadius * s_zoneRadius;
+    
+    for ( auto& p : _particles )
+    {
+        
+        _part_mtx.apply_to_radius( [&]( spatial_matrix< Particle >& mtx, Particle& p1, Particle& p2 )
+        {
+            dir = p1.m_position - p2.m_position;
+            float distSqrd = dir.lengthSquared();
+            
+            if ( distSqrd < zoneRadiusSqrd ) // Neighbor is in the zone
+            {
+                float percent = distSqrd / ( s_zoneRadius * s_zoneRadius );
+                
+                if( percent < s_lowThresh )            // Separation
+                {
+                    if ( s_repelStrength < 0.0001f )
+                    {
+                        return;
+                    }
+                    
+                    float F = s_lowThresh * s_repelStrength * updateRatio;
+                    dir.normalize();
+                    dir *= F;
+                    
+                    if ( !p1.m_flockLeader ) p1.applyForce(  dir );
+                    if ( !p2.m_flockLeader ) p2.applyForce( -dir );
+                }
+                else if( percent < s_highThresh ) // Alignment
+                {
+                    if ( s_alignStrength < 0.0001f )
+                    {
+                        return;
+                    }
+                    
+                    float threshDelta     = s_highThresh - s_lowThresh;
+                    float adjustedPercent = ( percent - s_lowThresh ) / threshDelta;
+                    float F               = ( 1.0f - ( cos( adjustedPercent * PI2 ) * -0.5f + 0.5f ) ) * s_alignStrength * updateRatio;
+                    
+                    if ( !p1.m_flockLeader ) p1.applyForce( p2.m_direction * F );
+                    if ( !p2.m_flockLeader ) p2.applyForce( p1.m_direction * F );
+                    
+                }
+                else                                 // Cohesion
+                {
+                    if ( s_attractStrength < 0.0001f )
+                    {
+                        return;
+                    }
+                    
+                    float threshDelta     = 1.0f - s_highThresh;
+                    float adjustedPercent = ( percent - s_highThresh )/threshDelta;
+                    float F               = ( 1.0f - ( cos( adjustedPercent * PI2 ) * -0.5f + 0.5f ) ) * s_attractStrength * updateRatio;
+                    
+                    dir.normalize();
+                    dir *= F;
+                    
+                    if ( !p1.m_flockLeader ) p1.applyForce( -dir );
+                    if ( !p2.m_flockLeader ) p2.applyForce(  dir );
+                }
+            }
+            
+        }, *p, p->m_position, s_zoneRadius );
+    }
+    
+    
+    /*while ( itr < itr_end )
     {
         Particle* p1 = _particles[ itr ];
         
@@ -642,7 +732,7 @@ void ParticleEmitter::updateParticlesFlocking( float _currentTime, float _delta,
         }
         
         ++itr;
-    }
+    }*/
 }
 
 void ParticleEmitter::updateParticlesOpticalFlow( float _currentTime, float _delta, std::vector< Particle* >& _particles )

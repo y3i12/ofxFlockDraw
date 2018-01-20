@@ -9,6 +9,7 @@
 #include <atomic>
 #include <unordered_map>
 
+#include "ofSpatialMatrix.h"
 #include "Particle.h"
 #include "ofxFlowTools.h"
 #include "tools/ftToScalar.h"
@@ -67,6 +68,7 @@ public:
     virtual void continueThreads( void );
     virtual void killAll( void );
     
+    std::vector< spatial_matrix< Particle > > m_particleMatrix;
     std::vector< std::vector< Particle* > > m_particles;
     ofVec2f                     m_position;
     float                       m_maxLifeTime;
@@ -79,13 +81,14 @@ public:
     UpdateType                  m_updateType;
     
     // flocking vars
-    static ofParameter< float > s_zoneRadiusSqrd;
+    static ofParameter< float > s_zoneRadius;
     static ofParameter< float > s_repelStrength;
     static ofParameter< float > s_alignStrength;
     static ofParameter< float > s_attractStrength;
     static ofParameter< float > s_lowThresh;
     static ofParameter< float > s_highThresh;
     static ofParameterGroup     s_flockingParams;
+    bool                        m_updateFlocking;
     
     // image related
     ofPixels*&                  m_referenceSurface;
@@ -116,11 +119,11 @@ private:
     void startThreadedUpdate( void );
     void threadProcessParticles( size_t _group );
     
-    void updateParticles(               float _currentTime, float _delta, std::vector< Particle* >& _particles );
+    void updateParticles(               float _currentTime, float _delta, std::vector< Particle* >& _particles, spatial_matrix< Particle >& _part_mtx );
     void updateParticleTiming(          float _currentTime, float _delta, std::vector< Particle* >& _particles );
-    void updateParticlesFollowTheLead(  float _currentTime, float _delta, std::vector< Particle* >& _particles );
+    void updateParticlesFollowTheLead(  float _currentTime, float _delta, std::vector< Particle* >& _particles, spatial_matrix< Particle >& _part_mtx );
     void updateParticlesFunctions(      float _currentTime, float _delta, std::vector< Particle* >& _particles );
-    void updateParticlesFlocking(       float _currentTime, float _delta, std::vector< Particle* >& _particles );
+    void updateParticlesFlocking(       float _currentTime, float _delta, std::vector< Particle* >& _particles, spatial_matrix< Particle >& _part_mtx );
     void updateParticlesOpticalFlow(    float _currentTime, float _delta, std::vector< Particle* >& _particles );
     
     // Threading stuff
