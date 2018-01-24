@@ -105,8 +105,7 @@ void Particle::update( float _currentTime, float _delta, float _sizeFactor )
         
         
         // update the speed
-        m_velocity *= Particle::s_dampness * _delta;
-        m_velocity += m_acceleration + m_instantAcceleration;
+        m_velocity     += m_acceleration + m_instantAcceleration;
         m_instantAcceleration.set( 0.0f, 0.0f );
         
         // capping to avoid errors
@@ -173,8 +172,8 @@ void Particle::update( float _currentTime, float _delta, float _sizeFactor )
             m_oldPosition = m_position;
         }
         
-        m_velocity     *= Particle::s_friction * _delta;
-        m_acceleration *= Particle::s_dampness * _delta;
+        m_velocity     -= m_velocity     * ( 1.0f - Particle::s_friction ) * _delta;
+        m_acceleration -= m_acceleration * ( 1.0f - Particle::s_dampness ) * _delta;
     }
     
 }
