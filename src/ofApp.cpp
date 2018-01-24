@@ -19,9 +19,7 @@ std::vector< std::string >  ofApp::s_particleBehaviors = { "Function", "Flocking
 #define threshold(n,t) ( std::max< float >( n - t, 0.0f ) / n )
 
 ofApp::ofApp( std::list< std::string >& _args ) :
-    m_particleEmitter( m_surface ),
-    m_strobe( false ),
-    m_renderOpticalFlow( nullptr )
+    m_particleEmitter( m_surface )
 {
     _args.pop_front();
 }
@@ -118,20 +116,14 @@ void ofApp::setup()
     m_mainPanel->addGroup( ParticleEmitter::FuncCtl::s_functionParams );
     m_mainPanel->addGroup( ParticleEmitter::s_flockingParams );
     
-    // m_mainPanel->addSpacer( 0, 20 );
     
     ofxGuiGroup* uiGroup = m_mainPanel->addGroup( "Function Mode" );
-    
-    //m_mainPanel->add< ofxGuiLabel  >( "Function Mode" );
     
     m_functionButtons.push_back( uiGroup->add< ofxGuiToggle >( "Function",               false ) );
     m_functionButtons.back()->addListener( this, &ofApp::onToggleFunction );
     
     m_functionButtons.push_back( uiGroup->add< ofxGuiToggle >( "Flocking",               false ) );
     m_functionButtons.back()->addListener( this, &ofApp::onToggleFlocking );
-    
-    //m_functionButtons.push_back( m_mainPanel->add< ofxGuiToggle >( "Function & Flocking",    true  ) );
-    //m_functionButtons.back()->addListener( this, &ofApp::onToggleFunctionAndFlocking );
     
     m_functionButtons.push_back( uiGroup->add< ofxGuiToggle >( "Follow the lead",        false ) );
     m_functionButtons.back()->addListener( this, &ofApp::onToggleFollowTheLead );
@@ -141,17 +133,16 @@ void ofApp::setup()
     
     updateFunctionType();
     
-    //m_mainPanel->addSpacer( 0, 10 );
-    
-    //m_mainPanel->add< ofxGuiLabel  >( "FX" );
     uiGroup = m_mainPanel->addGroup( "FX" );
     uiGroup->add< ofxGuiToggle >( "RGB Shift",  m_rgbShift->getEnabled()        )->addListener( this, &ofApp::onToggleRGBShiftPass   );
     uiGroup->add< ofxGuiToggle >( "Noise Wrap", m_noiseWrap->getEnabled()       )->addListener( this, &ofApp::onToggleNoiseWarpPass  );
     uiGroup->add< ofxGuiToggle >( "Bloom Pass", m_bloomPass->getEnabled()       )->addListener( this, &ofApp::onToggleBloomPass      );
     uiGroup->add< ofxGuiToggle >( "Zoom Blur",  m_zoomBlurPass->getEnabled()    )->addListener( this, &ofApp::onToggleZoomBlurPass   );
-    bool _strobe = m_strobe;
-    uiGroup->add< ofxGuiToggle >( "Strobe",     _strobe                         )->addListener( this, &ofApp::onToggleStrobe         );
-    uiGroup->add< ofxGuiToggle >( m_renderOpticalFlow );
+    
+    uiGroup->add( m_strobe );
+    uiGroup->add( m_renderOpticalFlow );
+    uiGroup->add( m_overlay );
+    uiGroup->add( m_opacity );
     
     uiGroup = m_mainPanel->addGroup( m_particleEmitter.m_opticalFlow.parameters );
     //m_mainPanel->addSpacer( 0, 10 );
@@ -374,22 +365,54 @@ void ofApp::draw()
     // save what happened to the framebuffer
     ofSetColor( 255, 255, 255 );
     m_post.begin();
-    m_frameBufferObject.draw( 0, 0 );
-    m_post.end();
-    if ( m_strobe && m_isOnset )
     {
-        //blendMode = OF_BLENDMODE_ALPHA;
-        //blendMode = OF_BLENDMODE_ADD;
-        //blendMode = OF_BLENDMODE_MULTIPLY;
-        //blendMode = OF_BLENDMODE_SUBTRACT;
-        //blendMode = OF_BLENDMODE_SCREEN;
-        ofEnableBlendMode( OF_BLENDMODE_SCREEN );
+        ofSetColor( 255, 255, 255 );
+        m_frameBufferObject.draw( 0, 0 );
+        
+        if ( m_overlay )
         {
-            ofSetColor( m_tristimulus[ 0 ] * 255, m_tristimulus[ 1 ] * 255, m_tristimulus[ 2 ] * 255, 64 );
-            ofDrawRectangle( 0, 0, displaySz.x, displaySz.y );
+            {
+                ofSetColor( 255, 255, 255, 255 * m_opacity );
+                if ( m_video.isLoaded() )
+                {
+                    m_video.draw(
+                                 m_particleEmitter.m_position.x,
+                                 m_particleEmitter.m_position.y,
+                                 m_particleEmitter.m_referenceSurface->getWidth()  * m_particleEmitter.m_sizeFactor,
+                                 m_particleEmitter.m_referenceSurface->getHeight() * m_particleEmitter.m_sizeFactor );
+                }
+                else
+                {
+                    m_image.setFromPixels( *m_surface );
+                    m_image.draw(
+                                 m_particleEmitter.m_position.x,
+                                 m_particleEmitter.m_position.y,
+                                 m_particleEmitter.m_referenceSurface->getWidth()  * m_particleEmitter.m_sizeFactor,
+                                 m_particleEmitter.m_referenceSurface->getHeight() * m_particleEmitter.m_sizeFactor );
+                }
+            }
         }
-        ofDisableBlendMode();
-    }//*/
+        
+        
+        if ( m_strobe && m_isOnset )
+        {
+            //blendMode = OF_BLENDMODE_ALPHA;
+            //blendMode = OF_BLENDMODE_ADD;
+            //blendMode = OF_BLENDMODE_MULTIPLY;
+            //blendMode = OF_BLENDMODE_SUBTRACT;
+            //blendMode = OF_BLENDMODE_SCREEN;
+            //ofEnableBlendMode( OF_BLENDMODE_SCREEN );
+            {
+                ofSetColor( m_tristimulus[ 0 ] * 255, m_tristimulus[ 1 ] * 255, m_tristimulus[ 2 ] * 255, 48 );
+                ofDrawRectangle( 0, 0, displaySz.x, displaySz.y );
+            }
+            //ofDisableBlendMode();
+        }//*/
+    
+        
+        ofSetColor( 255, 255, 255 );
+    }
+    m_post.end();
     
     if ( ParticleEmitter::s_debugDraw )
     {
@@ -492,6 +515,18 @@ void ofApp::keyPressed(int key){
         case 'o':
         {
             openImage();
+        }
+        break;
+        
+        case OF_KEY_LEFT:
+        {
+            m_video.setPosition( std::max< float >( 0.0f, m_video.getPosition() - 0.01 ) );
+        }
+        break;
+        
+        case OF_KEY_RIGHT:
+        {
+            m_video.setPosition( std::min< float >( 100.0f, m_video.getPosition() + 0.01 ) );
         }
         break;
             
@@ -635,12 +670,6 @@ void ofApp::updateFunctionType( void )
         bool value = static_cast< bool >( ( update_type >> i ) & 1 );
         ( *m_functionButtons[ i ] ) = value;
     }
-}
-
-void ofApp::onToggleStrobe( bool& b )
-{
-    m_strobe = b;
-    return false;
 }
 
 void ofApp::onToggleRGBShiftPass( bool& b )

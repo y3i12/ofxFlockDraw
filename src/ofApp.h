@@ -44,7 +44,6 @@ public:
     void onToggleOpticalFlow( bool& b );
     void updateFunctionType( void );
 
-    void onToggleStrobe( bool& b );
     void onToggleRGBShiftPass( bool& b );
     void onToggleNoiseWarpPass( bool& b );
     void onToggleBloomPass( bool& b );
@@ -64,6 +63,7 @@ public:
     
     // properties
     ofPixels*                   m_surface;
+    ofImage                     m_image;
     ofVideoPlayer               m_video;
     ofImage                     m_texture;
     ofRectangle                 m_outputArea;
@@ -84,7 +84,7 @@ public:
     ofxGuiValuePlotter*         m_hpcpPlotter;
     ofxGuiValuePlotter*         m_tristimulusPlotter;
     
-    ofParameter< bool >         m_renderOpticalFlow{ "Show Optical Flow", false, false, true };
+    ofParameter< bool >         m_renderOpticalFlow{ "Optical Flow", false, false, true };
     std::vector< ofxGuiToggle* > m_functionButtons;
     ofxGui                      m_gui;
     
@@ -112,7 +112,7 @@ private:
     ofSoundBuffer               m_soundBuffer;
     
     ofParameter< float >        m_smoothing{ "Smoothing", 0.1f, 0.0f, 1.0f };
-    ofParameter< float >        m_rms{ "RMS", 0.0f, 0.0f, 1.0f };//{ "", 0.0f, 0.0f, 1.0f };
+    ofParameter< float >        m_rms{ "RMS", 0.0f, 0.0f, 1.0f };
     ofParameter< float >        m_power{ "Power", 0.0f, 0.0f, 1.0f };;
     ofParameter< float >        m_pitchFreq;
     ofParameter< float >        m_pitchFreqNorm{ "Pitch Frequency", 0.0f, 0.0f, 1.0f };;
@@ -146,6 +146,8 @@ private:
     
     ofParameter< bool >         m_isOnset{ "Onset", false, false, true };
     ofParameter< bool >         m_strobe{ "Strobe", false, false, true };
+    ofParameter< bool >         m_overlay{ "Overlay", false, false, true };
+    ofParameter< float >        m_opacity{ "Opacity", 0.33f, 0.0f, 1.0f };
     // AUDIO STUFF <<
     
     static bool                 s_debugFFt;
