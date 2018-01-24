@@ -6,21 +6,7 @@
 class ParticleEmitter;
 
 class Particle
-{
-public:
-    struct PointAccessFunctor
-    {
-        static inline ofVec2f& position( Particle* p )
-        {
-            return p->m_position;
-        }
-        
-        static inline ofVec2f& stable_position( Particle* p )
-        {
-            return p->m_stablePosition;
-        }
-    };
-    
+{    
 public:
     Particle( ParticleEmitter* _owner, ofVec2f& _position, ofVec2f& _direction );
     
@@ -42,33 +28,38 @@ protected:
     
     
 public:
-    ofVec2f             m_position;
-    ofVec2f             m_oldPosition;
-    ofVec2f             m_stablePosition;
-    ofVec2f             m_direction;
-    ofVec2f             m_velocity;
-    ofVec2f             m_acceleration;
-    ofVec2f             m_instantAcceleration;
+    // Particle attributes -> needs to be mapped to a texture
     
-    ofColor             m_color;
-    unsigned char       m_alpha;
+    // texture 1: will contain attributes updated by the particle shader itself
+    ofVec2f             m_position;             // t1.xy
+    ofVec2f             m_velocity;             // t1.zu
     
-    float               m_maxSpeedSquared;
-    float               m_minSpeedSquared;
+    // texture 2: will other attributes controlled by the particle shader
+    float               m_lifeTime;             // t2.x
+    float               m_lifeTimeLeft;         // t2.y
+    float               m_maxSpeedSquared;      // t2.z
+    float               m_minSpeedSquared;      // t2.u
     
-    float               m_lifeTime;
-    float               m_lifeTimeLeft;
+    // texture 3: will contain input forces modificable from outside
+    ofVec2f             m_acceleration;         // t.xy
+    ofVec2f             m_instantAcceleration;  // t.zu -> is this really needed?
+    ofVec2f             m_oldPosition;          // this will not be needed, the old position can be used before actually commiting the vertex
     
-    bool                m_flockLeader;
-    bool                m_flocked;
+    ofColor             m_color;                // will be acquired from image texture
+    unsigned char       m_alpha;                // based on time, can be computed
+    
+    
+    
+    bool                m_flockLeader;          // Thinking on removing follow the lead - it is worthless
     
     ofPixels*&          m_referenceSurface;
     
     ParticleEmitter*    m_owner;
     
-    int                 m_group;
+    int                 m_group;                // is this needed? groups can be different particle emitters
     
 public:
+    // all of this go as parameters to the shader
     static ofParameter< float >     s_maxRadius;
     static ofParameter< float >     s_particleSizeRatio;
     static ofParameter< float >     s_particleSpeedRatio;
@@ -78,8 +69,8 @@ public:
     static ofParameterGroup         s_particleParameters;
     
 private:
+    // The temporary parameters will all be discarded
     // temporary variables to avoid construction every update
-    // ofRectangle         t_sourceArea;
     ofColor             t_color;
     ofVec2f             t_tempDir;
     float               t_angle;

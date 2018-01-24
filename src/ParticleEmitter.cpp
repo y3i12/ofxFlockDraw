@@ -253,7 +253,6 @@ void ParticleEmitter::addParticles( int _group )
         p->m_maxSpeedSquared = ofRandom( s_midSpeed, s_maxSpeed  );
         p->m_minSpeedSquared = ofRandom( s_minSpeed, s_midSpeed );
         
-        p->m_acceleration         = p->m_direction;
         p->m_acceleration.normalize();
         p->m_acceleration        *= 2.5f;
         p->m_group                = _group;
@@ -636,8 +635,10 @@ void ParticleEmitter::updateParticlesFlocking( float _currentTime, float _delta,
                     float adjustedPercent = ( percent - s_lowThresh ) / threshDelta;
                     float F               = ( 1.0f - ( cos( adjustedPercent * PI2 ) * -0.5f + 0.5f ) ) * s_alignStrength * updateRatio;
                     
-                    if ( !p1.m_flockLeader ) p1.applyForce( p2.m_direction * F );
-                    if ( !p2.m_flockLeader ) p2.applyForce( p1.m_direction * F );
+                    ofVec2f p1Direction = p1.m_velocity.getNormalized();
+                    ofVec2f p2Direction = p2.m_velocity.getNormalized();
+                    if ( !p1.m_flockLeader ) p1.applyForce( p2Direction * F );
+                    if ( !p2.m_flockLeader ) p2.applyForce( p1Direction * F );
                     
                 }
                 else                                 // Cohesion

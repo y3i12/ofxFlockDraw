@@ -47,8 +47,6 @@ size_t                  Particle::s_idGenerator        = 0;
 
 Particle::Particle( ParticleEmitter* _owner, ofVec2f& _position, ofVec2f& _direction ) :
     m_position( _position ),
-    m_stablePosition( _position ),
-    m_direction( _direction ),
     m_color( 255, 255, 255 ),
     m_alpha( 0 ),
     m_velocity( 0.0f, 0.0f ),
@@ -57,7 +55,6 @@ Particle::Particle( ParticleEmitter* _owner, ofVec2f& _position, ofVec2f& _direc
     m_lifeTime( 0.0f ),
     m_lifeTimeLeft( 0.0f ),
     m_flockLeader( false ),
-    m_flocked( false ),
     m_owner( _owner ),
     m_group( -1 ),
     m_id( s_idGenerator++ ),
@@ -81,13 +78,11 @@ Particle::~Particle( void )
 void Particle::applyInstantForce( ofVec2f _force )
 {
     m_instantAcceleration  += _force;
-    m_direction             = ( m_velocity + m_acceleration + m_instantAcceleration ).getNormalized();
 }
 
 void Particle::applyForce( ofVec2f _force )
 {
     m_acceleration += _force;
-    m_direction     = ( m_velocity + m_acceleration + m_instantAcceleration ).getNormalized();
 }
 
 void Particle::update( float _currentTime, float _delta, float _sizeFactor )
@@ -122,7 +117,7 @@ void Particle::update( float _currentTime, float _delta, float _sizeFactor )
             m_oldPosition = m_position;
         }
         
-        t_tempDir = m_direction * 2.0f;
+        t_tempDir = m_velocity;
         t_angle   = 45;
         
         t_currentColor = m_referenceSurface->getColor( static_cast< int >( m_position.x / _sizeFactor ), static_cast< int >( m_position.y / _sizeFactor ) );
@@ -231,12 +226,12 @@ void Particle::limitSpeed()
     
     if ( vLengthSqrd > m_maxSpeedSquared )
     {
-        m_velocity = m_direction * m_maxSpeedSquared;
+        m_velocity.normalize() *= m_maxSpeedSquared;
         
     } 
     else if ( vLengthSqrd < m_minSpeedSquared )
     {
-        m_velocity = m_direction * m_minSpeedSquared;
+        m_velocity.normalize() *= m_minSpeedSquared;
     }
 }
 
